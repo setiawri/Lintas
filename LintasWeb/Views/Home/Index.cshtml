@@ -9,9 +9,7 @@
         <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
             <div class="d-flex">
                 <div class="breadcrumb">
-                    <a href="index.html" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
-                    <a href="form_wizard.html" class="breadcrumb-item">Data</a>
-                    <span class="breadcrumb-item active">Shipment Status</span>
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Dashboard</a>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
@@ -22,7 +20,7 @@
     <div class="content">
 
         <!-- Wizard with validation -->
-        <div class="card">
+        @*<div class="card">
             <div class="card-header bg-white header-elements-inline">
                 <h6 class="card-title">Shipment Status</h6>
                 <div class="header-elements">
@@ -441,7 +439,7 @@
                     </div>
                 </fieldset>
             </form>
-        </div>
+        </div>*@
         <!-- /wizard with validation -->
     </div>
     <!-- /content area -->

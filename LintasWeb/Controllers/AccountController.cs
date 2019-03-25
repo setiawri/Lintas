@@ -9,17 +9,39 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using LintasMVC.Models;
+using System.Collections.Generic;
 
 namespace LintasMVC.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        private LintasContext db = new LintasContext();
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationRoleManager _roleManager;
 
         public AccountController()
         {
+        }
+
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ApplicationRoleManager roleManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+            RoleManager = roleManager;
+        }
+
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
+            }
+            private set
+            {
+                _roleManager = value;
+            }
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -75,7 +97,7 @@ namespace LintasMVC.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -139,6 +161,13 @@ namespace LintasMVC.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var role in RoleManager.Roles.OrderBy(x => x.Name))
+            {
+                list.Add(new SelectListItem() { Value = role.Name, Text = role.Name });
+            }
+            ViewBag.Roles = list;
+            ViewBag.listStation = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View();
         }
 
@@ -151,24 +180,32 @@ namespace LintasMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, Fullname = model.Fullname, Stations_Id = model.Stations_Id, Notes = model.Notes };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    result = await UserManager.AddToRoleAsync(user.Id, model.RoleName);
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "User");
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
+            List<SelectListItem> list = new List<SelectListItem>();
+            foreach (var role in RoleManager.Roles.OrderBy(x => x.Name))
+            {
+                list.Add(new SelectListItem() { Value = role.Name, Text = role.Name });
+            }
+            ViewBag.Roles = list;
+            ViewBag.listStation = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View(model);
         }
 
@@ -387,8 +424,8 @@ namespace LintasMVC.Controllers
 
         //
         // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);

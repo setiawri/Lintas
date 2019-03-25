@@ -1,0 +1,114 @@
+﻿@model LintasMVC.Models.StationsModels
+
+@{
+    ViewBag.Root = "Stations";
+    ViewBag.Title = "Create";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Stations")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Countries_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.DropDownListFor(model => model.Countries_Id, ViewBag.listCountries as SelectList, "Select Country", new { @class = "form-control select2" })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Countries_Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Phone1, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Phone1, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Phone1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Phone2, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Phone2, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Phone2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2();
+    });
+</script>

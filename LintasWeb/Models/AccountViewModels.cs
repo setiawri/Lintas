@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LintasMVC.Models
@@ -49,9 +50,12 @@ namespace LintasMVC.Models
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
+        
+        //[Display(Name = "Email")]
+        //[EmailAddress]
+        //public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -65,7 +69,19 @@ namespace LintasMVC.Models
     public class RegisterViewModel
     {
         [Required]
-        [EmailAddress]
+        [Display(Name = "Role")]
+        public string RoleName { get; set; }
+
+        [Required]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
+
+        [Required]
+        [Display(Name = "Full Name")]
+        public string Fullname { get; set; }
+
+        //[Required]
+        //[EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
@@ -79,6 +95,11 @@ namespace LintasMVC.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Station")]
+        public Guid? Stations_Id { get; set; }
+
+        public string Notes { get; set; }
     }
 
     public class ResetPasswordViewModel
