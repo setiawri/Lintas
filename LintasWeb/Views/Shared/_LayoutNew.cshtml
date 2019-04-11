@@ -16,6 +16,7 @@
     <link href="~/assets/css/layout.min.css" rel="stylesheet" type="text/css">
     <link href="~/assets/css/components.min.css" rel="stylesheet" type="text/css">
     <link href="~/assets/css/colors.min.css" rel="stylesheet" type="text/css">
+    @*<link href="~/assets/css/bootstrap-datetimepicker.css" rel="stylesheet" />*@
     <!-- /global stylesheets -->
 
     <!-- Core JS files -->
@@ -25,6 +26,13 @@
     <!-- /core JS files -->
 
     <!-- Theme JS files -->
+    <script src="~/assets/js/plugins/ui/moment/moment.min.js"></script>
+    <script src="~/assets/js/plugins/pickers/daterangepicker.js"></script>
+    <script src="~/assets/js/plugins/pickers/anytime.min.js"></script>
+    <script src="~/assets/js/plugins/pickers/pickadate/picker.js"></script>
+    <script src="~/assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+    <script src="~/assets/js/plugins/pickers/pickadate/picker.time.js"></script>
+    @*<script src="~/assets/js/bootstrap-datetimepicker.min.js"></script>*@
     <script src="~/assets/js/plugins/forms/wizards/steps.min.js"></script>
     <script src="~/assets/js/plugins/forms/selects/select2.min.js"></script>
     <script src="~/assets/js/plugins/forms/styling/uniform.min.js"></script>
@@ -33,11 +41,12 @@
     <script src="~/assets/js/plugins/extensions/cookie.js"></script>
 
     <script src="~/assets/js/app.js"></script>
+    @*<script src="~/assets/js/demo_pages/picker_date.js"></script>*@
     @*<script src="~/assets/js/demo_pages/form_wizard.js"></script>*@
     <!-- /theme JS files -->
 
 </head>
-<body class="sidebar-xs">
+<body> <!--use class="sidebar-xs" to hide left panel-->
 
     <!-- Main navbar -->
     <div class="navbar navbar-expand-md navbar-dark">
@@ -128,11 +137,18 @@
                         <li class="nav-item">
                             <a href="@Url.Action("Index", "Home")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "nav-link active" : "nav-link")">
                                 <i class="icon-home4"></i>
-                                <span>
-                                    Dashboard
-                                </span>
+                                <span>Dashboard</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Orders")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders" ? "nav-link active" : "nav-link")">
+                                <i class="icon-clipboard3"></i>
+                                <span>Order</span>
+                            </a>
+                        </li>
+                        <!-- /main -->
+                        <!-- Setting -->
+                        <li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Setting</div> <i class="icon-menu" title="Setting"></i></li>
                         <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Role"
                             || ViewContext.RouteData.Values["Controller"].ToString() == "User"
                             ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
@@ -153,7 +169,7 @@
                                 <li class="nav-item"><a href="@Url.Action("Index", "Stations")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Stations" ? "nav-link active" : "nav-link")">Stations</a></li>
                             </ul>
                         </li>
-                        <!-- /main -->
+                        <!-- /setting -->
 
                     </ul>
                 </div>

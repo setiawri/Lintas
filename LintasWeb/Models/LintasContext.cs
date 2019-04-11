@@ -14,5 +14,7 @@ namespace LintasMVC.Models
         public DbSet<CountriesModels> Countries { get; set; }
         public DbSet<CustomersModels> Customers { get; set; }
         public DbSet<StationsModels> Stations { get; set; }
+        public DbSet<OrdersModels> Orders { get; set; }
+        public DbSet<OrderItemsModels> OrderItems { get; set; }
     }
 }

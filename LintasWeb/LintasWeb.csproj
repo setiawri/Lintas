@@ -169,12 +169,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Common\IdentityExtension.cs" />
+    <Compile Include="Common\Master.cs" />
     <Compile Include="Common\Permissions.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\StationsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -193,6 +195,9 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LintasContext.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\OrderItemsModels.cs" />
+    <Compile Include="Models\OrdersIndexViewModels.cs" />
+    <Compile Include="Models\OrdersModels.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
@@ -202,6 +207,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\css\bootstrap-datetimepicker.css" />
     <Content Include="assets\css\bootstrap.min.css" />
     <Content Include="assets\css\bootstrap_limitless.min.css" />
     <Content Include="assets\css\colors.min.css" />
@@ -210,9 +216,12 @@
     <Content Include="assets\css\icons\icomoon\styles.css" />
     <Content Include="assets\images\logo_light.png" />
     <Content Include="assets\js\app.js" />
+    <Content Include="assets\js\bootstrap-datetimepicker.min.js" />
     <Content Include="assets\js\demo_pages\form_wizard.js" />
+    <Content Include="assets\js\demo_pages\picker_date.js" />
     <Content Include="assets\js\main\bootstrap.bundle.min.js" />
     <Content Include="assets\js\main\jquery.min.js" />
+    <Content Include="assets\js\moment.min.js" />
     <Content Include="assets\js\plugins\extensions\cookie.js" />
     <Content Include="assets\js\plugins\forms\inputs\inputmask.js" />
     <Content Include="assets\js\plugins\forms\selects\select2.min.js" />
@@ -220,6 +229,12 @@
     <Content Include="assets\js\plugins\forms\validation\validate.min.js" />
     <Content Include="assets\js\plugins\loaders\blockui.min.js" />
     <Content Include="assets\js\plugins\forms\wizards\steps.min.js" />
+    <Content Include="assets\js\plugins\pickers\anytime.min.js" />
+    <Content Include="assets\js\plugins\pickers\daterangepicker.js" />
+    <Content Include="assets\js\plugins\pickers\pickadate\picker.date.js" />
+    <Content Include="assets\js\plugins\pickers\pickadate\picker.js" />
+    <Content Include="assets\js\plugins\pickers\pickadate\picker.time.js" />
+    <Content Include="assets\js\plugins\ui\moment\moment.min.js" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
@@ -294,6 +309,10 @@
     <Content Include="Views\Role\Delete.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\Orders\Index.cshtml" />
+    <Content Include="Views\Orders\Create.cshtml" />
+    <Content Include="Views\Orders\Delete.cshtml" />
+    <Content Include="Views\Orders\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
