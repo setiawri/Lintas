@@ -175,6 +175,7 @@
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
@@ -193,11 +194,15 @@
     <Compile Include="Models\CustomersIndexViewModels.cs" />
     <Compile Include="Models\CustomersModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\InvoiceItemsModels.cs" />
+    <Compile Include="Models\InvoicesIndexViewModels.cs" />
+    <Compile Include="Models\InvoicesModels.cs" />
     <Compile Include="Models\LintasContext.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\OrderItemsModels.cs" />
     <Compile Include="Models\OrdersIndexViewModels.cs" />
     <Compile Include="Models\OrdersModels.cs" />
+    <Compile Include="Models\OrderStatusEnum.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
@@ -313,6 +318,10 @@
     <Content Include="Views\Orders\Create.cshtml" />
     <Content Include="Views\Orders\Delete.cshtml" />
     <Content Include="Views\Orders\Edit.cshtml" />
+    <Content Include="Views\Invoices\Create.cshtml" />
+    <Content Include="Views\Invoices\Index.cshtml" />
+    <Content Include="Views\Invoices\Edit.cshtml" />
+    <Content Include="Views\Invoices\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

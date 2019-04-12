@@ -62,13 +62,14 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes")] OrdersModels ordersModels, string Items)
+        public async Task<ActionResult> Create([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items)
         {
             if (ModelState.IsValid)
             {
                 Common.Master m = new Common.Master();
                 ordersModels.Id = Guid.NewGuid();
                 ordersModels.No = m.GetLastNo(ordersModels.Timestamp).ToString("000");
+                ordersModels.Status_enumid = OrderStatusEnum.Ordered;
                 db.Orders.Add(ordersModels);
 
                 List<OrderItemDetails> lOrderItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(Items);
@@ -140,7 +141,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes")] OrdersModels ordersModels, string Items)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items)
         {
             if (ModelState.IsValid)
             {

@@ -16,5 +16,7 @@ namespace LintasMVC.Models
         public DbSet<StationsModels> Stations { get; set; }
         public DbSet<OrdersModels> Orders { get; set; }
         public DbSet<OrderItemsModels> OrderItems { get; set; }
+        public DbSet<InvoicesModels> Invoices { get; set; }
+        public DbSet<InvoiceItemsModels> InvoiceItems { get; set; }
     }
 }

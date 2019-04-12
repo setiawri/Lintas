@@ -1,8 +1,8 @@
-﻿@model LintasMVC.Models.OrdersModels
+﻿@model LintasMVC.Models.InvoicesModels
 
 @{
-    ViewBag.Root = "Orders";
-    ViewBag.Title = "Edit";
+    ViewBag.Root = "Invoices";
+    ViewBag.Title = "Create";
 }
 
 <div class="content-wrapper">
@@ -13,7 +13,7 @@
             <div class="d-flex">
                 <div class="breadcrumb">
                     <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
-                    <a href="@Url.Action("Index", "Orders")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <a href="@Url.Action("Index", "Invoices")" class="breadcrumb-item">@ViewBag.Root</a>
                     <span class="breadcrumb-item active">@ViewBag.Title</span>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -23,12 +23,12 @@
     <!-- /page header -->
     <!-- Content area -->
     <div class="content">
-        @using (Html.BeginForm("Edit", "Orders", FormMethod.Post, new { id = "target" }))
+        @using (Html.BeginForm("Create", "Invoices", FormMethod.Post, new { id = "target" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.Id)
-            @Html.HiddenFor(model => model.No)
-            @Html.HiddenFor(model => model.Status_enumid)
+            <input type="hidden" id="No" name="No" value="1" />
+            <input type="hidden" id="TotalAmount" name="TotalAmount" />
+            <input type="hidden" id="TotalPaid" name="TotalPaid" value="0" />
             <input type="hidden" id="Items" name="Items" />
             <!-- Form inputs -->
             <div class="card">
@@ -50,38 +50,13 @@
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Timestamp, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                                     <div class="col-lg-10">
-                                        @*<div class="input-group">
+                                        <div class="input-group">
                                             @Html.EditorFor(model => model.Timestamp, new { htmlAttributes = new { @class = "form-control tanggal" } })
                                             <span class="input-group-append">
                                                 <span class="input-group-text"><i class="icon-calendar"></i></span>
                                             </span>
-                                        </div>*@
-                                        @Html.EditorFor(model => model.Timestamp, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                        </div>
                                         @Html.ValidationMessageFor(model => model.Timestamp, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
-                                    <div class="col-lg-10">
-                                        @Html.DropDownListFor(model => model.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Customers_Id, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    <label class="col-form-label col-lg-2">Stations</label>
-                                    <div class="col-lg-5">
-                                        @Html.DropDownListFor(model => model.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Origin_Stations_Id, "", new { @class = "text-danger" })
-                                    </div>
-                                    <div class="col-lg-5">
-                                        @Html.DropDownListFor(model => model.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Destination_Stations_Id, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -91,6 +66,17 @@
                                     <div class="col-lg-10">
                                         @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
                                         @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Orders_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.DropDownListFor(model => model.Orders_Id, ViewBag.listOrders as SelectList, "Select Order", new { @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.Orders_Id, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -105,29 +91,21 @@
                                             <tr>
                                                 <th style="width:5% !important"></th>
                                                 <th style="width:50% !important">Description</th>
-                                                <th style="width:20% !important">Cost</th>
+                                                <th style="width:20% !important">Amount</th>
                                                 <th style="width:25% !important">Notes</th>
                                             </tr>
                                         </thead>
                                         <tbody id="data-body">
-                                            @{ int row = 0; }
-                                            @if (ViewBag.listItems != null)
-                                            {
-                                                foreach (var item in ViewBag.listItems)
-                                                {
-                                                    <tr id="row_@row">
-                                                        <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                        <td><input type="text" class="form-control desc" value="@item.Description" /></td>
-                                                        <td><input type="text" class="form-control text-right cost"  value="@item.Cost" onkeyup="math_total_price()" /></td>
-                                                        <td><input type="text" class="form-control note" value="@item.Notes" /></td>
-                                                    </tr>
-                                                    @(row++)
-                                                }
-                                            }
+                                            <tr id="row_0">
+                                                <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                                <td><input type="text" class="form-control desc" /></td>
+                                                <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
+                                                <td><input type="text" class="form-control note" /></td>
+                                            </tr>
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="2" class="text-right">TOTAL COST</th>
+                                                <th colspan="2" class="text-right">TOTAL AMOUNT</th>
                                                 <th class="text-right total-cost">0</th>
                                                 <th></th>
                                             </tr>
@@ -138,7 +116,7 @@
                         </div>
                     </fieldset>
                     <div>
-                        <button type="submit" class="btn btn-primary">Save <i class="icon-paperplane ml-2"></i></button>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
                     </div>
                 </div>
             </div>
@@ -149,7 +127,7 @@
 
 </div>
 <script type="text/javascript">
-    var item_no = 100;
+    var item_no = 0;
     function AddItem() {
         item_no += 1;
 
@@ -189,8 +167,6 @@
             selectYears: true
         });
 
-        math_total_price();
-
         var arrItem = [];
         $('#target').submit(function (e) {
             //e.preventDefault();
@@ -199,9 +175,11 @@
                 var desc = $(this).find('input.desc').val();
                 var cost = parseFloat($(this).find('input.cost').val());
                 var note = $(this).find('input.note').val();
+                all += cost;
                 var obj = { desc: desc, cost: cost, note: note };
                 arrItem.push(obj);
             });
+            $('#TotalAmount').val(all);
             $('#Items').val(JSON.stringify(arrItem));
         });
     });

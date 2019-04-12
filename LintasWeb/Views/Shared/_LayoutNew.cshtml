@@ -140,11 +140,22 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        @*<li class="nav-item">
                             <a href="@Url.Action("Index", "Orders")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders" ? "nav-link active" : "nav-link")">
-                                <i class="icon-clipboard3"></i>
+                                <i class="icon-airplane2"></i>
                                 <span>Order</span>
                             </a>
+                        </li>*@
+                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders"
+                            || ViewContext.RouteData.Values["Controller"].ToString() == "Invoices"
+                            || ViewContext.RouteData.Values["Controller"].ToString() == "Payments"
+                            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
+                            <a href="#" class="nav-link"><i class="icon-airplane2"></i> <span>Concierge Service PLUS</span></a>
+                            <ul class="nav nav-group-sub" data-submenu-title="Concierge Service PLUS">
+                                <li class="nav-item"><a href="@Url.Action("Index", "Orders")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders" ? "nav-link active" : "nav-link")">Orders</a></li>
+                                <li class="nav-item"><a href="@Url.Action("Index", "Invoices")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Invoices" ? "nav-link active" : "nav-link")">Invoices</a></li>
+                                <li class="nav-item"><a href="@Url.Action("Index", "Payments")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Payments" ? "nav-link active" : "nav-link")">Payments</a></li>
+                            </ul>
                         </li>
                         <!-- /main -->
                         <!-- Setting -->
