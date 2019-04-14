@@ -7,28 +7,23 @@ using System.Web;
 
 namespace LintasMVC.Models
 {
-    [Table("Orders")]
-    public class OrdersModels
+    [Table("Payments")]
+    public class PaymentsModels
     {
         [Key]
         public Guid Id { get; set; }
 
-        [Required]
-        public string No { get; set; }
+        [Display(Name = "Invoice")]
+        public Guid Invoices_Id { get; set; }
 
         [Display(Name = "Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateTime Timestamp { get; set; }
+        public decimal Amount { get; set; }
 
-        [Display(Name = "Customer")]
-        public Guid Customers_Id { get; set; }
-
-        [Display(Name = "Origin")]
-        public Guid Origin_Stations_Id { get; set; }
-
-        [Display(Name = "Destination")]
-        public Guid Destination_Stations_Id { get; set; }
+        [Required]
+        [Display(Name = "Info")]
+        public string PaymentInfo { get; set; }
         public string Notes { get; set; }
-        public OrderStatusEnum Status_enumid { get; set; }
     }
 }

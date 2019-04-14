@@ -30,6 +30,7 @@
             <input type="hidden" id="TotalAmount" name="TotalAmount" />
             <input type="hidden" id="TotalPaid" name="TotalPaid" value="0" />
             <input type="hidden" id="Items" name="Items" />
+            <input type="hidden" id="ItemValid" name="ItemValid" />
             <!-- Form inputs -->
             <div class="card">
                 <div class="card-header header-elements-inline">
@@ -50,12 +51,7 @@
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Timestamp, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                                     <div class="col-lg-10">
-                                        <div class="input-group">
-                                            @Html.EditorFor(model => model.Timestamp, new { htmlAttributes = new { @class = "form-control tanggal" } })
-                                            <span class="input-group-append">
-                                                <span class="input-group-text"><i class="icon-calendar"></i></span>
-                                            </span>
-                                        </div>
+                                        @Html.EditorFor(model => model.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = DateTime.Today.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
                                         @Html.ValidationMessageFor(model => model.Timestamp, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
@@ -85,6 +81,7 @@
                         <div class="form-group row">
                             <div class="col-lg-12">
                                 <button type="button" class="btn btn-success btn-sm" onclick="AddItem()"><i class="icon-plus2"></i> Add New Item</button>
+                                @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
                                 <div class="table-responsive">
                                     <table class="table table-condensed">
                                         <thead>
@@ -170,6 +167,7 @@
         var arrItem = [];
         $('#target').submit(function (e) {
             //e.preventDefault();
+            var isValid = true;
             var all = 0;
             $('#data-body tr').each(function () {
                 var desc = $(this).find('input.desc').val();
@@ -178,9 +176,13 @@
                 all += cost;
                 var obj = { desc: desc, cost: cost, note: note };
                 arrItem.push(obj);
+
+                if (desc == '') { isValid = false; }
+                if ($(this).find('input.cost').val() == '') { isValid = false; }
             });
             $('#TotalAmount').val(all);
             $('#Items').val(JSON.stringify(arrItem));
+            $('#ItemValid').val(isValid);
         });
     });
 </script>

@@ -1,7 +1,7 @@
-﻿@model LintasMVC.Models.OrdersIndexViewModels
+﻿@model LintasMVC.Models.PaymentsIndexViewModels
 
 @{
-    ViewBag.Root = "Orders";
+    ViewBag.Root = "Payments";
     ViewBag.Title = "Delete";
 }
 
@@ -13,7 +13,7 @@
             <div class="d-flex">
                 <div class="breadcrumb">
                     <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
-                    <a href="@Url.Action("Index", "Orders")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <a href="@Url.Action("Index", "Payments")" class="breadcrumb-item">@ViewBag.Root</a>
                     <span class="breadcrumb-item active">@ViewBag.Title</span>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -43,14 +43,6 @@
                         <div class="col-lg-6">
                             <dl class="dl-horizontal">
                                 <dt>
-                                    @Html.DisplayNameFor(model => model.No)
-                                </dt>
-
-                                <dd>
-                                    @(Model.Timestamp.ToString("yyyyMMdd") + Model.No)
-                                </dd>
-
-                                <dt>
                                     @Html.DisplayNameFor(model => model.Timestamp)
                                 </dt>
 
@@ -59,30 +51,30 @@
                                 </dd>
 
                                 <dt>
-                                    @Html.DisplayNameFor(model => model.Customer)
+                                    @Html.DisplayNameFor(model => model.InvoiceNo)
                                 </dt>
 
                                 <dd>
-                                    @Html.DisplayFor(model => model.Customer)
+                                    @Html.DisplayFor(model => model.InvoiceNo)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Amount)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Amount)
                                 </dd>
                             </dl>
                         </div>
                         <div class="col-lg-6">
                             <dl class="dl-horizontal">
                                 <dt>
-                                    @Html.DisplayNameFor(model => model.Origin)
+                                    @Html.DisplayNameFor(model => model.Info)
                                 </dt>
 
                                 <dd>
-                                    @Html.DisplayFor(model => model.Origin)
-                                </dd>
-
-                                <dt>
-                                    @Html.DisplayNameFor(model => model.Destination)
-                                </dt>
-
-                                <dd>
-                                    @Html.DisplayFor(model => model.Destination)
+                                    @Html.DisplayFor(model => model.Info)
                                 </dd>
 
                                 <dt>
@@ -94,7 +86,7 @@
                                 </dd>
                             </dl>
                         </div>
-                    </div>            
+                    </div>
                 </fieldset>
                 <hr />
                 @using (Html.BeginForm())

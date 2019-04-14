@@ -66,8 +66,13 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items, bool ItemValid)
         {
+            if (!ItemValid)
+            {
+                ModelState.AddModelError("Items", "The Invoice Item Description and Amount field is required.");
+            }
+
             if (ModelState.IsValid)
             {
                 OrdersModels order = db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefault();
@@ -153,8 +158,13 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items, bool ItemValid)
         {
+            if (!ItemValid)
+            {
+                ModelState.AddModelError("Items", "The Invoice Item Description and Amount field is required.");
+            }
+
             if (ModelState.IsValid)
             {
                 List<InvoiceItemsModels> lInvoiceItem_before = db.InvoiceItems.Where(x => x.Invoices_Id == invoicesModels.Id).ToList();

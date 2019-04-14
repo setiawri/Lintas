@@ -18,5 +18,6 @@ namespace LintasMVC.Models
         public DbSet<OrderItemsModels> OrderItems { get; set; }
         public DbSet<InvoicesModels> Invoices { get; set; }
         public DbSet<InvoiceItemsModels> InvoiceItems { get; set; }
+        public DbSet<PaymentsModels> Payments { get; set; }
     }
 }

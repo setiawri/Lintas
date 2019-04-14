@@ -62,8 +62,13 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items)
+        public async Task<ActionResult> Create([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items, bool ItemValid)
         {
+            if (!ItemValid)
+            {
+                ModelState.AddModelError("Items", "The Order Item Description and Amount field is required.");
+            }
+
             if (ModelState.IsValid)
             {
                 Common.Master m = new Common.Master();
@@ -79,7 +84,7 @@ namespace LintasMVC.Controllers
                     oi.Id = Guid.NewGuid();
                     oi.Orders_Id = ordersModels.Id;
                     oi.Description = item.desc;
-                    oi.Cost = item.cost;
+                    oi.Amount = item.cost;
                     oi.Notes = item.note;
                     db.OrderItems.Add(oi);
                 }
@@ -141,8 +146,13 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,No,Timestamp,Customers_Id,Origin_Stations_Id,Destination_Stations_Id,Notes,Status_enumid")] OrdersModels ordersModels, string Items, bool ItemValid)
         {
+            if (!ItemValid)
+            {
+                ModelState.AddModelError("Items", "The Order Item Description and Amount field is required.");
+            }
+
             if (ModelState.IsValid)
             {
                 List<OrderItemsModels> lOrderItem_before = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
@@ -160,7 +170,7 @@ namespace LintasMVC.Controllers
                     oi.Id = Guid.NewGuid();
                     oi.Orders_Id = ordersModels.Id;
                     oi.Description = item.desc;
-                    oi.Cost = item.cost;
+                    oi.Amount = item.cost;
                     oi.Notes = item.note;
                     db.OrderItems.Add(oi);
                 }
@@ -189,6 +199,7 @@ namespace LintasMVC.Controllers
 
             ViewBag.listCustomers = new SelectList(newList, "Id", "Name");
             ViewBag.listStations = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
+            ViewBag.listItems = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
             return View(ordersModels);
         }
 

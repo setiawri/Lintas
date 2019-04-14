@@ -178,6 +178,7 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
+    <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\StationsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -203,6 +204,8 @@
     <Compile Include="Models\OrdersIndexViewModels.cs" />
     <Compile Include="Models\OrdersModels.cs" />
     <Compile Include="Models\OrderStatusEnum.cs" />
+    <Compile Include="Models\PaymentsIndexViewModels.cs" />
+    <Compile Include="Models\PaymentsModels.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
@@ -322,6 +325,10 @@
     <Content Include="Views\Invoices\Index.cshtml" />
     <Content Include="Views\Invoices\Edit.cshtml" />
     <Content Include="Views\Invoices\Delete.cshtml" />
+    <Content Include="Views\Payments\Index.cshtml" />
+    <Content Include="Views\Payments\Create.cshtml" />
+    <Content Include="Views\Payments\Edit.cshtml" />
+    <Content Include="Views\Payments\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
