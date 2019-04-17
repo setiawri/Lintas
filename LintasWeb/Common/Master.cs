@@ -18,5 +18,18 @@ namespace LintasMVC.Common
 
             return result + 1;
         }
+
+        public string GetTotalOrderItem(Guid order_id)
+        {
+            string result;
+            using (var ctx = new LintasContext())
+            {
+                decimal sum = ctx.OrderItems.Where(x => x.Orders_Id == order_id).Sum(x => x.Amount);
+                int count = ctx.OrderItems.Where(x => x.Orders_Id == order_id).Count();
+                result = string.Format("{0:N2}", sum) + " (" + string.Format("{0:N0}", count) + " items)";
+            }
+
+            return result;
+        }
     }
 }

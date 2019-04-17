@@ -17,7 +17,7 @@ namespace LintasMVC.Models
         public Guid Invoices_Id { get; set; }
 
         [Display(Name = "Date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
+        //[DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateTime Timestamp { get; set; }
         public decimal Amount { get; set; }
 

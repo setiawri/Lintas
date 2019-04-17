@@ -37,9 +37,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <a href="@Url.Action("Create", "Invoices")" class="btn btn-sm btn-success">Create New <i class="icon-plus22 ml-2"></i></a>
+                @*<a href="@Url.Action("Create", "Invoices")" class="btn btn-sm btn-success">Create New <i class="icon-plus22 ml-2"></i></a>*@
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover datatable">
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Timestamp)</th>
@@ -48,7 +48,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Amount)</th>
                                 <th>@Html.DisplayNameFor(model => model.Paid)</th>
                                 <th>@Html.DisplayNameFor(model => model.Notes)</th>
-                                <th>Action</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,10 +61,24 @@
                                     <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Paid)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                    <td>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Payment", "Payment", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                    <td class="text-center">
+                                        <div class="list-icons">
+                                            <div class="dropdown">
+                                                <a href="#" class="list-icons-item" data-toggle="dropdown">
+                                                    <i class="icon-menu9"></i>
+                                                </a>
+
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a href="#" class="dropdown-item" onclick="Views('@item.Id', '@item.Customer', '@item.No')"><i class="icon-eye"></i> Views</a>
+                                                    <a href="@Url.Action("Edit", "Invoices", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
+                                                    @if (item.Paid < item.Amount)
+                                                    {
+                                                        <a href="@Url.Action("Payment", "Invoices", new { id = item.Id })" class="dropdown-item"><i class="icon-coin-dollar"></i> Payment</a>
+                                                    }
+                                                    <a href="@Url.Action("Delete", "Invoices", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -79,3 +93,48 @@
     <!-- /content area -->
 
 </div>
+<script type="text/javascript">
+    function Views(id, customer, order_no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetItems", "Invoices")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: customer + ' ( Order No. ' + order_no + ' )',
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    $(document).ready(function () {
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [6]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        $('.datatable').DataTable({
+            pagingType: 'full_numbers',
+            order: [[0, 'desc']]
+        });
+    });
+</script>

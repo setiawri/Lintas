@@ -18,5 +18,6 @@ namespace LintasMVC.Models
         public string Origin { get; set; }
         public string Destination { get; set; }
         public string Notes { get; set; }
+        public OrderStatusEnum Status { get; set; }
     }
 }

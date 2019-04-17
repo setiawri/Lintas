@@ -37,9 +37,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <a href="@Url.Action("Create", "Payments")" class="btn btn-sm btn-success">Create New <i class="icon-plus22 ml-2"></i></a>
+                @*<a href="@Url.Action("Create", "Payments")" class="btn btn-sm btn-success">Create New <i class="icon-plus22 ml-2"></i></a>*@
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover datatable">
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Timestamp)</th>
@@ -47,7 +47,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Amount)</th>
                                 <th>@Html.DisplayNameFor(model => model.Info)</th>
                                 <th>@Html.DisplayNameFor(model => model.Notes)</th>
-                                <th>Action</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,8 +59,8 @@
                                     <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Info)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                    <td>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                    <td class="text-center">
+                                        @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
                                         @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                                     </td>
                                 </tr>
@@ -76,3 +76,28 @@
     <!-- /content area -->
 
 </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [5]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        $('.datatable').DataTable({
+            pagingType: 'full_numbers',
+            order: [[0, 'desc']]
+        });
+    });
+</script>

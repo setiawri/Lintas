@@ -15,6 +15,32 @@ namespace LintasMVC.Controllers
     {
         private LintasContext db = new LintasContext();
 
+        public JsonResult GetItems(Guid id)
+        {
+            List<InvoiceItemsModels> items = db.InvoiceItems.Where(x => x.Invoices_Id == id).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (InvoiceItemsModels item in items)
+            {
+                message += @"<tr>
+                                <td>" + item.Description + @"</td>
+                                <td>" + item.Amount.ToString("#,##0.00") + @"</td>
+                                <td>" + item.Notes + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Invoices
         public async Task<ActionResult> Index()
         {
@@ -130,7 +156,7 @@ namespace LintasMVC.Controllers
             
             var orders = (from o in db.Orders
                           join c in db.Customers on o.Customers_Id equals c.Id
-                          where o.Status_enumid == OrderStatusEnum.Ordered
+                          where o.Id == invoicesModels.Orders_Id
                           orderby c.FirstName
                           select new { o, c }).ToList();
             List<object> newList = new List<object>();
@@ -193,7 +219,7 @@ namespace LintasMVC.Controllers
 
             var orders = (from o in db.Orders
                           join c in db.Customers on o.Customers_Id equals c.Id
-                          where o.Status_enumid == OrderStatusEnum.Ordered
+                          where o.Id == invoicesModels.Orders_Id
                           orderby c.FirstName
                           select new { o, c }).ToList();
             List<object> newList = new List<object>();
@@ -217,6 +243,55 @@ namespace LintasMVC.Controllers
             ViewBag.listOrders = new SelectList(newList, "Id", "Name");
             ViewBag.listItems = db.InvoiceItems.Where(x => x.Invoices_Id == invoicesModels.Id).ToList();
             return View(invoicesModels);
+        }
+
+        public async Task<ActionResult> Payment(Guid? id)
+        {
+            InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
+            ViewBag.InvoiceId = id;
+            ViewBag.Invoice = invoicesModels.No + " - " + invoicesModels.Notes + " (" + string.Format("{0:N2}", invoicesModels.TotalAmount) + ")";
+
+            PaymentsModels paymentsModels = new PaymentsModels();
+            return View(paymentsModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Payment([Bind(Include = "Id,Invoices_Id,Timestamp,Amount,PaymentInfo,Notes")] PaymentsModels paymentsModels)
+        {
+            var invoice = db.Invoices.AsNoTracking().Where(x => x.Id == paymentsModels.Invoices_Id).FirstOrDefault();
+            if (invoice != null)
+            {
+                decimal remaining = invoice.TotalAmount - invoice.TotalPaid;
+                if (paymentsModels.Amount > remaining)
+                {
+                    ModelState.AddModelError("Max", "The Maximum payment is " + string.Format("{0:N2}", remaining));
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                paymentsModels.Id = Guid.NewGuid();
+                db.Payments.Add(paymentsModels);
+
+                invoice.TotalPaid += paymentsModels.Amount;
+                db.Entry(invoice).State = System.Data.Entity.EntityState.Modified;
+
+                if (invoice.TotalPaid == invoice.TotalAmount)
+                {
+                    OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Orders_Id).FirstOrDefaultAsync();
+                    ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted;
+                    db.Entry(ordersModels).State = EntityState.Modified;
+                }
+
+                await db.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.InvoiceId = paymentsModels.Invoices_Id;
+            ViewBag.Invoice = invoice.No + " - " + invoice.Notes + " (" + string.Format("{0:N2}", invoice.TotalAmount) + ")";
+            return View(paymentsModels);
         }
 
         public async Task<ActionResult> Delete(Guid? id)
@@ -247,8 +322,30 @@ namespace LintasMVC.Controllers
             {
                 db.InvoiceItems.Remove(item);
             }
+
             InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
             db.Invoices.Remove(invoicesModels);
+
+            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            List<InvoicesModels> invoices = await db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Id != id).ToListAsync();
+            if (invoices.Count == 0)
+            {
+                ordersModels.Status_enumid = OrderStatusEnum.Ordered;
+            }
+            else
+            {
+                decimal total_amount = 0; decimal total_paid = 0;
+                foreach(InvoicesModels invoice in invoices)
+                {
+                    total_amount += invoice.TotalAmount;
+                    total_paid += invoice.TotalPaid;
+                }
+
+                if (total_amount == total_paid) { ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted; }
+                else { ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment; }
+            }
+            db.Entry(ordersModels).State = EntityState.Modified;
+
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

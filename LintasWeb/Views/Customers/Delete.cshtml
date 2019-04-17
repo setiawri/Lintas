@@ -96,6 +96,7 @@
                     @Html.AntiForgeryToken()
 
                     <div class="form-actions no-color">
+                        <a href="@Url.Action("Index", "Customers")" class="btn btn-warning">Cancel <i class="icon-cross2"></i></a>
                         <button type="submit" class="btn btn-danger">Delete <i class="icon-bin ml-2"></i></button>
                     </div>
                 }

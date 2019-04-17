@@ -179,6 +179,10 @@ namespace LintasMVC.Controllers
             invoicesModels.TotalPaid -= paymentsModels.Amount;
             db.Entry(invoicesModels).State = EntityState.Modified;
 
+            OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
+            db.Entry(ordersModels).State = EntityState.Modified;
+
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

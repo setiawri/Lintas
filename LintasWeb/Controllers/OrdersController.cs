@@ -15,6 +15,32 @@ namespace LintasMVC.Controllers
     {
         private LintasContext db = new LintasContext();
 
+        public JsonResult GetItems(Guid id)
+        {
+            List<OrderItemsModels> items = db.OrderItems.Where(x => x.Orders_Id == id).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (OrderItemsModels item in items)
+            {
+                message += @"<tr>
+                                <td>" + item.Description + @"</td>
+                                <td>" + item.Amount.ToString("#,##0.00") + @"</td>
+                                <td>" + item.Notes + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Orders
         public async Task<ActionResult> Index()
         {
@@ -30,7 +56,8 @@ namespace LintasMVC.Controllers
                             Customer = c.FirstName + " " + c.MiddleName + " " + c.LastName,
                             Origin = os.Name,
                             Destination = ds.Name,
-                            Notes = o.Notes
+                            Notes = o.Notes,
+                            Status = o.Status_enumid
                         }).ToListAsync();
             return View(await data);
         }
@@ -201,6 +228,72 @@ namespace LintasMVC.Controllers
             ViewBag.listStations = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
             ViewBag.listItems = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
             return View(ordersModels);
+        }
+
+        public async Task<ActionResult> Invoice(Guid? id)
+        {
+            var order = await (from o in db.Orders
+                               join c in db.Customers on o.Customers_Id equals c.Id
+                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == id
+                               select new { o, c }).FirstOrDefaultAsync();
+            string fullName = order.c.FirstName;
+            if (!string.IsNullOrEmpty(order.c.MiddleName)) { fullName += " " + order.c.MiddleName; }
+            if (!string.IsNullOrEmpty(order.c.LastName)) { fullName += " " + order.c.LastName; }
+
+            ViewBag.OrderId = id;
+            ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+
+            InvoicesModels invoicesModels = new InvoicesModels();
+            return View(invoicesModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Invoice([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items, bool ItemValid)
+        {
+            if (!ItemValid)
+            {
+                ModelState.AddModelError("Items", "The Invoice Item Description and Amount field is required.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+                int counter = db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id).Count();
+                invoicesModels.Id = Guid.NewGuid();
+                invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
+                db.Invoices.Add(invoicesModels);
+
+                List<OrderItemDetails> lInvoiceItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(Items);
+                foreach (var item in lInvoiceItem)
+                {
+                    InvoiceItemsModels ii = new InvoiceItemsModels();
+                    ii.Id = Guid.NewGuid();
+                    ii.Invoices_Id = invoicesModels.Id;
+                    ii.Description = item.desc;
+                    ii.Amount = item.cost;
+                    ii.Notes = item.note;
+                    db.InvoiceItems.Add(ii);
+                }
+
+                ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
+                db.Entry(ordersModels).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+
+            var order = await (from o in db.Orders
+                               join c in db.Customers on o.Customers_Id equals c.Id
+                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == invoicesModels.Orders_Id
+                               select new { o, c }).FirstOrDefaultAsync();
+            string fullName = order.c.FirstName;
+            if (!string.IsNullOrEmpty(order.c.MiddleName)) { fullName += " " + order.c.MiddleName; }
+            if (!string.IsNullOrEmpty(order.c.LastName)) { fullName += " " + order.c.LastName; }
+
+            ViewBag.OrderId = invoicesModels.Orders_Id;
+            ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+            return View(invoicesModels);
         }
 
         public async Task<ActionResult> Delete(Guid? id)

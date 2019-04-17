@@ -39,15 +39,17 @@
             <div class="card-body">
                 <a href="@Url.Action("Create", "Orders")" class="btn btn-sm btn-success">Create New <i class="icon-plus22 ml-2"></i></a>
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover datatable">
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.No)</th>
                                 <th>@Html.DisplayNameFor(model => model.Customer)</th>
                                 <th>@Html.DisplayNameFor(model => model.Origin)</th>
                                 <th>@Html.DisplayNameFor(model => model.Destination)</th>
-                                <th>@Html.DisplayNameFor(model => model.Notes)</th>
-                                <th>Action</th>
+                                @*<th>@Html.DisplayNameFor(model => model.Notes)</th>*@
+                                <th>Total</th>
+                                <th>@Html.DisplayNameFor(model => model.Status)</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,10 +60,51 @@
                                     <td>@Html.DisplayFor(modelItem => item.Customer)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Origin)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Destination)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                    @*<td>@Html.DisplayFor(modelItem => item.Notes)</td>*@
                                     <td>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                        @{ 
+                                            LintasMVC.Common.Master m = new LintasMVC.Common.Master();
+                                            var total = m.GetTotalOrderItem(item.Id);
+                                        }
+                                        @total
+                                    </td>
+                                    <td>
+                                        @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered)
+                                        {
+                                            <span class="badge badge-secondary d-block">Ordered</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment)
+                                        {
+                                            <span class="badge badge-warning d-block">Waiting Payment</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted)
+                                        {
+                                            <span class="badge badge-success d-block">Payment Completed</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
+                                        {
+                                            <span class="badge badge-info d-block">Shipping</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.Completed)
+                                        {
+                                            <span class="badge badge-primary d-block">Completed</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="list-icons">
+                                            <div class="dropdown">
+                                                <a href="#" class="list-icons-item" data-toggle="dropdown">
+                                                    <i class="icon-menu9"></i>
+                                                </a>
+
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a href="#" class="dropdown-item" onclick="Views('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> Views</a>
+                                                    <a href="@Url.Action("Edit", "Orders", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
+                                                    <a href="@Url.Action("Invoice", "Orders", new { id = item.Id })" class="dropdown-item"><i class="icon-file-plus"></i> Invoice</a>
+                                                    <a href="@Url.Action("Delete", "Orders", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -76,3 +119,48 @@
     <!-- /content area -->
 
 </div>
+<script type="text/javascript">
+    function Views(id, customer, origin, destination) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetItems", "Orders")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: customer + ' ( ' + origin + ' - ' + destination + ' )',
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    $(document).ready(function () {
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [6]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        $('.datatable').DataTable({
+            pagingType: 'full_numbers',
+            order: [[0, 'desc']]
+        });
+    });
+</script>
