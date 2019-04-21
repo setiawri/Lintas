@@ -1,0 +1,116 @@
+﻿@model LintasMVC.Models.OrdersIndexViewModels
+
+@{
+    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Title = "Delete";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+
+        <!-- Form inputs -->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">@ViewBag.Root</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                        <a class="list-icons-item" data-action="reload"></a>
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <fieldset>
+                    <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.No)
+                                </dt>
+
+                                <dd>
+                                    @(Model.Timestamp.ToString("yyyyMMdd") + Model.No)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Timestamp)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Timestamp)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Customer)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Customer)
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-lg-6">
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Origin)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Origin)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Destination)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Destination)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.Notes)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Notes)
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </fieldset>
+                <hr />
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2"></i></a>
+                        <button type="submit" class="btn btn-danger">Delete <i class="icon-bin ml-2"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- /form inputs -->
+
+    </div>
+    <!-- /content area -->
+
+</div>

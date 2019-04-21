@@ -172,6 +172,7 @@
     <Compile Include="Common\Master.cs" />
     <Compile Include="Common\Permissions.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ConciergeplusController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -191,6 +192,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ConciergeplusModels.cs" />
     <Compile Include="Models\CountriesModels.cs" />
     <Compile Include="Models\CustomersIndexViewModels.cs" />
     <Compile Include="Models\CustomersModels.cs" />
@@ -266,7 +268,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -333,6 +337,9 @@
     <Content Include="Views\Payments\Delete.cshtml" />
     <Content Include="Views\Orders\Invoice.cshtml" />
     <Content Include="Views\Invoices\Payment.cshtml" />
+    <Content Include="Views\Conciergeplus\Index.cshtml" />
+    <Content Include="Views\Conciergeplus\Create.cshtml" />
+    <Content Include="Views\Conciergeplus\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
