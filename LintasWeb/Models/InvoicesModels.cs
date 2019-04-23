@@ -20,7 +20,13 @@ namespace LintasMVC.Models
         [Display(Name = "Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateTime Timestamp { get; set; }
+
+        [Display(Name = "Total Amount")]
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal TotalAmount { get; set; }
+
+        [Display(Name = "Total Paid")]
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal TotalPaid { get; set; }
 
         [Required]

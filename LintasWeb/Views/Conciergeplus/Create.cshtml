@@ -149,69 +149,43 @@
                 <h6>Invoice</h6>
                 <fieldset>
                     <label class="invoice-validation text-danger" style="display: none"></label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Invoice Date: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Invoice.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = Model.Invoice == null ? DateTime.Today.ToString("yyyy/MM/dd") : Model.Invoice.Timestamp.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Notes: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Invoice.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </div>
+                    <div class="row div-insert-inv">
+                        <a href="@Url.Action("Invoice", "Conciergeplus", new { id = Model.Order.Id })" class="btn btn-sm btn-success btn-insert-inv">Add New Invoice</a>
                     </div>
-
-                    <button type="button" class="btn btn-success btn-sm" onclick="AddInvoiceItem()"><i class="icon-plus2 mr-2"></i> Add New Item</button>
-                    @Html.Hidden("InvoiceItems")
                     <div class="table-responsive">
-                        <table class="table table-condensed">
+                        <table class="table table-hover datatable">
                             <thead>
                                 <tr>
-                                    <th style="width:5% !important"></th>
-                                    <th style="width:50% !important">Description <span class="text-danger">*</span></th>
-                                    <th style="width:20% !important">Amount <span class="text-danger">*</span></th>
-                                    <th style="width:25% !important">Notes</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.Timestamp)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.No)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalAmount)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalPaid)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.Notes)</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="data-body-invoice">
-                                @{ int row2 = 0; }
-                                @if (ViewBag.listInv == null)
+                            <tbody>
+                                @if (Model.ListInvoice != null)
                                 {
-                                    <tr id="inv_0">
-                                        <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveInvoiceItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                        <td><input type="text" class="form-control desc" /></td>
-                                        <td><input type="text" class="form-control text-right cost-inv" onkeyup="inv_math_total_price()" /></td>
-                                        <td><input type="text" class="form-control note" /></td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    foreach (var item in ViewBag.listInv)
+                                    foreach (var item in Model.ListInvoice)
                                     {
-                                        <tr id="inv_@row2">
-                                            <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveInvoiceItem(@row2)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                            <td><input type="text" class="form-control desc" value="@item.Description" /></td>
-                                            <td><input type="text" class="form-control text-right cost-inv" value="@item.Amount" onkeyup="inv_math_total_price()" /></td>
-                                            <td><input type="text" class="form-control note" value="@item.Notes" /></td>
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                            <td class="text-center" style="color: black">
+                                                <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
+                                                @Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })
+                                            </td>
                                         </tr>
-                                        @(row2++)
                                     }
                                 }
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="2" class="text-right">TOTAL AMOUNT</th>
-                                    <th class="text-right total-cost-inv">0</th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
-
+                    <br />
                     <div style="float: right; margin-bottom: 20px">
                         <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
                         <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
@@ -223,38 +197,41 @@
                 <h6>Payment</h6>
                 <fieldset>
                     <label class="payment-validation text-danger" style="display: none"></label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Payment Date: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Payment.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = Model.Payment == null ? DateTime.Today.ToString("yyyy/MM/dd") : Model.Payment.Timestamp.ToString("yyyy-MM-dd"), @readonly = "readonly" } })
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Payment Info: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Payment.PaymentInfo, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.Timestamp)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.No)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalAmount)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalPaid)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Invoice.Notes)</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ListInvoice != null)
+                                {
+                                    foreach (var item in Model.ListInvoice)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                            <td class="text-center" style="color: black">
+                                                <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
+                                                @Html.ActionLink("Payment", "Payment", new { id = item.Id }) |
+                                                @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Amount: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Payment.Amount, new { htmlAttributes = new { @class = "form-control", @Value = Model.Payment == null ? 0 : Model.Invoice.TotalAmount, @readonly = "readonly" } })
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Notes:</label>
-                                @Html.EditorFor(model => model.Payment.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </div>
-                    </div>
-
+                    <br />
                     <div style="float: right; margin-bottom: 20px">
                         <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
                         <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
@@ -304,35 +281,24 @@
     }
 
     //Form Invoice
-    var inv_item_no = 100;
-    function AddInvoiceItem() {
-        inv_item_no += 1;
-
-        var rowItem = '<tr id="inv_' + inv_item_no + '">'
-                    + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveInvoiceItem(' + inv_item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
-                    + '<td><input type="text" class="form-control desc" /></td>'
-                    + '<td><input type="text" class="form-control text-right cost-inv" onkeyup="inv_math_total_price()" /></td>'
-                    + '<td><input type="text" class="form-control note" /></td>'
-                    + '</tr>';
-        $('#data-body-invoice').append(rowItem);
-    }
-
-    function RemoveInvoiceItem(no) {
-        $('#inv_' + no).remove();
-        inv_math_total_price();
-    }
-
-    function inv_math_total_price() {
-        var total_price = 0;
-        $('input.cost-inv').each(function () {
-            var result = $(this).val().replace(/,/g, '');
-            if (result == '') {
-                result = 0;
-            }
-            total_price += parseFloat(result);
-        });
-
-        $('.total-cost-inv').text(total_price.toLocaleString());
+    function ViewInvoices(id, no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetInvoiceItems", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: no,
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
     }
 
     $(document).ready(function () {
@@ -369,8 +335,8 @@
                     form.find('.body:eq(' + newIndex + ') .error').removeClass('error');
                 }
 
-                var arrItem = [];
                 if (currentIndex === 0) {
+                    var arrItem = [];
                     var isValid = true;
                     $('#data-body-order tr').each(function () {
                         var desc = $(this).find('input.desc').val();
@@ -420,6 +386,11 @@
                                 console.log(data);
                                 $('#Order_Id').val(data.id);
                                 $('.no-order').html(data.no_order);
+                                $('#Invoice_Timestamp').val('@DateTime.Today.ToString("yyyy/MM/dd")');
+
+                                var x = $('<a href="/Conciergeplus/Invoice/' + data.id + '" class="btn btn-sm btn-success">Add New Invoice</a>');
+                                $('.btn-insert-inv').hide();
+                                $('.div-insert-inv').append(x);
                             }, //end success
                             error: function (result) {
                                 bootbox.alert("Error " + result);
@@ -432,56 +403,13 @@
                     }
                 }
                 else if (currentIndex === 1) {
-                    var isValid = true;
-                    var all = 0;
-                    $('#data-body-invoice tr').each(function () {
-                        var desc = $(this).find('input.desc').val();
-                        var cost = parseFloat($(this).find('input.cost-inv').val());
-                        var note = $(this).find('input.note').val();
-                        all += cost;
-                        var obj = { desc: desc, cost: cost, note: note };
-                        arrItem.push(obj);
-
-                        if (desc == '') { isValid = false; }
-                        if ($(this).find('input.cost-inv').val() == '') { isValid = false; }
-                    });
-                    $('#Invoice_TotalAmount').val(all);
-                    $('#InvoiceItems').val(JSON.stringify(arrItem));
-
-                    if ($('#Invoice_Notes').val() == '') {
-                        $('.invoice-validation').html('The Notes field is required.').show();
-                        return false;
-                    }
-                    else if(!isValid) {
-                        $('.invoice-validation').html('The Invoice Item Description and Amount field is required.').show();
+                    if (@Model.ListInvoice.Count === 0) {
+                        $('.invoice-validation').html('The Invoice is required.').show();
                         return false;
                     }
                     else {
                         $('.invoice-validation').html('').hide();
-
-                        var isSuccess = true;
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("SaveInvoice", "Conciergeplus")',
-                            data: {
-                                order_id: $('#Order_Id').val(),
-                                inv_date: $('#Invoice_Timestamp').val(),
-                                total_amount: $('#Invoice_TotalAmount').val(),
-                                notes: $('#Invoice_Notes').val(),
-                                inv_items: $('#InvoiceItems').val()
-                            },
-                            success: function (data) {
-                                console.log(data);
-                                $('#Invoice_Id').val(data.invoice_id);
-                            }, //end success
-                            error: function (result) {
-                                bootbox.alert("Error " + result);
-                                isSuccess = false;
-                            } //end error
-                        }); //end ajax
-
-                        if (isSuccess) { return true; }
-                        else{ return false; }
+                        return true;
                     }
                 }
 
@@ -496,40 +424,13 @@
                 //return form.valid();
 
                 if (currentIndex === 2) {
-                    if ($('#Payment_PaymentInfo').val() == '') {
-                        $('.payment-validation').html('The Payment Info field is required.').show();
-                        return false;
-                    }
-                    else if ($('#Payment_Amount').val() == '') {
-                        $('.payment-validation').html('The Amount field is required.').show();
-                        return false;
+                    if ('@Model.Order.Status_enumid' == '@LintasMVC.Models.OrderStatusEnum.PaymentCompleted') {
+                        $('.payment-validation').html('').hide(); 
+                        return true;
                     }
                     else {
-                        $('.payment-validation').html('').hide();
-
-                        var isSuccess = true;
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("SavePayment", "Conciergeplus")',
-                            data: {
-                                inv_id: $('#Invoice_Id').val(),
-                                pay_date: $('#Payment_Timestamp').val(),
-                                amount: $('#Payment_Amount').val(),
-                                info: $('#Payment_PaymentInfo').val(),
-                                notes: $('#Payment_Notes').val()
-                            },
-                            success: function (data) {
-                                console.log(data);
-                                $('#RedirectUrl').val(data.RedirectUrl);
-                            }, //end success
-                            error: function (result) {
-                                bootbox.alert("Error " + result);
-                                isSuccess = false;
-                            } //end error
-                        }); //end ajax
-
-                        if (isSuccess) { return true; }
-                        else{ return false; }
+                        $('.payment-validation').html('The Payment still not completed.').show();
+                        return false;
                     }
                 }
             },
@@ -557,7 +458,6 @@
         });
 
         order_math_total_price();
-        inv_math_total_price();
 
     });
 </script>

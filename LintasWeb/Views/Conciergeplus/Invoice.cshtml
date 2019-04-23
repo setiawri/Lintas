@@ -1,0 +1,190 @@
+﻿@model LintasMVC.Models.InvoicesModels
+
+@{
+    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Title = "Invoice";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm("Invoice", "Conciergeplus", FormMethod.Post, new { id = "target" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="Orders_Id" name="Orders_Id" value="@ViewBag.OrderId" />
+            <input type="hidden" id="No" name="No" value="1" />
+            <input type="hidden" id="TotalAmount" name="TotalAmount" />
+            <input type="hidden" id="TotalPaid" name="TotalPaid" value="0" />
+            <input type="hidden" id="Items" name="Items" />
+            <input type="hidden" id="ItemValid" name="ItemValid" />
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Timestamp, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.EditorFor(model => model.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = DateTime.Today.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.Timestamp, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Orders_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.Editor("Order", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Order, @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.Orders_Id, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group row">
+                            <div class="col-lg-12">
+                                <button type="button" class="btn btn-success btn-sm" onclick="AddItem()"><i class="icon-plus2"></i> Add New Item</button>
+                                @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
+                                <div class="table-responsive">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:5% !important"></th>
+                                                <th style="width:50% !important">Description</th>
+                                                <th style="width:20% !important">Amount</th>
+                                                <th style="width:25% !important">Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-body">
+                                            <tr id="row_0">
+                                                <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                                <td><input type="text" class="form-control desc" /></td>
+                                                <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
+                                                <td><input type="text" class="form-control note" /></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="2" class="text-right">TOTAL AMOUNT</th>
+                                                <th class="text-right total-cost">0</th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2"></i></a>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    var item_no = 0;
+    function AddItem() {
+        item_no += 1;
+
+        var rowItem = '<tr id="row_' + item_no + '">'
+                    + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
+                    + '<td><input type="text" class="form-control desc" /></td>'
+                    + '<td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>'
+                    + '<td><input type="text" class="form-control note" /></td>'
+                    + '</tr>';
+        $('#data-body').append(rowItem);
+    }
+
+    function RemoveItem(no) {
+        $('#row_' + no).remove();
+        math_total_price();
+    }
+
+    function math_total_price() {
+        var total_price = 0;
+        $('input.cost').each(function () {
+            var result = $(this).val().replace(/,/g, '');
+            if (result == '') {
+                result = 0;
+            }
+            total_price += parseFloat(result);
+        });
+
+        $('.total-cost').text(total_price.toLocaleString());
+    }
+
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        $('.tanggal').pickadate({
+            format: 'yyyy/mm/dd',
+            selectMonths: true,
+            selectYears: true
+        });
+
+        var arrItem = [];
+        $('#target').submit(function (e) {
+            //e.preventDefault();
+            var isValid = true;
+            var all = 0;
+            $('#data-body tr').each(function () {
+                var desc = $(this).find('input.desc').val();
+                var cost = parseFloat($(this).find('input.cost').val());
+                var note = $(this).find('input.note').val();
+                all += cost;
+                var obj = { desc: desc, cost: cost, note: note };
+                arrItem.push(obj);
+
+                if (desc == '') { isValid = false; }
+                if ($(this).find('input.cost').val() == '') { isValid = false; }
+            });
+            $('#TotalAmount').val(all);
+            $('#Items').val(JSON.stringify(arrItem));
+            $('#ItemValid').val(isValid);
+        });
+    });
+</script>

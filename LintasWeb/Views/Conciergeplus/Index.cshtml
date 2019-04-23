@@ -91,10 +91,10 @@
 
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     <a href="#" class="dropdown-item" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> View Orders</a>
-                                                    @if (item.Status != LintasMVC.Models.OrderStatusEnum.Ordered)
+                                                    @*@if (item.Status != LintasMVC.Models.OrderStatusEnum.Ordered)
                                                     {
                                                         <a href="#" class="dropdown-item" onclick="ViewInvoices('@item.Id', '@item.Customer')"><i class="icon-file-eye2"></i> View Invoices</a>
-                                                    }
+                                                    }*@
                                                     @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment)
                                                     {
                                                         <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>

@@ -1,0 +1,110 @@
+﻿@model LintasMVC.Models.PaymentsModels
+
+@{
+    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Title = "Payment";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="Invoices_Id" name="Invoices_Id" value="@ViewBag.InvoiceId" />
+            @Html.HiddenFor(model => model.Timestamp, new { @Value = DateTime.Today.ToString("yyyy/MM/dd") })
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Invoices_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.Editor("Invoice", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Invoice, @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.Invoices_Id, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.PaymentInfo, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.EditorFor(model => model.PaymentInfo, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.PaymentInfo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                                        @Html.ValidationMessage("Max", "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <div class="col-lg-10">
+                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2"></i></a>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        $('.tanggal').pickadate({
+            format: 'yyyy/mm/dd',
+            selectMonths: true,
+            selectYears: true
+        });
+    });
+</script>
