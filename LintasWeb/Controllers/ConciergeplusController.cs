@@ -144,6 +144,7 @@ namespace LintasMVC.Controllers
 
             OrdersModels ordersModels;
             List<InvoicesModels> listInvoice;
+            List<PaymentsIndexViewModels> listPayment;
             InvoicesModels invoicesModels;
             PaymentsModels paymentsModels;
             ConciergeplusModels conciergeplusModels = new ConciergeplusModels();
@@ -151,6 +152,7 @@ namespace LintasMVC.Controllers
             {
                 ordersModels = new OrdersModels();
                 listInvoice = new List<InvoicesModels>();
+                listPayment = new List<PaymentsIndexViewModels>();
                 invoicesModels = new InvoicesModels();
                 paymentsModels = new PaymentsModels();
                 ViewBag.startIndex = 0;
@@ -161,6 +163,18 @@ namespace LintasMVC.Controllers
                 ViewBag.listItems = db.OrderItems.Where(x => x.Orders_Id == id).ToList();
 
                 listInvoice = await db.Invoices.Where(x => x.Orders_Id == id).OrderBy(x => x.No).ToListAsync();
+                listPayment = await (from pay in db.Payments
+                                     join i in db.Invoices on pay.Invoices_Id equals i.Id
+                                     where i.Orders_Id == id
+                                     select new PaymentsIndexViewModels
+                                     {
+                                         Id = pay.Id,
+                                         Timestamp = pay.Timestamp,
+                                         InvoiceNo = i.No,
+                                         Amount = pay.Amount,
+                                         Info = pay.PaymentInfo,
+                                         Notes = pay.Notes
+                                     }).ToListAsync();
 
                 invoicesModels = await db.Invoices.Where(x => x.Orders_Id == id).FirstOrDefaultAsync();
                 ViewBag.listInv = invoicesModels != null ? db.InvoiceItems.Where(x => x.Invoices_Id == invoicesModels.Id).ToList() : null;
@@ -171,6 +185,7 @@ namespace LintasMVC.Controllers
             }
             conciergeplusModels.Order = ordersModels;
             conciergeplusModels.ListInvoice = listInvoice;
+            conciergeplusModels.ListPayment = listPayment;
             conciergeplusModels.Invoice = invoicesModels;
             conciergeplusModels.Payment = paymentsModels;
 
@@ -186,8 +201,8 @@ namespace LintasMVC.Controllers
                 ordersModels = new OrdersModels();
                 Common.Master m = new Common.Master();
                 ordersModels.Id = Guid.NewGuid();
-                ordersModels.No = m.GetLastNo(ordersModels.Timestamp).ToString("000");
                 ordersModels.Timestamp = order_date;
+                ordersModels.No = m.GetLastNo(ordersModels.Timestamp).ToString("000");
                 ordersModels.Customers_Id = customer_id;
                 ordersModels.Origin_Stations_Id = origin_id;
                 ordersModels.Destination_Stations_Id = destination_id;
@@ -512,17 +527,32 @@ namespace LintasMVC.Controllers
 
         public async Task<ActionResult> Payment(Guid? id)
         {
-            InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
-            ViewBag.InvoiceId = id;
-            ViewBag.Invoice = invoicesModels.No + " - " + invoicesModels.Notes + " (" + string.Format("{0:N2}", invoicesModels.TotalAmount) + ")";
+            var invoices = await db.Invoices.Where(x => x.Orders_Id == id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
+            List<object> newList = new List<object>();
+            foreach (var inv in invoices)
+            {
+                newList.Add(new
+                {
+                    Id = inv.Id,
+                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ")"
+                });
+            }
+            
+            ViewBag.listInvoice = new SelectList(newList, "Id", "Name");
+            ViewBag.OrderId = id;
+            return View();
 
-            PaymentsModels paymentsModels = new PaymentsModels();
-            return View(paymentsModels);
+            //InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
+            //ViewBag.InvoiceId = id;
+            //ViewBag.Invoice = invoicesModels.No + " - " + invoicesModels.Notes + " (" + string.Format("{0:N2}", invoicesModels.TotalAmount) + ")";
+
+            //PaymentsModels paymentsModels = new PaymentsModels();
+            //return View(paymentsModels);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Payment([Bind(Include = "Id,Invoices_Id,Timestamp,Amount,PaymentInfo,Notes")] PaymentsModels paymentsModels)
+        public async Task<ActionResult> Payment([Bind(Include = "Id,Invoices_Id,Timestamp,Amount,PaymentInfo,Notes")] PaymentsModels paymentsModels, Guid Order_Id)
         {
             var invoice = db.Invoices.AsNoTracking().Where(x => x.Id == paymentsModels.Invoices_Id).FirstOrDefault();
             if (invoice != null)
@@ -557,8 +587,22 @@ namespace LintasMVC.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.InvoiceId = paymentsModels.Invoices_Id;
-            ViewBag.Invoice = invoice.No + " - " + invoice.Notes + " (" + string.Format("{0:N2}", invoice.TotalAmount) + ")";
+            //ViewBag.InvoiceId = paymentsModels.Invoices_Id;
+            //ViewBag.Invoice = invoice.No + " - " + invoice.Notes + " (" + string.Format("{0:N2}", invoice.TotalAmount) + ")";
+            
+            var invoices = await db.Invoices.Where(x => x.Orders_Id == Order_Id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
+            List<object> newList = new List<object>();
+            foreach (var inv in invoices)
+            {
+                newList.Add(new
+                {
+                    Id = inv.Id,
+                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ")"
+                });
+            }
+
+            ViewBag.listInvoice = new SelectList(newList, "Id", "Name");
+            ViewBag.OrderId = Order_Id;
             return View(paymentsModels);
         }
 
@@ -566,7 +610,7 @@ namespace LintasMVC.Controllers
         {
             var data = (from pay in db.Payments
                         join i in db.Invoices on pay.Invoices_Id equals i.Id
-                        where pay.Invoices_Id == id
+                        where pay.Id == id
                         select new PaymentsIndexViewModels
                         {
                             Id = pay.Id,
@@ -575,22 +619,46 @@ namespace LintasMVC.Controllers
                             Amount = pay.Amount,
                             Info = pay.PaymentInfo,
                             Notes = pay.Notes
-                        }).ToListAsync();
+                        }).FirstOrDefaultAsync();
             return View(await data);
+            //var data = (from pay in db.Payments
+            //            join i in db.Invoices on pay.Invoices_Id equals i.Id
+            //            where pay.Invoices_Id == id
+            //            select new PaymentsIndexViewModels
+            //            {
+            //                Id = pay.Id,
+            //                Timestamp = pay.Timestamp,
+            //                InvoiceNo = i.No,
+            //                Amount = pay.Amount,
+            //                Info = pay.PaymentInfo,
+            //                Notes = pay.Notes
+            //            }).ToListAsync();
+            //return View(await data);
         }
 
         [HttpPost, ActionName("DeletePayment")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeletePaymentConfirmed(Guid id)
         {
-            List<PaymentsModels> listPayment = await db.Payments.Where(x => x.Invoices_Id == id).ToListAsync();
-            foreach (var item in listPayment)
-            {
-                db.Payments.Remove(item);
-            }
+            //List<PaymentsModels> listPayment = await db.Payments.Where(x => x.Invoices_Id == id).ToListAsync();
+            //foreach (var item in listPayment)
+            //{
+            //    db.Payments.Remove(item);
+            //}
 
-            InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
-            invoicesModels.TotalPaid = 0;
+            //InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
+            //invoicesModels.TotalPaid = 0;
+            //db.Entry(invoicesModels).State = EntityState.Modified;
+
+            //OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            //ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
+            //db.Entry(ordersModels).State = EntityState.Modified;
+
+            PaymentsModels paymentsModels = await db.Payments.FindAsync(id);
+            db.Payments.Remove(paymentsModels);
+
+            InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Id == paymentsModels.Invoices_Id).FirstOrDefaultAsync();
+            invoicesModels.TotalPaid -= paymentsModels.Amount;
             db.Entry(invoicesModels).State = EntityState.Modified;
 
             OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();

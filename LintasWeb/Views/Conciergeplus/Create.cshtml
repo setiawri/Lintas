@@ -197,36 +197,38 @@
                 <h6>Payment</h6>
                 <fieldset>
                     <label class="payment-validation text-danger" style="display: none"></label>
+                    <div>
+                        <a href="@Url.Action("Payment", "Conciergeplus", new { id = Model.Order.Id })" class="btn btn-sm btn-success">Add New Payment</a>
+                        <span style="float: right; margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                        <span style="float: right; margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                        <span style="float: right; margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover datatable">
                             <thead>
                                 <tr>
-                                    <th>@Html.DisplayNameFor(model => model.Invoice.Timestamp)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Invoice.No)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalAmount)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Invoice.TotalPaid)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Invoice.Notes)</th>
+                                    <th>Date</th>
+                                    <th>Invoice No.</th>
+                                    <th>Amount</th>
+                                    <th>Info</th>
+                                    <th>Notes</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (Model.ListInvoice != null)
+                                @foreach (var item in Model.ListPayment)
                                 {
-                                    foreach (var item in Model.ListInvoice)
-                                    {
-                                        <tr>
-                                            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.No)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                            <td class="text-center" style="color: black">
-                                                <a href="#" onclick="ViewPayments('@item.Id', '@item.No')">Views</a> |
-                                                @Html.ActionLink("Payment", "Payment", new { id = item.Id }) |
-                                                @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
-                                            </td>
-                                        </tr>
-                                    }
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.InvoiceNo)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Info)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                        <td class="text-center">
+                                            @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
+                                            @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
+                                        </td>
+                                    </tr>
                                 }
                             </tbody>
                         </table>

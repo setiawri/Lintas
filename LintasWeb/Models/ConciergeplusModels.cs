@@ -9,6 +9,7 @@ namespace LintasMVC.Models
     {
         public OrdersModels Order { get; set; }
         public List<InvoicesModels> ListInvoice { get; set; }
+        public List<PaymentsIndexViewModels> ListPayment { get; set; }
         public InvoicesModels Invoice { get; set; }
         public PaymentsModels Payment { get; set; }
     }

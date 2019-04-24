@@ -26,7 +26,7 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
-            <input type="hidden" id="Invoices_Id" name="Invoices_Id" value="@ViewBag.InvoiceId" />
+            <input type="hidden" id="Order_Id" name="Order_Id" value="@ViewBag.OrderId" />
             @Html.HiddenFor(model => model.Timestamp, new { @Value = DateTime.Today.ToString("yyyy/MM/dd") })
             <!-- Form inputs -->
             <div class="card">
@@ -48,7 +48,8 @@
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Invoices_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                                     <div class="col-lg-10">
-                                        @Html.Editor("Invoice", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Invoice, @readonly = "readonly" } })
+                                        @*@Html.Editor("Invoice", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Invoice, @readonly = "readonly" } })*@
+                                        @Html.DropDownListFor(model => model.Invoices_Id, ViewBag.listInvoice as SelectList, "Select Invoice", new { @class = "form-control select2" })
                                         @Html.ValidationMessageFor(model => model.Invoices_Id, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
