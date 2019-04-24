@@ -221,7 +221,7 @@
                                             <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
                                             <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                             <td class="text-center" style="color: black">
-                                                <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
+                                                <a href="#" onclick="ViewPayments('@item.Id', '@item.No')">Views</a> |
                                                 @Html.ActionLink("Payment", "Payment", new { id = item.Id }) |
                                                 @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
                                             </td>
@@ -285,6 +285,27 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetInvoiceItems", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: no,
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    //Form Payment
+    function ViewPayments(id, no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPayments", "Conciergeplus")',
             data: {
                 id: id
             },
@@ -425,7 +446,7 @@
 
                 if (currentIndex === 2) {
                     if ('@Model.Order.Status_enumid' == '@LintasMVC.Models.OrderStatusEnum.PaymentCompleted') {
-                        $('.payment-validation').html('').hide(); 
+                        $('.payment-validation').html('').hide();
                         return true;
                     }
                     else {

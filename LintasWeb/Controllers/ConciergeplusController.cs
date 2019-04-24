@@ -68,6 +68,36 @@ namespace LintasMVC.Controllers
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetPayments(Guid id)
+        {
+            var payments = db.Payments.Where(x => x.Invoices_Id == id).ToList();
+            var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
+            List<InvoiceItemsModels> items = db.InvoiceItems.Where(x => x.Invoices_Id == invoice.Id).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Amount</th>
+                                                <th>Payment Info</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (PaymentsModels item in payments)
+            {
+                message += @"<tr>
+                                <td>" + item.Timestamp.ToString("yyyy/MM/dd") + @"</td>
+                                <td>" + item.Amount.ToString("#,##0.00") + @"</td>
+                                <td>" + item.PaymentInfo + @"</td>
+                                <td>" + item.Notes + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Conciergeplus
         public async Task<ActionResult> Index()
         {
@@ -525,6 +555,45 @@ namespace LintasMVC.Controllers
             ViewBag.InvoiceId = paymentsModels.Invoices_Id;
             ViewBag.Invoice = invoice.No + " - " + invoice.Notes + " (" + string.Format("{0:N2}", invoice.TotalAmount) + ")";
             return View(paymentsModels);
+        }
+
+        public async Task<ActionResult> DeletePayment(Guid? id)
+        {
+            var data = (from pay in db.Payments
+                        join i in db.Invoices on pay.Invoices_Id equals i.Id
+                        where pay.Invoices_Id == id
+                        select new PaymentsIndexViewModels
+                        {
+                            Id = pay.Id,
+                            Timestamp = pay.Timestamp,
+                            InvoiceNo = i.No,
+                            Amount = pay.Amount,
+                            Info = pay.PaymentInfo,
+                            Notes = pay.Notes
+                        }).ToListAsync();
+            return View(await data);
+        }
+
+        [HttpPost, ActionName("DeletePayment")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeletePaymentConfirmed(Guid id)
+        {
+            List<PaymentsModels> listPayment = await db.Payments.Where(x => x.Invoices_Id == id).ToListAsync();
+            foreach (var item in listPayment)
+            {
+                db.Payments.Remove(item);
+            }
+
+            InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
+            invoicesModels.TotalPaid = 0;
+            db.Entry(invoicesModels).State = EntityState.Modified;
+
+            OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
+            db.Entry(ordersModels).State = EntityState.Modified;
+
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<LintasMVC.Models.PaymentsIndexViewModels>
+
+@{
+    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Title = "Delete Payments";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+
+        <!-- Form inputs -->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">@ViewBag.Root</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                        <a class="list-icons-item" data-action="reload"></a>
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <fieldset>
+                    <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Timestamp)</th>
+                                    <th>@Html.DisplayNameFor(model => model.InvoiceNo)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Amount)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Info)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Notes)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.InvoiceNo)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Info)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+                <hr />
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2"></i></a>
+                        <button type="submit" class="btn btn-danger">Delete <i class="icon-bin ml-2"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- /form inputs -->
+
+    </div>
+    <!-- /content area -->
+
+</div>
