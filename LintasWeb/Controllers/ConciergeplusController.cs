@@ -373,10 +373,15 @@ namespace LintasMVC.Controllers
                 {
                     db.InvoiceItems.Remove(item);
                 }
-
-                PaymentsModels paymentsModels = await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).FirstOrDefaultAsync();
-                if (paymentsModels != null)
-                    db.Payments.Remove(paymentsModels);
+                
+                List<PaymentsModels> listPayment = await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).ToListAsync();
+                if (listPayment.Count > 0)
+                {
+                    foreach(var item in listPayment)
+                    {
+                        db.Payments.Remove(item);
+                    }
+                }
             }
 
             await db.SaveChangesAsync();
