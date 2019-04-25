@@ -98,7 +98,8 @@
                             <thead>
                                 <tr>
                                     <th style="width:5% !important"></th>
-                                    <th style="width:50% !important">Description: <span class="text-danger">*</span></th>
+                                    <th style="width:40% !important">Description: <span class="text-danger">*</span></th>
+                                    <th style="width:10% !important">Qty: <span class="text-danger">*</span></th>
                                     <th style="width:20% !important">Amount: <span class="text-danger">*</span></th>
                                     <th style="width:25% !important">Notes:</th>
                                 </tr>
@@ -110,6 +111,7 @@
                                     <tr id="order_0">
                                         <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveOrderItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
                                         <td><input type="text" class="form-control desc" /></td>
+                                        <td><input type="text" class="form-control qty text-right" /></td>
                                         <td><input type="text" class="form-control text-right cost-order" onkeyup="order_math_total_price()" /></td>
                                         <td><input type="text" class="form-control note" /></td>
                                     </tr>
@@ -121,6 +123,7 @@
                                         <tr id="order_@row">
                                             <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveOrderItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
                                             <td><input type="text" class="form-control desc" value="@item.Description" /></td>
+                                            <td><input type="text" class="form-control qty text-right" value="@item.Qty" /></td>
                                             <td><input type="text" class="form-control text-right cost-order" value="@item.Amount" onkeyup="order_math_total_price()" /></td>
                                             <td><input type="text" class="form-control note" value="@item.Notes" /></td>
                                         </tr>
@@ -130,7 +133,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="2" class="text-right">TOTAL AMOUNT</th>
+                                    <th colspan="3" class="text-right">TOTAL AMOUNT</th>
                                     <th class="text-right total-cost-order">0</th>
                                     <th></th>
                                 </tr>
@@ -237,10 +240,53 @@
                     <div style="float: right; margin-bottom: 20px">
                         <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
                         <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
-                        <button type="button" class="btn btn-primary btn-sm submit-step">Submit Form <i class="icon-arrow-right14 ml-2"></i></button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
                     </div>
                 </fieldset>
                 <!-- /Payment -->
+                <!-- Purchasing -->
+                <h6>Purchasing</h6>
+                <fieldset>
+                    <label class="purchasing-validation text-danger" style="display: none"></label>
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Qty</th>
+                                    <th>Amount</th>
+                                    <th>Purchase Date</th>
+                                    <th>Receive Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-body-purchasing">
+                                @foreach (var item in Model.ListOrderItem)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.PurchaseTimestamp)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.ReceiveTimestamp)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
+                                        <td class="text-center">
+                                            @Html.ActionLink("Change Status", "OrderItemLog", new { id = item.Id })
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm submit-step">Submit Form <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Purchasing -->
             </form>
         </div>
         <!-- /wizard with validation -->
@@ -258,6 +304,7 @@
         var rowItem = '<tr id="order_' + order_item_no + '">'
                     + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveOrderItem(' + order_item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
                     + '<td><input type="text" class="form-control desc" /></td>'
+                    + '<td><input type="text" class="form-control qty text-right" /></td>'
                     + '<td><input type="text" class="form-control text-right cost-order" onkeyup="order_math_total_price()" /></td>'
                     + '<td><input type="text" class="form-control note" /></td>'
                     + '</tr>';
@@ -363,12 +410,14 @@
                     var isValid = true;
                     $('#data-body-order tr').each(function () {
                         var desc = $(this).find('input.desc').val();
+                        var qty = parseFloat($(this).find('input.qty').val());
                         var cost = parseFloat($(this).find('input.cost-order').val());
                         var note = $(this).find('input.note').val();
-                        var obj = { desc: desc, cost: cost, note: note };
+                        var obj = { desc: desc, qty: qty, cost: cost, note: note };
                         arrItem.push(obj);
 
                         if (desc == '') { isValid = false; }
+                        if ($(this).find('input.qty').val() == '') { isValid = false; }
                         if ($(this).find('input.cost-order').val() == '') { isValid = false; }
                     });
                     $('#OrderItems').val(JSON.stringify(arrItem));
@@ -386,7 +435,7 @@
                         return false;
                     }
                     else if(!isValid) {
-                        $('.order-validation').html('The Order Item Description and Amount field is required.').show();
+                        $('.order-validation').html('The Order Item Description, Qty and Amount field is required.').show();
                         return false;
                     }
                     else {
@@ -435,6 +484,16 @@
                         return true;
                     }
                 }
+                else if (currentIndex === 2) {
+                    if ('@Model.Order.Status_enumid' == '@LintasMVC.Models.OrderStatusEnum.PaymentCompleted') {
+                        $('.payment-validation').html('').hide();
+                        return true;
+                    }
+                    else {
+                        $('.payment-validation').html('The Payment still not completed.').show();
+                        return false;
+                    }
+                }
 
                 //form.validate().settings.ignore = ':disabled,:hidden';
                 //return form.valid();
@@ -446,15 +505,8 @@
                 //form.validate().settings.ignore = ':disabled';
                 //return form.valid();
 
-                if (currentIndex === 2) {
-                    if ('@Model.Order.Status_enumid' == '@LintasMVC.Models.OrderStatusEnum.PaymentCompleted') {
-                        $('.payment-validation').html('').hide();
-                        return true;
-                    }
-                    else {
-                        $('.payment-validation').html('The Payment still not completed.').show();
-                        return false;
-                    }
+                if (currentIndex === 3) {
+                    return true;
                 }
             },
             onFinished: function (event, currentIndex) {

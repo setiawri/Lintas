@@ -23,6 +23,7 @@ namespace LintasMVC.Controllers
                                         <thead>
                                             <tr>
                                                 <th>Description</th>
+                                                <th>Qty</th>
                                                 <th>Amount</th>
                                                 <th>Notes</th>
                                             </tr>
@@ -32,6 +33,7 @@ namespace LintasMVC.Controllers
             {
                 message += @"<tr>
                                 <td>" + item.Description + @"</td>
+                                <td>" + item.Qty.ToString("#,##0") + @"</td>
                                 <td>" + item.Amount.ToString("#,##0.00") + @"</td>
                                 <td>" + item.Notes + @"</td>
                             </tr>";
@@ -147,6 +149,7 @@ namespace LintasMVC.Controllers
             List<PaymentsIndexViewModels> listPayment;
             InvoicesModels invoicesModels;
             PaymentsModels paymentsModels;
+            List<OrderItemsModels> listOrderItem;
             ConciergeplusModels conciergeplusModels = new ConciergeplusModels();
             if (id == null || id == Guid.Empty)
             {
@@ -155,6 +158,7 @@ namespace LintasMVC.Controllers
                 listPayment = new List<PaymentsIndexViewModels>();
                 invoicesModels = new InvoicesModels();
                 paymentsModels = new PaymentsModels();
+                listOrderItem = new List<OrderItemsModels>();
                 ViewBag.startIndex = 0;
             }
             else
@@ -181,6 +185,8 @@ namespace LintasMVC.Controllers
 
                 paymentsModels = invoicesModels == null ? null : await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).FirstOrDefaultAsync();
 
+                listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
+
                 ViewBag.startIndex = (int)ordersModels.Status_enumid + 1;
             }
             conciergeplusModels.Order = ordersModels;
@@ -188,6 +194,7 @@ namespace LintasMVC.Controllers
             conciergeplusModels.ListPayment = listPayment;
             conciergeplusModels.Invoice = invoicesModels;
             conciergeplusModels.Payment = paymentsModels;
+            conciergeplusModels.ListOrderItem = listOrderItem;
 
             return View(conciergeplusModels);
         }
@@ -217,8 +224,10 @@ namespace LintasMVC.Controllers
                     oi.Id = Guid.NewGuid();
                     oi.Orders_Id = ordersModels.Id;
                     oi.Description = item.desc;
+                    oi.Qty = item.qty;
                     oi.Amount = item.cost;
                     oi.Notes = item.note;
+                    oi.Status_enumid = OrderItemStatusEnum.Pending;
                     db.OrderItems.Add(oi);
                 }
             }
@@ -245,8 +254,10 @@ namespace LintasMVC.Controllers
                     oi.Id = Guid.NewGuid();
                     oi.Orders_Id = ordersModels.Id;
                     oi.Description = item.desc;
+                    oi.Qty = item.qty;
                     oi.Amount = item.cost;
                     oi.Notes = item.note;
+                    oi.Status_enumid = OrderItemStatusEnum.Pending;
                     db.OrderItems.Add(oi);
                 }
             }
@@ -666,6 +677,45 @@ namespace LintasMVC.Controllers
             db.Entry(ordersModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> OrderItemLog(Guid? id)
+        {
+            OrderItemsModels orderItemsModels = await db.OrderItems.FindAsync(id);
+            List<OrderItemLogModels> listOrderItemLog = await db.OrderItemLog.Where(x => x.OrderItems_Id == orderItemsModels.Id).ToListAsync();
+            OrderItemLogViewModels orderItemLogViewModels = new OrderItemLogViewModels();
+            orderItemLogViewModels.OrderItem = orderItemsModels;
+            orderItemLogViewModels.ListOrderItemLog = listOrderItemLog;
+            return View(orderItemLogViewModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels)
+        {
+            OrderItemsModels orderItemsModels = await db.OrderItems.AsNoTracking().Where(x => x.Id == orderItemLogViewModels.OrderItem.Id).FirstOrDefaultAsync();
+            if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
+            {
+                orderItemsModels.PurchaseTimestamp = DateTime.Now;
+            }
+            else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
+            {
+                orderItemsModels.ReceiveTimestamp = DateTime.Now;
+            }
+            orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
+            db.Entry(orderItemsModels).State = EntityState.Modified;
+
+            OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
+            orderItemLogModels.Id = Guid.NewGuid();
+            orderItemLogModels.OrderItems_Id = orderItemLogViewModels.OrderItem.Id;
+            orderItemLogModels.Timestamp = DateTime.Now;
+            orderItemLogModels.Description = "Status changed to " + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid);
+            orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
+            db.OrderItemLog.Add(orderItemLogModels);
+
+            await db.SaveChangesAsync();
+
             return RedirectToAction("Index");
         }
     }

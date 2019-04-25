@@ -202,7 +202,10 @@
     <Compile Include="Models\InvoicesModels.cs" />
     <Compile Include="Models\LintasContext.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\OrderItemLogModels.cs" />
+    <Compile Include="Models\OrderItemLogViewModels.cs" />
     <Compile Include="Models\OrderItemsModels.cs" />
+    <Compile Include="Models\OrderItemStatusEnum.cs" />
     <Compile Include="Models\OrdersIndexViewModels.cs" />
     <Compile Include="Models\OrdersModels.cs" />
     <Compile Include="Models\OrderStatusEnum.cs" />
@@ -344,6 +347,7 @@
     <Content Include="Views\Conciergeplus\DeleteInvoice.cshtml" />
     <Content Include="Views\Conciergeplus\Payment.cshtml" />
     <Content Include="Views\Conciergeplus\DeletePayment.cshtml" />
+    <Content Include="Views\Conciergeplus\OrderItemLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

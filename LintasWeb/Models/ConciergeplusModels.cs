@@ -12,5 +12,6 @@ namespace LintasMVC.Models
         public List<PaymentsIndexViewModels> ListPayment { get; set; }
         public InvoicesModels Invoice { get; set; }
         public PaymentsModels Payment { get; set; }
+        public List<OrderItemsModels> ListOrderItem { get; set; }
     }
 }
