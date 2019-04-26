@@ -201,10 +201,12 @@ namespace LintasMVC.Controllers
 
         public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string notes, string order_items)
         {
+            string status;
             OrdersModels ordersModels;
 
             if (order_id == null || order_id == Guid.Empty)
             {
+                status = "new";
                 ordersModels = new OrdersModels();
                 Common.Master m = new Common.Master();
                 ordersModels.Id = Guid.NewGuid();
@@ -233,38 +235,39 @@ namespace LintasMVC.Controllers
             }
             else
             {
+                status = "edit";
                 ordersModels = await db.Orders.FindAsync(order_id);
 
-                List<OrderItemsModels> lOrderItem_before = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
-                foreach (var item in lOrderItem_before)
-                {
-                    db.OrderItems.Remove(item);
-                }
+                //List<OrderItemsModels> lOrderItem_before = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
+                //foreach (var item in lOrderItem_before)
+                //{
+                //    db.OrderItems.Remove(item);
+                //}
 
-                ordersModels.Customers_Id = customer_id;
-                ordersModels.Origin_Stations_Id = origin_id;
-                ordersModels.Destination_Stations_Id = destination_id;
-                ordersModels.Notes = notes;
-                db.Entry(ordersModels).State = EntityState.Modified;
+                //ordersModels.Customers_Id = customer_id;
+                //ordersModels.Origin_Stations_Id = origin_id;
+                //ordersModels.Destination_Stations_Id = destination_id;
+                //ordersModels.Notes = notes;
+                //db.Entry(ordersModels).State = EntityState.Modified;
 
-                List<OrderItemDetails> lOrderItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(order_items);
-                foreach (var item in lOrderItem)
-                {
-                    OrderItemsModels oi = new OrderItemsModels();
-                    oi.Id = Guid.NewGuid();
-                    oi.Orders_Id = ordersModels.Id;
-                    oi.Description = item.desc;
-                    oi.Qty = item.qty;
-                    oi.Amount = item.cost;
-                    oi.Notes = item.note;
-                    oi.Status_enumid = OrderItemStatusEnum.Pending;
-                    db.OrderItems.Add(oi);
-                }
+                //List<OrderItemDetails> lOrderItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(order_items);
+                //foreach (var item in lOrderItem)
+                //{
+                //    OrderItemsModels oi = new OrderItemsModels();
+                //    oi.Id = Guid.NewGuid();
+                //    oi.Orders_Id = ordersModels.Id;
+                //    oi.Description = item.desc;
+                //    oi.Qty = item.qty;
+                //    oi.Amount = item.cost;
+                //    oi.Notes = item.note;
+                //    oi.Status_enumid = OrderItemStatusEnum.Pending;
+                //    db.OrderItems.Add(oi);
+                //}
             }
 
             await db.SaveChangesAsync();
 
-            return Json(new { id = ordersModels.Id, no_order = order_date.ToString("yyyyMMdd") + ordersModels.No }, JsonRequestBehavior.AllowGet);
+            return Json(new { status = status, id = ordersModels.Id, no_order = order_date.ToString("yyyyMMdd") + ordersModels.No }, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<JsonResult> SaveInvoice(Guid order_id, DateTime inv_date, decimal total_amount, string notes, string inv_items)
@@ -683,7 +686,7 @@ namespace LintasMVC.Controllers
         public async Task<ActionResult> OrderItemLog(Guid? id)
         {
             OrderItemsModels orderItemsModels = await db.OrderItems.FindAsync(id);
-            List<OrderItemLogModels> listOrderItemLog = await db.OrderItemLog.Where(x => x.OrderItems_Id == orderItemsModels.Id).ToListAsync();
+            List<OrderItemLogModels> listOrderItemLog = await db.OrderItemLog.Where(x => x.OrderItems_Id == orderItemsModels.Id).OrderByDescending(x => x.Timestamp).ToListAsync();
             OrderItemLogViewModels orderItemLogViewModels = new OrderItemLogViewModels();
             orderItemLogViewModels.OrderItem = orderItemsModels;
             orderItemLogViewModels.ListOrderItemLog = listOrderItemLog;
@@ -692,7 +695,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels)
+        public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels, string DescriptionLog)
         {
             OrderItemsModels orderItemsModels = await db.OrderItems.AsNoTracking().Where(x => x.Id == orderItemLogViewModels.OrderItem.Id).FirstOrDefaultAsync();
             if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
@@ -710,7 +713,14 @@ namespace LintasMVC.Controllers
             orderItemLogModels.Id = Guid.NewGuid();
             orderItemLogModels.OrderItems_Id = orderItemLogViewModels.OrderItem.Id;
             orderItemLogModels.Timestamp = DateTime.Now;
-            orderItemLogModels.Description = "Status changed to " + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid);
+            if (string.IsNullOrEmpty(DescriptionLog))
+            {
+                orderItemLogModels.Description = "Status changed to " + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid);
+            }
+            else
+            {
+                orderItemLogModels.Description = DescriptionLog;
+            }
             orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.OrderItemLog.Add(orderItemLogModels);
 

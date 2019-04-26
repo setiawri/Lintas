@@ -46,7 +46,7 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.OrderItem.Description, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <label class="col-form-label col-lg-2">Item</label>
                                     <div class="col-lg-10">
                                         @Html.EditorFor(model => model.OrderItem.Description, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                                         @Html.ValidationMessageFor(model => model.OrderItem.Description, "", new { @class = "text-danger" })
@@ -55,8 +55,32 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.OrderItem.Status_enumid, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                                    <label class="col-form-label col-lg-3">Qty / Amount</label>
+                                    <div class="col-lg-3">
+                                        @Html.EditorFor(model => model.OrderItem.Qty, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.OrderItem.Qty, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-lg-6">
+                                        @Html.EditorFor(model => model.OrderItem.Amount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.OrderItem.Amount, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-2">Desc. Log</label>
                                     <div class="col-lg-10">
+                                        @Html.TextArea("DescriptionLog", new { @class = "form-control", @rows = 3 })
+                                        @Html.ValidationMessage("DescriptionLog", "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.OrderItem.Status_enumid, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
                                         @Html.EnumDropDownListFor(model => model.OrderItem.Status_enumid, new { @class = "form-control" })
                                         @Html.ValidationMessageFor(model => model.OrderItem.Status_enumid, "", new { @class = "text-danger" })
                                     </div>
@@ -74,9 +98,9 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Timestamp</th>
-                                            <th>Description</th>
-                                            <th>Created By</th>
+                                            <th style="width: 20% !important">Timestamp</th>
+                                            <th style="width: 60% !important">Description</th>
+                                            <th style="width: 20% !important">Created By</th>
                                         </tr>
                                     </thead>
                                     <tbody>

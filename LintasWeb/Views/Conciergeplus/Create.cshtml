@@ -91,7 +91,10 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-success btn-sm" onclick="AddOrderItem()"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                    @if (ViewBag.listItems == null)
+                    {
+                        <button type="button" class="btn btn-success btn-sm" onclick="AddOrderItem()"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                    }
                     @Html.Hidden("OrderItems")
                     <div class="table-responsive">
                         <table class="table table-condensed">
@@ -121,7 +124,8 @@
                                     foreach (var item in ViewBag.listItems)
                                     {
                                         <tr id="order_@row">
-                                            <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveOrderItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                            @*<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveOrderItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>*@
+                                            <td></td>
                                             <td><input type="text" class="form-control desc" value="@item.Description" /></td>
                                             <td><input type="text" class="form-control qty text-right" value="@item.Qty" /></td>
                                             <td><input type="text" class="form-control text-right cost-order" value="@item.Amount" onkeyup="order_math_total_price()" /></td>
@@ -456,13 +460,15 @@
                             },
                             success: function (data) {
                                 console.log(data);
-                                $('#Order_Id').val(data.id);
+                                //$('#Order_Id').val(data.id);
                                 $('.no-order').html(data.no_order);
                                 $('#Invoice_Timestamp').val('@DateTime.Today.ToString("yyyy/MM/dd")');
-
-                                var x = $('<a href="/Conciergeplus/Invoice/' + data.id + '" class="btn btn-sm btn-success">Add New Invoice</a>');
-                                $('.btn-insert-inv').hide();
-                                $('.div-insert-inv').append(x);
+                                
+                                if (data.status == 'new') {
+                                    var x = $('<a href="/Conciergeplus/Invoice/' + data.id + '" class="btn btn-sm btn-success">Add New Invoice</a>');
+                                    $('.btn-insert-inv').hide();
+                                    $('.div-insert-inv').append(x);
+                                }
                             }, //end success
                             error: function (result) {
                                 bootbox.alert("Error " + result);
