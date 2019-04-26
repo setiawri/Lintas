@@ -100,6 +100,34 @@ namespace LintasMVC.Controllers
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetLogs(Guid id)
+        {
+            var payments = db.Payments.Where(x => x.Invoices_Id == id).ToList();
+            var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
+            List<OrderItemLogModels> itemLogs = db.OrderItemLog.Where(x => x.OrderItems_Id == id).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Description</th>
+                                                <th>Created By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (OrderItemLogModels item in itemLogs)
+            {
+                message += @"<tr>
+                                <td>" + item.Timestamp.ToString("yyyy/MM/dd") + @"</td>
+                                <td>" + item.Description + @"</td>
+                                <td>" + db.User.Where(x => x.Id == item.UserAccounts_Id).FirstOrDefault().Fullname + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Conciergeplus
         public async Task<ActionResult> Index()
         {
@@ -467,7 +495,7 @@ namespace LintasMVC.Controllers
                 db.Entry(ordersModels).State = EntityState.Modified;
 
                 await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
             }
 
             var order = await (from o in db.Orders
@@ -536,7 +564,7 @@ namespace LintasMVC.Controllers
             db.Entry(ordersModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
         }
 
         public async Task<ActionResult> Payment(Guid? id)
@@ -598,7 +626,7 @@ namespace LintasMVC.Controllers
 
                 await db.SaveChangesAsync();
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Create", "Conciergeplus", new { id = invoice.Orders_Id });
             }
 
             //ViewBag.InvoiceId = paymentsModels.Invoices_Id;
@@ -680,7 +708,7 @@ namespace LintasMVC.Controllers
             db.Entry(ordersModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
         }
 
         public async Task<ActionResult> OrderItemLog(Guid? id)
@@ -726,7 +754,7 @@ namespace LintasMVC.Controllers
 
             await db.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Create", "Conciergeplus", new { id = orderItemsModels.Orders_Id });
         }
     }
 }

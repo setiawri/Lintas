@@ -276,6 +276,7 @@
                                         <td>@Html.DisplayFor(modelItem => item.ReceiveTimestamp)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
                                         <td class="text-center">
+                                            <a href="#" onclick="ViewLogs('@item.Id')">Views Log</a> |
                                             @Html.ActionLink("Change Status", "OrderItemLog", new { id = item.Id })
                                         </td>
                                     </tr>
@@ -375,6 +376,27 @@
         }); //end ajax
     }
 
+    //Form Purchasing
+    function ViewLogs(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetLogs", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: 'History Logs Item',
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
     $(document).ready(function () {
 
         var form = $('.steps-validation').show();
@@ -460,10 +482,10 @@
                             },
                             success: function (data) {
                                 console.log(data);
-                                //$('#Order_Id').val(data.id);
+                                $('#Order_Id').val(data.id);
                                 $('.no-order').html(data.no_order);
                                 $('#Invoice_Timestamp').val('@DateTime.Today.ToString("yyyy/MM/dd")');
-                                
+
                                 if (data.status == 'new') {
                                     var x = $('<a href="/Conciergeplus/Invoice/' + data.id + '" class="btn btn-sm btn-success">Add New Invoice</a>');
                                     $('.btn-insert-inv').hide();
