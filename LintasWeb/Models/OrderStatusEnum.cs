@@ -13,6 +13,7 @@ namespace LintasMVC.Models
         WaitingPayment,
         [Display(Name = "Payment Completed")]
         PaymentCompleted,
+        Purchasing,
         Shipping,
         Completed
     }

@@ -1,0 +1,231 @@
+﻿@model LintasMVC.Models.ShippingItemsModels
+
+@{
+    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Title = "Packaging";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm("Package", "Conciergeplus", FormMethod.Post, new { id = "target" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="Order_Id" name="Order_Id" value="@ViewBag.OrderId" />
+            <input type="hidden" id="Items_Selected" name="Items_Selected" />
+            <input type="hidden" id="Items_Content" name="Items_Content" />
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-3">Dimension (cm)</label>
+                                    <div class="col-lg-3">
+                                        @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @class = "form-control", @placeholder = "Length" } })
+                                        @Html.ValidationMessageFor(model => model.Length, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-lg-3">
+                                        @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @class = "form-control", @placeholder = "Width" } })
+                                        @Html.ValidationMessageFor(model => model.Width, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-lg-3">
+                                        @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @class = "form-control", @placeholder = "Height" } })
+                                        @Html.ValidationMessageFor(model => model.Height, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-3">Weight (gr)</label>
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Weight, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover datatable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Item</th>
+                                        <th>Qty</th>
+                                        <th>Amount</th>
+                                        <th>Notes</th>
+                                        <th>Status</th>
+                                        <th class="never">Id</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-body">
+                                    @if (ViewBag.listOrderItem != null)
+                                    {
+                                        foreach (var item in ViewBag.listOrderItem)
+                                        {
+                                            LintasMVC.Models.LintasContext ctx = new LintasMVC.Models.LintasContext();
+                                            Guid OrderItems_Id = new Guid(item.Id.ToString());
+                                            var sicModel = ctx.ShippingItemContents.Where(x => x.OrderItems_Id == OrderItems_Id).ToList();
+                                            int qtyUsed = 0;
+                                            foreach (var sic in sicModel)
+                                            {
+                                                qtyUsed += sic.Qty;
+                                            }
+                                            int remaining = item.Qty - qtyUsed;
+                                            if (remaining > 0)
+                                            {
+                                                <tr>
+                                                    <td>@item.Id</td>
+                                                    <td>@item.Description</td>
+                                                    <td style="width: 15% !important"><input type="number" class="form-control qty text-right" value='@remaining' /></td>
+                                                    <td>@item.Amount.ToString("#,##0.00")</td>
+                                                    <td><input type="text" class="form-control notes" /></td>
+                                                    <td>@item.Status_enumid</td>
+                                                    <td><input type="text" class="form-control id" value="@item.Id" /></td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        $('.tanggal').pickadate({
+            format: 'yyyy/mm/dd',
+            selectMonths: true,
+            selectYears: true
+        });
+
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            //columnDefs: [{
+            //    orderable: false,
+            //    width: 100,
+            //    targets: [5]
+            //}],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        var datatable = $('.datatable').DataTable({
+            columnDefs: [
+                {
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>';
+                        }
+
+                        return data;
+                    },
+                    checkboxes: {
+                        selectRow: true,
+                        selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    },
+                    orderable: false,
+                    //className: 'select-checkbox',
+                    targets: 0
+                },
+                {
+                    visible: false, targets: [6]
+                }
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child'
+            },
+            pagingType: 'full_numbers',
+            order: [[1, 'asc']]
+        });
+
+        var arrItem = [];
+        $('#target').submit(function (e) {
+            //e.preventDefault();
+            $('#data-body tr').each(function () {
+                var current_row = $(this).closest('tr');
+                var data = datatable.row(current_row).data();
+                //console.log(data);
+
+                var id = data[0];
+                var qty = parseFloat($(this).find('input.qty').val());
+                var notes = $(this).find('input.notes').val();
+                var obj = { id: id, qty: qty, notes: notes };
+                arrItem.push(obj);
+            });
+            $('#Items_Content').val(JSON.stringify(arrItem));
+
+            var ids_selected = datatable.column(0).checkboxes.selected();
+            $('#Items_Selected').val(ids_selected.join(","));
+        });
+
+    });
+</script>

@@ -63,7 +63,7 @@
                                     <td>
                                         @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered)
                                         {
-                                            <span class="badge badge-secondary d-block">Ordered</span>
+                                            <span class="badge badge-dark d-block">Ordered</span>
                                         }
                                         else if (item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment)
                                         {
@@ -72,6 +72,10 @@
                                         else if (item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted)
                                         {
                                             <span class="badge badge-success d-block">Payment Completed</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing)
+                                        {
+                                            <span class="badge bg-purple d-block">Purchasing</span>
                                         }
                                         else if (item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
                                         {
@@ -95,9 +99,11 @@
                                                     {
                                                         <a href="#" class="dropdown-item" onclick="ViewInvoices('@item.Id', '@item.Customer')"><i class="icon-file-eye2"></i> View Invoices</a>
                                                     }*@
-                                                    @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered 
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment 
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted)
+                                                    @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
+                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
+                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
+                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
+                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
                                                     {
                                                         <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
                                                     }

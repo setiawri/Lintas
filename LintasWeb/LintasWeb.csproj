@@ -212,6 +212,9 @@
     <Compile Include="Models\PaymentsIndexViewModels.cs" />
     <Compile Include="Models\PaymentsModels.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
+    <Compile Include="Models\ShippingItemContentsModels.cs" />
+    <Compile Include="Models\ShippingItemsModels.cs" />
+    <Compile Include="Models\ShippingItemStatusEnum.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
     <Compile Include="Models\UserModels.cs" />
@@ -225,8 +228,11 @@
     <Content Include="assets\css\bootstrap_limitless.min.css" />
     <Content Include="assets\css\colors.min.css" />
     <Content Include="assets\css\components.min.css" />
+    <Content Include="assets\css\icons\fontawesome\styles.min.css" />
     <Content Include="assets\css\layout.min.css" />
     <Content Include="assets\css\icons\icomoon\styles.css" />
+    <Content Include="assets\css\tables\datatable\awesome-bootstrap-checkbox.css" />
+    <Content Include="assets\css\tables\datatable\checkboxes.css" />
     <Content Include="assets\images\logo_light.png" />
     <Content Include="assets\js\app.js" />
     <Content Include="assets\js\bootstrap-datetimepicker.min.js" />
@@ -249,6 +255,8 @@
     <Content Include="assets\js\plugins\pickers\pickadate\picker.js" />
     <Content Include="assets\js\plugins\pickers\pickadate\picker.time.js" />
     <Content Include="assets\js\plugins\tables\datatables\datatables.min.js" />
+    <Content Include="assets\js\plugins\tables\datatables\extensions\checkboxes.min.js" />
+    <Content Include="assets\js\plugins\tables\datatables\extensions\select.min.js" />
     <Content Include="assets\js\plugins\ui\moment\moment.min.js" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -348,6 +356,7 @@
     <Content Include="Views\Conciergeplus\Payment.cshtml" />
     <Content Include="Views\Conciergeplus\DeletePayment.cshtml" />
     <Content Include="Views\Conciergeplus\OrderItemLog.cshtml" />
+    <Content Include="Views\Conciergeplus\Package.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

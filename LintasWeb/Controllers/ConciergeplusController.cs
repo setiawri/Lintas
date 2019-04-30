@@ -128,6 +128,35 @@ namespace LintasMVC.Controllers
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetPackage(Guid id)
+        {
+            var list = (from sic in db.ShippingItemContents
+                        join oi in db.OrderItems on sic.OrderItems_Id equals oi.Id
+                        where sic.ShippingItems_Id == id
+                        select new { sic, oi }).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Qty</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (var item in list)
+            {
+                message += @"<tr>
+                                <td>" + item.oi.Description + @"</td>
+                                <td>" + item.sic.Qty + @"</td>
+                                <td>" + item.sic.Notes + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Conciergeplus
         public async Task<ActionResult> Index()
         {
@@ -178,6 +207,7 @@ namespace LintasMVC.Controllers
             InvoicesModels invoicesModels;
             PaymentsModels paymentsModels;
             List<OrderItemsModels> listOrderItem;
+            List<ShippingItemsModels> listShippingItem;
             ConciergeplusModels conciergeplusModels = new ConciergeplusModels();
             if (id == null || id == Guid.Empty)
             {
@@ -187,6 +217,7 @@ namespace LintasMVC.Controllers
                 invoicesModels = new InvoicesModels();
                 paymentsModels = new PaymentsModels();
                 listOrderItem = new List<OrderItemsModels>();
+                listShippingItem = new List<ShippingItemsModels>();
                 ViewBag.startIndex = 0;
             }
             else
@@ -215,6 +246,29 @@ namespace LintasMVC.Controllers
 
                 listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
 
+                //var list_si = await (from si in db.ShippingItems
+                //                     join sic in db.ShippingItemContents on si.Id equals sic.ShippingItems_Id
+                //                     join oi in db.OrderItems on sic.OrderItems_Id equals oi.Id
+                //                     where oi.Orders_Id == id
+                //                     select new { si }).ToListAsync();
+
+                var list_si = await db.ShippingItems.Where(x => x.Status_enumid == ShippingItemStatusEnum.Open).OrderBy(x => x.No).ToListAsync();
+                
+                listShippingItem = new List<ShippingItemsModels>();
+                foreach (var item in list_si)
+                {
+                    var shipping = await db.ShippingItemContents.Where(x => x.ShippingItems_Id == item.Id).FirstOrDefaultAsync();
+                    var order = await (from o in db.Orders
+                                       join oi in db.OrderItems on o.Id equals oi.Orders_Id
+                                       where oi.Id == shipping.OrderItems_Id
+                                       select new { o }).FirstOrDefaultAsync();
+
+                    if(order.o.Id == id)
+                    {
+                        listShippingItem.Add(item);
+                    }
+                }
+
                 ViewBag.startIndex = (int)ordersModels.Status_enumid + 1;
             }
             conciergeplusModels.Order = ordersModels;
@@ -223,6 +277,7 @@ namespace LintasMVC.Controllers
             conciergeplusModels.Invoice = invoicesModels;
             conciergeplusModels.Payment = paymentsModels;
             conciergeplusModels.ListOrderItem = listOrderItem;
+            conciergeplusModels.ListShippingItem = listShippingItem;
 
             return View(conciergeplusModels);
         }
@@ -755,6 +810,61 @@ namespace LintasMVC.Controllers
             await db.SaveChangesAsync();
 
             return RedirectToAction("Create", "Conciergeplus", new { id = orderItemsModels.Orders_Id });
+        }
+
+        public async Task<ActionResult> Package(Guid id)
+        {
+            ViewBag.OrderId = id;
+            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Package([Bind(Include = "Id,Shippings_Id,No,Length,Width,Height,Weight,Notes,Status_enumid")] ShippingItemsModels shippingItemsModels, Guid Order_Id, string Items_Selected, string Items_Content)
+        {
+            if (string.IsNullOrEmpty(Items_Selected))
+            {
+                ModelState.AddModelError("Items", "No items selected for this package.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                shippingItemsModels.Id = Guid.NewGuid();
+                shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Open;
+                db.ShippingItems.Add(shippingItemsModels);
+
+                string[] arrID = Items_Selected.Split(',');
+                foreach (string s in arrID)
+                {
+                    ShippingItemContentsModels shippingItemContentsModels = new ShippingItemContentsModels();
+                    shippingItemContentsModels.Id = Guid.NewGuid();
+                    shippingItemContentsModels.ShippingItems_Id = shippingItemsModels.Id;
+                    shippingItemContentsModels.OrderItems_Id = new Guid(s);
+                    List<ShippingItemContentDetails> listContent = JsonConvert.DeserializeObject<List<ShippingItemContentDetails>>(Items_Content);
+                    foreach (var item in listContent)
+                    {
+                        if (item.Id == shippingItemContentsModels.OrderItems_Id)
+                        {
+                            shippingItemContentsModels.Qty = item.qty;
+                            shippingItemContentsModels.Notes = item.notes;
+                        }
+                    }
+                    db.ShippingItemContents.Add(shippingItemContentsModels);
+                }
+
+                OrdersModels ordersModels = await db.Orders.Where(x => x.Id == Order_Id).FirstOrDefaultAsync();
+                ordersModels.Status_enumid = OrderStatusEnum.Purchasing;
+                db.Entry(ordersModels).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+
+                return RedirectToAction("Create", "Conciergeplus", new { id = Order_Id });
+            }
+
+            ViewBag.OrderId = Order_Id;
+            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == Order_Id).ToListAsync();
+            return View(shippingItemsModels);
         }
     }
 }
