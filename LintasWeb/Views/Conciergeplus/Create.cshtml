@@ -336,10 +336,54 @@
                     <div style="float: right; margin-bottom: 20px">
                         <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
                         <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
-                        <button type="button" class="btn btn-primary btn-sm submit-step">Submit Form <i class="icon-arrow-right14 ml-2"></i></button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
                     </div>
                 </fieldset>
                 <!-- /Packaging -->
+                <!-- Shipping -->
+                <h6>Shipping</h6>
+                <fieldset>
+                    <label class="shipping-validation text-danger" style="display: none"></label>
+                    <div>
+                        <a href="@Url.Action("Shipping", "Conciergeplus", new { id = Model.Order.Id })" class="btn btn-sm btn-success">Add New Shipping</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Date</th>
+                                    <th>Origin</th>
+                                    <th>Destination</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-body-purchasing">
+                                @foreach (var item in Model.ListShipping)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Origin)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Destination)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                        <td class="text-center">
+                                            <a href="#" onclick="ViewShippingItem('@item.Id', '@item.No')">Views Shipping Items</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm submit-step">Submit Form <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Shipping -->
             </form>
         </div>
         <!-- /wizard with validation -->
@@ -456,6 +500,27 @@
             success: function (data) {
                 var dialog = bootbox.alert({
                     title: 'Package Item: ' + no,
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    //Form Shipping
+    function ViewShippingItem(id, no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetShippingItem", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: 'Shipping No: ' + no,
                     message: data.content,
                     backdrop: true
                 });
@@ -598,6 +663,9 @@
                 else if (currentIndex === 3) {
                     return true;
                 }
+                else if (currentIndex === 4) {
+                    return true;
+                }
 
                 //form.validate().settings.ignore = ':disabled,:hidden';
                 //return form.valid();
@@ -609,7 +677,7 @@
                 //form.validate().settings.ignore = ':disabled';
                 //return form.valid();
 
-                if (currentIndex === 4) {
+                if (currentIndex === 5) {
                     return true;
                 }
             },
