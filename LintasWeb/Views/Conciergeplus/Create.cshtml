@@ -85,6 +85,15 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
+                                <label>Destination Address: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <label>Notes:</label>
                                 @Html.EditorFor(model => model.Order.Notes, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
@@ -594,6 +603,10 @@
                         $('.order-validation').html('The Destination Station field is required.').show();
                         return false;
                     }
+                    else if ($('#Order_Address').val() == '') {
+                        $('.order-validation').html('The Destination Address field is required.').show();
+                        return false;
+                    }
                     else if(!isValid) {
                         $('.order-validation').html('The Order Item Description, Qty and Amount field is required.').show();
                         return false;
@@ -611,6 +624,7 @@
                                 customer_id: $('#Order_Customers_Id').val(),
                                 origin_id: $('#Order_Origin_Stations_Id').val(),
                                 destination_id: $('#Order_Destination_Stations_Id').val(),
+                                address: $('#Order_Address').val(),
                                 notes: $('#Order_Notes').val(),
                                 order_items: $('#OrderItems').val()
                             },

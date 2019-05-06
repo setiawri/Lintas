@@ -181,6 +181,7 @@
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\ShippingController.cs" />
     <Compile Include="Controllers\StationsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
@@ -206,6 +207,7 @@
     <Compile Include="Models\OrderItemLogViewModels.cs" />
     <Compile Include="Models\OrderItemsModels.cs" />
     <Compile Include="Models\OrderItemStatusEnum.cs" />
+    <Compile Include="Models\OrderPricesModels.cs" />
     <Compile Include="Models\OrdersIndexViewModels.cs" />
     <Compile Include="Models\OrdersModels.cs" />
     <Compile Include="Models\OrderStatusEnum.cs" />
@@ -215,6 +217,7 @@
     <Compile Include="Models\ShippingItemContentsModels.cs" />
     <Compile Include="Models\ShippingItemsModels.cs" />
     <Compile Include="Models\ShippingItemStatusEnum.cs" />
+    <Compile Include="Models\ShippingPricesModels.cs" />
     <Compile Include="Models\ShippingsModels.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
@@ -369,6 +372,8 @@
     <Content Include="Views\Conciergeplus\OrderItemLog.cshtml" />
     <Content Include="Views\Conciergeplus\Package.cshtml" />
     <Content Include="Views\Conciergeplus\Shipping.cshtml" />
+    <Content Include="Views\Shipping\Index.cshtml" />
+    <Content Include="Views\Shipping\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

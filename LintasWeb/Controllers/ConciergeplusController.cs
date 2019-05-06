@@ -104,7 +104,7 @@ namespace LintasMVC.Controllers
         {
             var payments = db.Payments.Where(x => x.Invoices_Id == id).ToList();
             var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
-            List<OrderItemLogModels> itemLogs = db.OrderItemLog.Where(x => x.OrderItems_Id == id).ToList();
+            List<OrderItemLogModels> itemLogs = db.OrderItemLog.Where(x => x.OrderItems_Id == id).OrderByDescending(x => x.Timestamp).ToList();
             string message = @"<div class='table-responsive'>
                                     <table class='table table-striped table-bordered'>
                                         <thead>
@@ -118,7 +118,7 @@ namespace LintasMVC.Controllers
             foreach (OrderItemLogModels item in itemLogs)
             {
                 message += @"<tr>
-                                <td>" + item.Timestamp.ToString("yyyy/MM/dd") + @"</td>
+                                <td>" + item.Timestamp.ToString("yyyy/MM/dd HH:mm") + @"</td>
                                 <td>" + item.Description + @"</td>
                                 <td>" + db.User.Where(x => x.Id == item.UserAccounts_Id).FirstOrDefault().Fullname + @"</td>
                             </tr>";
@@ -183,6 +183,37 @@ namespace LintasMVC.Controllers
             message += "</tbody></table></div>";
 
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPriceList(string key)
+        {
+            if (key == "order")
+            {
+                var ddl = new SelectList(db.OrderPrices.OrderBy(x => x.Description), "Id", "Description");
+                return Json(new { ddl }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                var ddl = new SelectList(db.ShippingPrices.OrderBy(x => x.Description), "Id", "Description");
+                return Json(new { ddl }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult GetPrices(string key, Guid id)
+        {
+            decimal amount = 0; string notes = "";
+            if (key == "order")
+            {
+                amount = db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Amount;
+                notes = db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
+            }
+            else
+            {
+                amount = db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Amount;
+                notes = db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
+            }
+
+            return Json(new { amount = amount, notes = notes }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Conciergeplus
@@ -345,7 +376,7 @@ namespace LintasMVC.Controllers
             return View(conciergeplusModels);
         }
 
-        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string notes, string order_items)
+        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string address, string notes, string order_items)
         {
             string status;
             OrdersModels ordersModels;
@@ -361,6 +392,7 @@ namespace LintasMVC.Controllers
                 ordersModels.Customers_Id = customer_id;
                 ordersModels.Origin_Stations_Id = origin_id;
                 ordersModels.Destination_Stations_Id = destination_id;
+                ordersModels.Address = address;
                 ordersModels.Notes = notes;
                 ordersModels.Status_enumid = OrderStatusEnum.Ordered;
                 db.Orders.Add(ordersModels);
@@ -575,6 +607,7 @@ namespace LintasMVC.Controllers
 
             ViewBag.OrderId = id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+            ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
 
             InvoicesModels invoicesModels = new InvoicesModels();
             return View(invoicesModels);
@@ -626,6 +659,7 @@ namespace LintasMVC.Controllers
 
             ViewBag.OrderId = invoicesModels.Orders_Id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+            ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
             return View(invoicesModels);
         }
 
@@ -694,7 +728,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ")"
+                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
             
@@ -757,7 +791,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ")"
+                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
 
@@ -861,11 +895,11 @@ namespace LintasMVC.Controllers
             orderItemLogModels.Timestamp = DateTime.Now;
             if (string.IsNullOrEmpty(DescriptionLog))
             {
-                orderItemLogModels.Description = "Status changed to " + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid);
+                orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "]";
             }
             else
             {
-                orderItemLogModels.Description = DescriptionLog;
+                orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "] " + DescriptionLog;
             }
             orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.OrderItemLog.Add(orderItemLogModels);

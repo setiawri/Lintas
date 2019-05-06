@@ -1,0 +1,339 @@
+﻿@model LintasMVC.Models.ShippingsModels
+
+@{
+    ViewBag.Root = "Shipping Service";
+    ViewBag.Title = "Create";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Shipping")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm("Create", "Shipping", FormMethod.Post, new { id = "target" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="Order_Id" name="Order_Id" value="@ViewBag.OrderId" />
+            <input type="hidden" id="Items_Selected" name="Items_Selected" />
+            <input type="hidden" id="Items_Content" name="Items_Content" />
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.DropDownListFor(model => model.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.Customers_Id, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-3">Stations</label>
+                                    <div class="col-lg-9">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                @Html.DropDownListFor(model => model.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2" })
+                                                @Html.ValidationMessageFor(model => model.Origin_Stations_Id, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-lg-6">
+                                                @Html.DropDownListFor(model => model.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2" })
+                                                @Html.ValidationMessageFor(model => model.Destination_Stations_Id, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                        @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover datatable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>No</th>
+                                        <th>Length (cm)</th>
+                                        <th>Width (cm)</th>
+                                        <th>Height (cm)</th>
+                                        <th>Weight (gr)</th>
+                                        <th>Notes</th>
+                                        <th class="never">Id</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                        @*<button type="button" class="btn btn-dark btn-test">Test</button>*@
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+
+            <!-- Horizontal form modal -->
+            <div id="modal_item" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">New Package Input</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <form action="#" class="form-horizontal">
+                            <div class="modal-body">
+                                <label class="model-validation text-danger" style="display: none"></label>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">No</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control mdl-no">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">Dimension (cm)</label>
+                                    <div class="col-sm-3">
+                                        <input type="number" placeholder="Length" class="form-control mdl-length">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="number" placeholder="Width" class="form-control mdl-width">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="number" placeholder="Height" class="form-control mdl-height">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">Weight (gr)</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control mdl-weight">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">Notes</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control mdl-notes">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn bg-primary mdl-btn-add">Add Package</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+			<!-- /horizontal form modal -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    var dataTable;
+
+    function RemoveItem(no) {
+        dataTable.row(no).remove().draw();
+        //$('#row_' + no).remove();
+        //math_total_price();
+    }
+
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        $('.tanggal').pickadate({
+            format: 'yyyy/mm/dd',
+            selectMonths: true,
+            selectYears: true
+        });
+
+        $('#Customers_Id').change(function () {
+            if ($(this).val() != '') {
+                $.get('@Url.Action("GetItems", "Shipping")', { customerId: $(this).val() }, function (data) {
+                    console.log(data);
+                    dataTable = $('.datatable').DataTable();
+                    if (data.length > 0) {
+                        dataTable.clear();
+                        $.each(data, function (index, row) {
+                            dataTable.row.add([
+                                '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + index + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
+                                row.No,
+                                row.Length,
+                                row.Width,
+                                row.Height,
+                                row.Weight,
+                                row.Notes,
+                                row.Id
+                            ]).draw();
+                        }); //end each
+                    }
+                    else {
+                        dataTable.clear().draw(); //empty
+                    }
+                }); //end ajax get
+            }
+        });
+
+        $('.mdl-btn-add').click(function () {
+            var no = $('.mdl-no').val();
+            var length = $('.mdl-length').val();
+            var width = $('.mdl-width').val();
+            var height = $('.mdl-height').val();
+            var weight = $('.mdl-weight').val();
+            var notes = $('.mdl-notes').val();
+
+            if (no == '') {
+                $('.model-validation').html('The No field is required.').show();
+            }
+            else if (length == '' || length == 0) {
+                $('.model-validation').html('The Length field is required.').show();
+            }
+            else if (width == '' || width == 0) {
+                $('.model-validation').html('The Width field is required.').show();
+            }
+            else if (height == '' || height == 0) {
+                $('.model-validation').html('The Height field is required.').show();
+            }
+            else if (weight == '' || weight == 0) {
+                $('.model-validation').html('The Weight field is required.').show();
+            }
+            else {
+                $('.model-validation').html('').hide();
+                var row_count = datatable.page.info().recordsTotal;
+
+                dataTable.row.add([
+                    '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + row_count + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
+                    no,
+                    parseFloat(length),
+                    parseFloat(width),
+                    parseFloat(height),
+                    parseFloat(weight),
+                    notes,
+                    ''
+                ]).draw();
+
+                $('#modal_item').modal('toggle');
+                $('.modal-body input').val('');
+            }
+        });
+
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [0]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        var datatable = $('.datatable').DataTable({
+            columnDefs: [
+                {
+                    visible: false, targets: [7]
+                }
+            ],
+            //select: {
+            //    style: 'multi',
+            //    selector: 'td:first-child'
+            //},
+            pagingType: 'full_numbers',
+            order: [[1, 'asc']]
+        });
+
+        var arrItem = [];
+        $('.btn-test').click(function () {
+
+        });
+
+        $('#target').submit(function (e) {
+            //e.preventDefault();
+            $('#data-body tr').each(function () {
+                var current_row = $(this).closest('tr');
+                var data = datatable.row(current_row).data();
+                //console.log(data);
+
+                var id = data[7];
+                var no = data[1];
+                var length = parseFloat(data[2]);
+                var width = parseFloat(data[3]);
+                var height = parseFloat(data[4]);
+                var weight = parseFloat(data[5]);
+                var notes = data[6];
+                var obj = { id: id, no: no, length: length, width: width, height: height, weight: weight, notes: notes };
+                arrItem.push(obj);
+            });
+            $('#Items_Content').val(JSON.stringify(arrItem));
+        });
+
+    });
+</script>

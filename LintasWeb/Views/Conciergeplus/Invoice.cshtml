@@ -96,7 +96,8 @@
                                         <tbody id="data-body">
                                             <tr id="row_0">
                                                 <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                <td><input type="text" class="form-control desc" /></td>
+                                                @*<td><input type="text" class="form-control desc" /></td>*@
+                                                <td>@Html.DropDownList("ddlPrices_0", ViewBag.ListPrice as SelectList, "Select Order Price", new { @class = "form-control desc select2", @onchange = "get_prices(0)" })</td>
                                                 <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
                                                 <td><input type="text" class="form-control note" /></td>
                                             </tr>
@@ -127,16 +128,24 @@
 </div>
 <script type="text/javascript">
     var item_no = 0;
+    var key = 'order';
     function AddItem() {
         item_no += 1;
 
         var rowItem = '<tr id="row_' + item_no + '">'
                     + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
-                    + '<td><input type="text" class="form-control desc" /></td>'
+                    + '<td><select class="form-control desc" id="ddlPrices_' + item_no + '" name="ddlPrices_' + item_no + '" onchange="get_prices(' + item_no + ')"><option value="">Select Order Price</option></select></td>'
                     + '<td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>'
                     + '<td><input type="text" class="form-control note" /></td>'
                     + '</tr>';
         $('#data-body').append(rowItem);
+        //add populate dropdown from AJAX Call
+        $.get('@Url.Action("GetPriceList", "Conciergeplus")', { key: 'order' }, function (data) {
+            $.each(data.ddl, function (index, row) {
+                $('#ddlPrices_' + item_no).append("<option value='" + row.Value + "'>" + row.Text + "</option>")
+            });
+        });
+        $('#ddlPrices_' + item_no).select2();
     }
 
     function RemoveItem(no) {
@@ -157,6 +166,26 @@
         $('.total-cost').text(total_price.toLocaleString());
     }
 
+    function get_prices(row) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPrices", "Conciergeplus")',
+            data: {
+                key: key,
+                id: $('#ddlPrices_' + row).val()
+            },
+            success: function (data) {
+                console.log(data);
+                $('table tr#row_' + row + ' .cost').val(data.amount);
+                $('table tr#row_' + row + ' .note').val(data.notes);
+                math_total_price();
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
     $(document).ready(function () {
         $('.select2').select2();
 
@@ -172,7 +201,7 @@
             var isValid = true;
             var all = 0;
             $('#data-body tr').each(function () {
-                var desc = $(this).find('input.desc').val();
+                var desc = $(this).find('select.desc option:selected').text();
                 var cost = parseFloat($(this).find('input.cost').val());
                 var note = $(this).find('input.note').val();
                 all += cost;

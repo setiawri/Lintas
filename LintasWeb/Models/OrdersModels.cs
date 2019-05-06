@@ -28,6 +28,9 @@ namespace LintasMVC.Models
 
         [Display(Name = "Destination")]
         public Guid Destination_Stations_Id { get; set; }
+
+        [Required]
+        public string Address { get; set; }
         public string Notes { get; set; }
         public OrderStatusEnum Status_enumid { get; set; }
     }
