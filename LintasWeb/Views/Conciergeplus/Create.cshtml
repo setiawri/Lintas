@@ -85,8 +85,8 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Destination Address: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })
+                                <label>Notes:</label>
+                                @Html.EditorFor(model => model.Order.Notes, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </div>
                     </div>
@@ -94,8 +94,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Notes:</label>
-                                @Html.EditorFor(model => model.Order.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                <label>Destination Address: <span class="text-danger">*</span></label>
+                                @*@Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })*@
+                                @Html.TextAreaFor(model => model.Order.Address, new { @class = "form-control", @rows = 3 })
                             </div>
                         </div>
                     </div>

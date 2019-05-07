@@ -319,14 +319,17 @@ namespace LintasMVC.Controllers
                 foreach (var item in list_si)
                 {
                     var shipping = await db.ShippingItemContents.Where(x => x.ShippingItems_Id == item.Id).FirstOrDefaultAsync();
-                    var order = await (from o in db.Orders
-                                       join oi in db.OrderItems on o.Id equals oi.Orders_Id
-                                       where oi.Id == shipping.OrderItems_Id
-                                       select new { o }).FirstOrDefaultAsync();
-
-                    if (order.o.Id == id)
+                    if (shipping != null)
                     {
-                        listShippingItem.Add(item);
+                        var order = await (from o in db.Orders
+                                           join oi in db.OrderItems on o.Id equals oi.Orders_Id
+                                           where oi.Id == shipping.OrderItems_Id
+                                           select new { o }).FirstOrDefaultAsync();
+
+                        if (order.o.Id == id)
+                        {
+                            listShippingItem.Add(item);
+                        }
                     }
                 }
 
@@ -348,17 +351,20 @@ namespace LintasMVC.Controllers
                 foreach (var item in list_shipping)
                 {
                     Guid shipping_item_id = db.ShippingItems.Where(x => x.Shippings_Id == item.Id).FirstOrDefault().Id;
-                    Guid order_item_id = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shipping_item_id).FirstOrDefault().OrderItems_Id;
-                    if (id == db.OrderItems.Where(x => x.Id == order_item_id).FirstOrDefault().Orders_Id)
+                    var shipping_item_content = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shipping_item_id).FirstOrDefault();
+                    if (shipping_item_content != null)
                     {
-                        ShippingsViewModels svm = new ShippingsViewModels();
-                        svm.Id = item.Id;
-                        svm.No = item.No;
-                        svm.Timestamp = item.Timestamp;
-                        svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
-                        svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;
-                        svm.Notes = item.Notes;
-                        listShipping.Add(svm);
+                        if (id == db.OrderItems.Where(x => x.Id == shipping_item_content.OrderItems_Id).FirstOrDefault().Orders_Id)
+                        {
+                            ShippingsViewModels svm = new ShippingsViewModels();
+                            svm.Id = item.Id;
+                            svm.No = item.No;
+                            svm.Timestamp = item.Timestamp;
+                            svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
+                            svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;
+                            svm.Notes = item.Notes;
+                            listShipping.Add(svm);
+                        }
                     }
                 }
 
