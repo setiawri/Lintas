@@ -26,6 +26,7 @@ namespace LintasMVC.Models
 
         [Display(Name = "Status")]
         public OrderItemStatusEnum Status_enumid { get; set; }
+        public bool Invoiced { get; set; }
     }
 
     public class OrderItemDetails

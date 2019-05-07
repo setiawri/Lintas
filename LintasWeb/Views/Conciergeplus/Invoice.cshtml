@@ -80,8 +80,22 @@
                         </div>
                         <hr />
                         <div class="form-group row">
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <button type="button" class="btn btn-success btn-block" onclick="AddItem()"><i class="icon-plus2"></i> Add New Item</button>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        @Html.DropDownList("ddlPrices", ViewBag.ListPrice as SelectList, "Select Order Price", new { @class = "form-control desc select2" })
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button type="button" class="btn btn-secondary btn-block" onclick="AddTemplate()">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <div class="col-lg-12">
-                                <button type="button" class="btn btn-success btn-sm" onclick="AddItem()"><i class="icon-plus2"></i> Add New Item</button>
                                 @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
                                 <div class="table-responsive">
                                     <table class="table table-condensed">
@@ -94,13 +108,29 @@
                                             </tr>
                                         </thead>
                                         <tbody id="data-body">
-                                            <tr id="row_0">
-                                                <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(0)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                @*<td><input type="text" class="form-control desc" /></td>*@
-                                                <td>@Html.DropDownList("ddlPrices_0", ViewBag.ListPrice as SelectList, "Select Order Price", new { @class = "form-control desc select2", @onchange = "get_prices(0)" })</td>
-                                                <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
-                                                <td><input type="text" class="form-control note" /></td>
-                                            </tr>
+                                            @{ int row = 0; }
+                                            @if (ViewBag.ListOrderItem != null)
+                                            {
+                                                foreach (var item in ViewBag.ListOrderItem)
+                                                {
+                                                    <tr id="row_@row">
+                                                        <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                                        <td><input type="text" class="form-control desc" value="@item.Description" /></td>
+                                                        <td><input type="text" class="form-control text-right cost" value="@item.Amount" onkeyup="math_total_price()" /></td>
+                                                        <td><input type="text" class="form-control note" value="@item.Notes" /></td>
+                                                    </tr>
+                                                    @(row++)
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr id="row_@row">
+                                                    <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                                    <td><input type="text" class="form-control desc" /></td>
+                                                    <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
+                                                    <td><input type="text" class="form-control note" /></td>
+                                                </tr>
+                                            }
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -127,25 +157,59 @@
 
 </div>
 <script type="text/javascript">
-    var item_no = 0;
+    var item_no = 100;
     var key = 'order';
     function AddItem() {
         item_no += 1;
 
         var rowItem = '<tr id="row_' + item_no + '">'
                     + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
-                    + '<td><select class="form-control desc" id="ddlPrices_' + item_no + '" name="ddlPrices_' + item_no + '" onchange="get_prices(' + item_no + ')"><option value="">Select Order Price</option></select></td>'
+                    + '<td><input type="text" class="form-control desc" /></td>'
+                    //+ '<td><select class="form-control desc" id="ddlPrices_' + item_no + '" name="ddlPrices_' + item_no + '" onchange="get_prices(' + item_no + ')"><option value="">Select Order Price</option></select></td>'
                     + '<td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>'
                     + '<td><input type="text" class="form-control note" /></td>'
                     + '</tr>';
         $('#data-body').append(rowItem);
         //add populate dropdown from AJAX Call
-        $.get('@Url.Action("GetPriceList", "Conciergeplus")', { key: 'order' }, function (data) {
+        @*$.get('@Url.Action("GetPriceList", "Conciergeplus")', { key: 'order' }, function (data) {
             $.each(data.ddl, function (index, row) {
                 $('#ddlPrices_' + item_no).append("<option value='" + row.Value + "'>" + row.Text + "</option>")
             });
         });
-        $('#ddlPrices_' + item_no).select2();
+        $('#ddlPrices_' + item_no).select2();*@
+    }
+
+    function AddTemplate() {
+        if ($('#ddlPrices').val() == '') {
+            bootbox.alert("Please select order price!");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPrices", "Conciergeplus")',
+                data: {
+                    key: key,
+                    id: $('#ddlPrices').val()
+                },
+                success: function (data) {
+                    console.log(data);
+                    //$('table tr#row_' + row + ' .cost').val(data.amount);
+                    //$('table tr#row_' + row + ' .note').val(data.notes);
+                    item_no += 1;
+                    var rowItem = '<tr id="row_' + item_no + '">'
+                        + '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + item_no + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>'
+                        + '<td><input type="text" class="form-control desc" value="' + $('#ddlPrices option:selected').text() + '" /></td>'
+                        + '<td><input type="text" class="form-control text-right cost" value="' + data.amount + '" onkeyup="math_total_price()" /></td>'
+                        + '<td><input type="text" class="form-control note" value="' + data.notes + '" /></td>'
+                        + '</tr>';
+                    $('#data-body').append(rowItem);
+                    math_total_price();
+                }, //end success
+                error: function (result) {
+                    bootbox.alert("Error " + result);
+                } //end error
+            }); //end ajax
+        }
     }
 
     function RemoveItem(no) {
@@ -195,13 +259,15 @@
             selectYears: true
         });
 
+        math_total_price();
+
         var arrItem = [];
         $('#target').submit(function (e) {
             //e.preventDefault();
             var isValid = true;
             var all = 0;
             $('#data-body tr').each(function () {
-                var desc = $(this).find('select.desc option:selected').text();
+                var desc = $(this).find('input.desc').val();
                 var cost = parseFloat($(this).find('input.cost').val());
                 var note = $(this).find('input.note').val();
                 all += cost;

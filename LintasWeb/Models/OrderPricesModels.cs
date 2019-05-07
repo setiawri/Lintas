@@ -15,6 +15,8 @@ namespace LintasMVC.Models
 
         [Required]
         public string Description { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal Amount { get; set; }
         public string Notes { get; set; }
     }

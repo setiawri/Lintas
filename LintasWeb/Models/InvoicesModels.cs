@@ -28,8 +28,7 @@ namespace LintasMVC.Models
         [Display(Name = "Total Paid")]
         [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal TotalPaid { get; set; }
-
-        [Required]
+        
         public string Notes { get; set; }
     }
 }

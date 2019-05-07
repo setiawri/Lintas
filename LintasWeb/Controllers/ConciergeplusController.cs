@@ -414,6 +414,7 @@ namespace LintasMVC.Controllers
                     oi.Amount = item.cost;
                     oi.Notes = item.note;
                     oi.Status_enumid = OrderItemStatusEnum.Pending;
+                    oi.Invoiced = false;
                     db.OrderItems.Add(oi);
                 }
             }
@@ -613,6 +614,7 @@ namespace LintasMVC.Controllers
 
             ViewBag.OrderId = id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+            ViewBag.ListOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id && x.Invoiced == false).OrderBy(x => x.Description).ToListAsync();
             ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
 
             InvoicesModels invoicesModels = new InvoicesModels();
@@ -636,6 +638,7 @@ namespace LintasMVC.Controllers
                 invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
                 db.Invoices.Add(invoicesModels);
 
+                List<OrderItemsModels> listOrderItems = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Invoiced == false).ToListAsync();
                 List<OrderItemDetails> lInvoiceItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(Items);
                 foreach (var item in lInvoiceItem)
                 {
@@ -646,6 +649,15 @@ namespace LintasMVC.Controllers
                     ii.Amount = item.cost;
                     ii.Notes = item.note;
                     db.InvoiceItems.Add(ii);
+
+                    foreach (var oi in listOrderItems)
+                    {
+                        if (item.desc == oi.Description)
+                        {
+                            oi.Invoiced = true;
+                            db.Entry(oi).State = EntityState.Modified;
+                        }
+                    }
                 }
 
                 ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
@@ -665,6 +677,7 @@ namespace LintasMVC.Controllers
 
             ViewBag.OrderId = invoicesModels.Orders_Id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
+            ViewBag.ListOrderItem = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Invoiced == false).OrderBy(x => x.Description).ToListAsync();
             ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
             return View(invoicesModels);
         }
