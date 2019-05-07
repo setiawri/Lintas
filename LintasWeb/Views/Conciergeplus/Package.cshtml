@@ -100,9 +100,10 @@
                                         <th></th>
                                         <th>Item</th>
                                         <th>Qty</th>
+                                        <th>Remaining Qty</th>
+                                        <th>Package Qty</th>
                                         <th>Amount</th>
                                         <th>Notes</th>
-                                        <th>Status</th>
                                         <th class="never">Id</th>
                                     </tr>
                                 </thead>
@@ -120,15 +121,16 @@
                                                 qtyUsed += sic.Qty;
                                             }
                                             int remaining = item.Qty - qtyUsed;
-                                            if (remaining > 0)
+                                            if (remaining > 0 && item.Status_enumid == LintasMVC.Models.OrderItemStatusEnum.Received)
                                             {
                                                 <tr>
                                                     <td>@item.Id</td>
                                                     <td>@item.Description</td>
+                                                    <td>@item.Qty</td>
+                                                    <td>@remaining</td>
                                                     <td style="width: 15% !important"><input type="number" class="form-control qty text-right" value='@remaining' /></td>
                                                     <td>@item.Amount.ToString("#,##0.00")</td>
                                                     <td><input type="text" class="form-control notes" /></td>
-                                                    <td>@item.Status_enumid</td>
                                                     <td><input type="text" class="form-control id" value="@item.Id" /></td>
                                                 </tr>
                                             }
@@ -196,7 +198,7 @@
                     targets: 0
                 },
                 {
-                    visible: false, targets: [6]
+                    visible: false, targets: [7]
                 }
             ],
             select: {

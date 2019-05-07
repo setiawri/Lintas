@@ -306,7 +306,7 @@ namespace LintasMVC.Controllers
                 paymentsModels = invoicesModels == null ? null : await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).FirstOrDefaultAsync();
 
                 listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
-
+                
                 //var list_si = await (from si in db.ShippingItems
                 //                     join sic in db.ShippingItemContents on si.Id equals sic.ShippingItems_Id
                 //                     join oi in db.OrderItems on sic.OrderItems_Id equals oi.Id
@@ -350,20 +350,48 @@ namespace LintasMVC.Controllers
                 listShipping = new List<ShippingsViewModels>();
                 foreach (var item in list_shipping)
                 {
-                    Guid shipping_item_id = db.ShippingItems.Where(x => x.Shippings_Id == item.Id).FirstOrDefault().Id;
-                    var shipping_item_content = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shipping_item_id).FirstOrDefault();
-                    if (shipping_item_content != null)
+                    //Guid shipping_item_id = db.ShippingItems.Where(x => x.Shippings_Id == item.Id).FirstOrDefault().Id;
+                    //var shipping_item_content = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shipping_item_id).FirstOrDefault();
+                    //if (shipping_item_content != null)
+                    //{
+                    //    if (id == db.OrderItems.Where(x => x.Id == shipping_item_content.OrderItems_Id).FirstOrDefault().Orders_Id)
+                    //    {
+                    //        ShippingsViewModels svm = new ShippingsViewModels();
+                    //        svm.Id = item.Id;
+                    //        svm.No = item.No;
+                    //        svm.Timestamp = item.Timestamp;
+                    //        svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
+                    //        svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;
+                    //        svm.Notes = item.Notes;
+                    //        listShipping.Add(svm);
+                    //    }
+                    //}
+
+                    bool isCsPlus = false;
+                    var ship_item = db.ShippingItems.Where(x => x.Shippings_Id == item.Id).ToList();
+                    foreach (var itm in ship_item)
                     {
-                        if (id == db.OrderItems.Where(x => x.Id == shipping_item_content.OrderItems_Id).FirstOrDefault().Orders_Id)
+                        if (!isCsPlus)
                         {
-                            ShippingsViewModels svm = new ShippingsViewModels();
-                            svm.Id = item.Id;
-                            svm.No = item.No;
-                            svm.Timestamp = item.Timestamp;
-                            svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
-                            svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;
-                            svm.Notes = item.Notes;
-                            listShipping.Add(svm);
+                            var ship_item_content = db.ShippingItemContents.Where(x => x.ShippingItems_Id == itm.Id).ToList();
+                            foreach (var i in ship_item_content)
+                            {
+                                if (!isCsPlus)
+                                {
+                                    if (id == db.OrderItems.Where(x => x.Id == i.OrderItems_Id).FirstOrDefault().Orders_Id)
+                                    {
+                                        ShippingsViewModels svm = new ShippingsViewModels();
+                                        svm.Id = item.Id;
+                                        svm.No = item.No;
+                                        svm.Timestamp = item.Timestamp;
+                                        svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
+                                        svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;
+                                        svm.Notes = item.Notes;
+                                        listShipping.Add(svm);
+                                        isCsPlus = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
