@@ -68,7 +68,7 @@
 
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     <a href="#" class="dropdown-item" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> Views</a>
-                                                    @*<a href="@Url.Action("Delete", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>*@
+                                                    <a href="@Url.Action("Create", "Shipping", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
                                                 </div>
                                             </div>
                                         </div>

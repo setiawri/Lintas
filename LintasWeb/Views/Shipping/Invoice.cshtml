@@ -1,7 +1,7 @@
 ﻿@model LintasMVC.Models.InvoicesModels
 
 @{
-    ViewBag.Root = "Concierge Service Plus";
+    ViewBag.Root = "Shipping Service";
     ViewBag.Title = "Invoice";
 }
 
@@ -13,7 +13,7 @@
             <div class="d-flex">
                 <div class="breadcrumb">
                     <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
-                    <a href="@Url.Action("Index", "Conciergeplus")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <a href="@Url.Action("Index", "Shipping")" class="breadcrumb-item">@ViewBag.Root</a>
                     <span class="breadcrumb-item active">@ViewBag.Title</span>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -23,10 +23,10 @@
     <!-- /page header -->
     <!-- Content area -->
     <div class="content">
-        @using (Html.BeginForm("Invoice", "Conciergeplus", FormMethod.Post, new { id = "target" }))
+        @using (Html.BeginForm("Invoice", "Shipping", FormMethod.Post, new { id = "target" }))
         {
             @Html.AntiForgeryToken()
-            <input type="hidden" id="Ref_Id" name="Ref_Id" value="@ViewBag.OrderId" />
+            <input type="hidden" id="Ref_Id" name="Ref_Id" value="@ViewBag.ShippingId" />
             <input type="hidden" id="No" name="No" value="1" />
             <input type="hidden" id="TotalAmount" name="TotalAmount" />
             <input type="hidden" id="TotalPaid" name="TotalPaid" value="0" />
@@ -72,7 +72,7 @@
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Ref_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                                     <div class="col-lg-10">
-                                        @Html.Editor("Order", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Order, @readonly = "readonly" } })
+                                        @Html.Editor("Order", new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.Shipping, @readonly = "readonly" } })
                                         @Html.ValidationMessageFor(model => model.Ref_Id, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
@@ -109,14 +109,14 @@
                                         </thead>
                                         <tbody id="data-body">
                                             @{ int row = 0; }
-                                            @if (ViewBag.ListOrderItem != null)
+                                            @if (ViewBag.ListShippingItem != null)
                                             {
-                                                foreach (var item in ViewBag.ListOrderItem)
+                                                foreach (var item in ViewBag.ListShippingItem)
                                                 {
                                                     <tr id="row_@row">
                                                         <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                        <td><input type="text" class="form-control desc" value="@item.Description" /></td>
-                                                        <td><input type="text" class="form-control text-right cost" value="@item.Amount" onkeyup="math_total_price()" /></td>
+                                                        <td><input type="text" class="form-control desc" value="@item.No" /></td>
+                                                        <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
                                                         <td><input type="text" class="form-control note" value="@item.Notes" /></td>
                                                     </tr>
                                                     @(row++)
@@ -145,13 +145,13 @@
                         </div>
                     </fieldset>
                     <div>
-                        <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
+                        <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
                         <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
                     </div>
                 </div>
             </div>
 			<!-- /form inputs -->
-        }
+                                                }
     </div>
     <!-- /content area -->
 

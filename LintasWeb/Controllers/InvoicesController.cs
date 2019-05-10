@@ -45,7 +45,7 @@ namespace LintasMVC.Controllers
         public async Task<ActionResult> Index()
         {
             var data = (from i in db.Invoices
-                        join o in db.Orders on i.Orders_Id equals o.Id
+                        join o in db.Orders on i.Ref_Id equals o.Id
                         join c in db.Customers on o.Customers_Id equals c.Id
                         select new InvoicesIndexViewModels
                         {
@@ -101,8 +101,8 @@ namespace LintasMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                OrdersModels order = db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefault();
-                int counter = db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id).Count();
+                OrdersModels order = db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefault();
+                int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
                 invoicesModels.No = order.Timestamp.ToString("yyyyMMdd") + order.No + counter;
                 db.Invoices.Add(invoicesModels);
@@ -156,7 +156,7 @@ namespace LintasMVC.Controllers
             
             var orders = (from o in db.Orders
                           join c in db.Customers on o.Customers_Id equals c.Id
-                          where o.Id == invoicesModels.Orders_Id
+                          where o.Id == invoicesModels.Ref_Id
                           orderby c.FirstName
                           select new { o, c }).ToList();
             List<object> newList = new List<object>();
@@ -219,7 +219,7 @@ namespace LintasMVC.Controllers
 
             var orders = (from o in db.Orders
                           join c in db.Customers on o.Customers_Id equals c.Id
-                          where o.Id == invoicesModels.Orders_Id
+                          where o.Id == invoicesModels.Ref_Id
                           orderby c.FirstName
                           select new { o, c }).ToList();
             List<object> newList = new List<object>();
@@ -279,7 +279,7 @@ namespace LintasMVC.Controllers
 
                 if (invoice.TotalPaid == invoice.TotalAmount)
                 {
-                    OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Orders_Id).FirstOrDefaultAsync();
+                    OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Ref_Id).FirstOrDefaultAsync();
                     ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted;
                     db.Entry(ordersModels).State = EntityState.Modified;
                 }
@@ -297,7 +297,7 @@ namespace LintasMVC.Controllers
         public async Task<ActionResult> Delete(Guid? id)
         {
             var data = (from i in db.Invoices
-                        join o in db.Orders on i.Orders_Id equals o.Id
+                        join o in db.Orders on i.Ref_Id equals o.Id
                         join c in db.Customers on o.Customers_Id equals c.Id
                         where i.Id == id
                         select new InvoicesIndexViewModels
@@ -326,8 +326,8 @@ namespace LintasMVC.Controllers
             InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
             db.Invoices.Remove(invoicesModels);
 
-            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
-            List<InvoicesModels> invoices = await db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Id != id).ToListAsync();
+            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
+            List<InvoicesModels> invoices = await db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id && x.Id != id).ToListAsync();
             if (invoices.Count == 0)
             {
                 ordersModels.Status_enumid = OrderStatusEnum.Ordered;

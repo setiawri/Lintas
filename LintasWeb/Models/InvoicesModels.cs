@@ -13,8 +13,8 @@ namespace LintasMVC.Models
         [Key]
         public Guid Id { get; set; }
 
-        [Display(Name = "Order")]
-        public Guid Orders_Id { get; set; }
+        [Display(Name = "Reff")]
+        public Guid Ref_Id { get; set; }
         public string No { get; set; }
 
         [Display(Name = "Date")]

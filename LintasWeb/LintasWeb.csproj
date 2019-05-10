@@ -219,6 +219,7 @@
     <Compile Include="Models\ShippingItemsModels.cs" />
     <Compile Include="Models\ShippingItemStatusEnum.cs" />
     <Compile Include="Models\ShippingPricesModels.cs" />
+    <Compile Include="Models\ShippingServicesModels.cs" />
     <Compile Include="Models\ShippingsModels.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
@@ -379,6 +380,10 @@
     <Content Include="Views\OrderPrices\Create.cshtml" />
     <Content Include="Views\OrderPrices\Edit.cshtml" />
     <Content Include="Views\OrderPrices\Delete.cshtml" />
+    <Content Include="Views\Shipping\Invoice.cshtml" />
+    <Content Include="Views\Shipping\DeleteInvoice.cshtml" />
+    <Content Include="Views\Shipping\Payment.cshtml" />
+    <Content Include="Views\Shipping\DeletePayment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

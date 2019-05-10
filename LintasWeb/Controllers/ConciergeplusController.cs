@@ -286,10 +286,10 @@ namespace LintasMVC.Controllers
                 ordersModels = await db.Orders.Where(x => x.Id == id).FirstOrDefaultAsync();
                 ViewBag.listItems = db.OrderItems.Where(x => x.Orders_Id == id).ToList();
 
-                listInvoice = await db.Invoices.Where(x => x.Orders_Id == id).OrderBy(x => x.No).ToListAsync();
+                listInvoice = await db.Invoices.Where(x => x.Ref_Id == id).OrderBy(x => x.No).ToListAsync();
                 listPayment = await (from pay in db.Payments
                                      join i in db.Invoices on pay.Invoices_Id equals i.Id
-                                     where i.Orders_Id == id
+                                     where i.Ref_Id == id
                                      select new PaymentsIndexViewModels
                                      {
                                          Id = pay.Id,
@@ -300,7 +300,7 @@ namespace LintasMVC.Controllers
                                          Notes = pay.Notes
                                      }).ToListAsync();
 
-                invoicesModels = await db.Invoices.Where(x => x.Orders_Id == id).FirstOrDefaultAsync();
+                invoicesModels = await db.Invoices.Where(x => x.Ref_Id == id).FirstOrDefaultAsync();
                 ViewBag.listInv = invoicesModels != null ? db.InvoiceItems.Where(x => x.Invoices_Id == invoicesModels.Id).ToList() : null;
 
                 paymentsModels = invoicesModels == null ? null : await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).FirstOrDefaultAsync();
@@ -492,8 +492,8 @@ namespace LintasMVC.Controllers
             {
                 invoicesModels = new InvoicesModels();
                 invoicesModels.Id = Guid.NewGuid();
-                invoicesModels.Orders_Id = order_id;
-                int counter = db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id).Count();
+                invoicesModels.Ref_Id = order_id;
+                int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
                 invoicesModels.Timestamp = inv_date;
                 invoicesModels.TotalAmount = total_amount;
@@ -518,7 +518,7 @@ namespace LintasMVC.Controllers
             }
             else
             {
-                invoicesModels = await db.Invoices.Where(x => x.Orders_Id == order_id).FirstOrDefaultAsync();
+                invoicesModels = await db.Invoices.Where(x => x.Ref_Id == order_id).FirstOrDefaultAsync();
 
                 List<InvoiceItemsModels> lInvoiceItem_before = db.InvoiceItems.Where(x => x.Invoices_Id == invoicesModels.Id).ToList();
                 foreach (var item in lInvoiceItem_before)
@@ -563,7 +563,7 @@ namespace LintasMVC.Controllers
             invoicesModels.TotalPaid = amount;
             db.Entry(invoicesModels).State = EntityState.Modified;
 
-            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
             ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted;
             db.Entry(ordersModels).State = EntityState.Modified;
 
@@ -605,7 +605,7 @@ namespace LintasMVC.Controllers
                 db.OrderItems.Remove(item);
             }
 
-            InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Orders_Id == ordersModels.Id).FirstOrDefaultAsync();
+            InvoicesModels invoicesModels = await db.Invoices.Where(x => x.Ref_Id == ordersModels.Id).FirstOrDefaultAsync();
             if (invoicesModels != null)
             {
                 db.Invoices.Remove(invoicesModels);
@@ -651,7 +651,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Invoice([Bind(Include = "Id,Orders_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items, bool ItemValid)
+        public async Task<ActionResult> Invoice([Bind(Include = "Id,Ref_Id,No,Timestamp,TotalAmount,TotalPaid,Notes")] InvoicesModels invoicesModels, string Items, bool ItemValid)
         {
             if (!ItemValid)
             {
@@ -660,13 +660,13 @@ namespace LintasMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
-                int counter = db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id).Count();
+                OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
+                int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
                 invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
                 db.Invoices.Add(invoicesModels);
 
-                List<OrderItemsModels> listOrderItems = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Invoiced == false).ToListAsync();
+                List<OrderItemsModels> listOrderItems = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Ref_Id && x.Invoiced == false).ToListAsync();
                 List<OrderItemDetails> lInvoiceItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(Items);
                 foreach (var item in lInvoiceItem)
                 {
@@ -692,20 +692,20 @@ namespace LintasMVC.Controllers
                 db.Entry(ordersModels).State = EntityState.Modified;
 
                 await db.SaveChangesAsync();
-                return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
+                return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Ref_Id });
             }
 
             var order = await (from o in db.Orders
                                join c in db.Customers on o.Customers_Id equals c.Id
-                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == invoicesModels.Orders_Id
+                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == invoicesModels.Ref_Id
                                select new { o, c }).FirstOrDefaultAsync();
             string fullName = order.c.FirstName;
             if (!string.IsNullOrEmpty(order.c.MiddleName)) { fullName += " " + order.c.MiddleName; }
             if (!string.IsNullOrEmpty(order.c.LastName)) { fullName += " " + order.c.LastName; }
 
-            ViewBag.OrderId = invoicesModels.Orders_Id;
+            ViewBag.OrderId = invoicesModels.Ref_Id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
-            ViewBag.ListOrderItem = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Invoiced == false).OrderBy(x => x.Description).ToListAsync();
+            ViewBag.ListOrderItem = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Ref_Id && x.Invoiced == false).OrderBy(x => x.Description).ToListAsync();
             ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
             return View(invoicesModels);
         }
@@ -713,7 +713,7 @@ namespace LintasMVC.Controllers
         public async Task<ActionResult> DeleteInvoice(Guid? id)
         {
             var data = (from i in db.Invoices
-                        join o in db.Orders on i.Orders_Id equals o.Id
+                        join o in db.Orders on i.Ref_Id equals o.Id
                         join c in db.Customers on o.Customers_Id equals c.Id
                         where i.Id == id
                         select new InvoicesIndexViewModels
@@ -742,8 +742,8 @@ namespace LintasMVC.Controllers
             InvoicesModels invoicesModels = await db.Invoices.FindAsync(id);
             db.Invoices.Remove(invoicesModels);
 
-            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
-            List<InvoicesModels> invoices = await db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id && x.Id != id).ToListAsync();
+            OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
+            List<InvoicesModels> invoices = await db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id && x.Id != id).ToListAsync();
             if (invoices.Count == 0)
             {
                 ordersModels.Status_enumid = OrderStatusEnum.Ordered;
@@ -763,12 +763,12 @@ namespace LintasMVC.Controllers
             db.Entry(ordersModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
-            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
+            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Ref_Id });
         }
 
         public async Task<ActionResult> Payment(Guid? id)
         {
-            var invoices = await db.Invoices.Where(x => x.Orders_Id == id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
+            var invoices = await db.Invoices.Where(x => x.Ref_Id == id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
             List<object> newList = new List<object>();
             foreach (var inv in invoices)
             {
@@ -813,25 +813,25 @@ namespace LintasMVC.Controllers
                 invoice.TotalPaid += paymentsModels.Amount;
                 db.Entry(invoice).State = System.Data.Entity.EntityState.Modified;
 
-                decimal sum_invoice_amount = db.Invoices.Where(x => x.Orders_Id == invoice.Orders_Id).Sum(x => x.TotalAmount);
-                decimal sum_invoice_paid = db.Invoices.Where(x => x.Orders_Id == invoice.Orders_Id).Sum(x => x.TotalPaid) + paymentsModels.Amount;
+                decimal sum_invoice_amount = db.Invoices.Where(x => x.Ref_Id == invoice.Ref_Id).Sum(x => x.TotalAmount);
+                decimal sum_invoice_paid = db.Invoices.Where(x => x.Ref_Id == invoice.Ref_Id).Sum(x => x.TotalPaid) + paymentsModels.Amount;
 
                 if (sum_invoice_amount == sum_invoice_paid)
                 {
-                    OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Orders_Id).FirstOrDefaultAsync();
+                    OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Ref_Id).FirstOrDefaultAsync();
                     ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted;
                     db.Entry(ordersModels).State = EntityState.Modified;
                 }
 
                 await db.SaveChangesAsync();
 
-                return RedirectToAction("Create", "Conciergeplus", new { id = invoice.Orders_Id });
+                return RedirectToAction("Create", "Conciergeplus", new { id = invoice.Ref_Id });
             }
 
             //ViewBag.InvoiceId = paymentsModels.Invoices_Id;
             //ViewBag.Invoice = invoice.No + " - " + invoice.Notes + " (" + string.Format("{0:N2}", invoice.TotalAmount) + ")";
             
-            var invoices = await db.Invoices.Where(x => x.Orders_Id == Order_Id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
+            var invoices = await db.Invoices.Where(x => x.Ref_Id == Order_Id && x.TotalPaid != x.TotalAmount).OrderBy(x => x.No).ToListAsync();
             List<object> newList = new List<object>();
             foreach (var inv in invoices)
             {
@@ -902,12 +902,12 @@ namespace LintasMVC.Controllers
             invoicesModels.TotalPaid -= paymentsModels.Amount;
             db.Entry(invoicesModels).State = EntityState.Modified;
 
-            OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
+            OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
             ordersModels.Status_enumid = OrderStatusEnum.WaitingPayment;
             db.Entry(ordersModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
-            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Orders_Id });
+            return RedirectToAction("Create", "Conciergeplus", new { id = invoicesModels.Ref_Id });
         }
 
         public async Task<ActionResult> OrderItemLog(Guid? id)
@@ -976,6 +976,7 @@ namespace LintasMVC.Controllers
             {
                 shippingItemsModels.Id = Guid.NewGuid();
                 shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Open;
+                shippingItemsModels.Invoiced = false;
                 db.ShippingItems.Add(shippingItemsModels);
 
                 string[] arrID = Items_Selected.Split(',');
@@ -1056,6 +1057,7 @@ namespace LintasMVC.Controllers
                     ShippingItemsModels shippingItemsModels = await db.ShippingItems.FindAsync(_id);
                     shippingItemsModels.Shippings_Id = shippingsModels.Id;
                     shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
+                    shippingItemsModels.Invoiced = true;
                     db.Entry(shippingItemsModels).State = EntityState.Modified;
                 }
 

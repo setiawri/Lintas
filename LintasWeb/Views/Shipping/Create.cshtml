@@ -1,4 +1,4 @@
-﻿@model LintasMVC.Models.ShippingsModels
+﻿@model LintasMVC.Models.ShippingServicesModels
 
 @{
     ViewBag.Root = "Shipping Service";
@@ -23,118 +23,11 @@
     <!-- /page header -->
     <!-- Content area -->
     <div class="content">
-        @*@using (Html.BeginForm("Create", "Shipping", FormMethod.Post, new { id = "target" }))
-        {
-            @Html.AntiForgeryToken()
-            <input type="hidden" id="Order_Id" name="Order_Id" value="@ViewBag.OrderId" />
-            <input type="hidden" id="Items_Selected" name="Items_Selected" />
-            <input type="hidden" id="Items_Content" name="Items_Content" />*@
-            <!-- Form inputs -->
-            @*<div class="card">
-                <div class="card-header header-elements-inline">
-                    <h5 class="card-title">@ViewBag.Root</h5>
-                    <div class="header-elements">
-                        <div class="list-icons">
-                            <a class="list-icons-item" data-action="collapse"></a>
-                            <a class="list-icons-item" data-action="reload"></a>
-                            <a class="list-icons-item" data-action="remove"></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <fieldset class="mb-3">
-                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.DropDownListFor(model => model.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Customers_Id, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    <label class="col-form-label col-lg-3">Stations</label>
-                                    <div class="col-lg-9">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                @Html.DropDownListFor(model => model.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2" })
-                                                @Html.ValidationMessageFor(model => model.Origin_Stations_Id, "", new { @class = "text-danger" })
-                                            </div>
-                                            <div class="col-lg-6">
-                                                @Html.DropDownListFor(model => model.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2" })
-                                                @Html.ValidationMessageFor(model => model.Destination_Stations_Id, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
-                        @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover datatable">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>No</th>
-                                        <th>Length (cm)</th>
-                                        <th>Width (cm)</th>
-                                        <th>Height (cm)</th>
-                                        <th>Weight (gr)</th>
-                                        <th>Notes</th>
-                                        <th class="never">Id</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="data-body">
-                                </tbody>
-                            </table>
-                        </div>
-                    </fieldset>
-                    <div>
-                        <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
-                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
-                    </div>
-                </div>
-            </div>*@
-			<!-- /form inputs -->
 
             <!-- Step Form -->
             <div class="card">
                 <div class="card-header bg-white header-elements-inline">
+                    @Html.HiddenFor(model => model.Shipping.Id)
                     <h6 class="card-title">No Shipping: <label class="no-shipping"></label></h6>
                     <div class="header-elements">
                         <div class="list-icons">
@@ -155,19 +48,19 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    @Html.LabelFor(model => model.Shipping.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.DropDownListFor(model => model.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Customers_Id, "", new { @class = "text-danger" })
+                                        @Html.DropDownListFor(model => model.Shipping.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Customers_Id, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
+                                        @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.No, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -179,12 +72,12 @@
                                     <div class="col-lg-9">
                                         <div class="row">
                                             <div class="col-lg-6">
-                                                @Html.DropDownListFor(model => model.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2" })
-                                                @Html.ValidationMessageFor(model => model.Origin_Stations_Id, "", new { @class = "text-danger" })
+                                                @Html.DropDownListFor(model => model.Shipping.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2" })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Origin_Stations_Id, "", new { @class = "text-danger" })
                                             </div>
                                             <div class="col-lg-6">
-                                                @Html.DropDownListFor(model => model.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2" })
-                                                @Html.ValidationMessageFor(model => model.Destination_Stations_Id, "", new { @class = "text-danger" })
+                                                @Html.DropDownListFor(model => model.Shipping.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2" })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Destination_Stations_Id, "", new { @class = "text-danger" })
                                             </div>
                                         </div>
                                     </div>
@@ -192,10 +85,10 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    @Html.LabelFor(model => model.Shipping.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                                        @Html.EditorFor(model => model.Shipping.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Notes, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -203,15 +96,20 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    @Html.LabelFor(model => model.Shipping.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @rows = 3 })
-                                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                                        @Html.TextAreaFor(model => model.Shipping.Address, new { @class = "form-control", @rows = 3 })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Address, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                        
+                        @if (ViewBag.listItems == null)
+                        {
+                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                        }
+                        
                         @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
                         <div class="table-responsive">
                             <table class="table table-striped table-hover datatable">
@@ -227,7 +125,24 @@
                                         <th class="never">Id</th>
                                     </tr>
                                 </thead>
-                                <tbody id="data-body"></tbody>
+                                <tbody id="data-body">
+                                    @if (ViewBag.listItems != null)
+                                    {
+                                        foreach (var item in ViewBag.listItems)
+                                        {
+                                            <tr>
+                                                <td></td>
+                                                <td>@item.No</td>
+                                                <td>@item.Length</td>
+                                                <td>@item.Width</td>
+                                                <td>@item.Height</td>
+                                                <td>@item.Weight</td>
+                                                <td>@item.Notes</td>
+                                                <td>@item.Id</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
                             </table>
                         </div>
 
@@ -242,6 +157,42 @@
                     <h6>Invoice</h6>
                     <fieldset>
                         <label class="invoice-validation text-danger" style="display: none"></label>
+                        <div class="row div-insert-inv">
+                            <a href="@Url.Action("Invoice", "Shipping", new { id = Model.Shipping.Id })" class="btn btn-sm btn-success btn-insert-inv">Add New Invoice</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>No</th>
+                                        <th>Total Amount</th>
+                                        <th>Total Paid</th>
+                                        <th>Notes</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListInvoice != null)
+                                    {
+                                        foreach (var item in Model.ListInvoice)
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                                <td class="text-center" style="color: black">
+                                                    <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
+                                                    @Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                         <br />
                         <div style="float: right; margin-bottom: 20px">
                             <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning btn-sm">Back to List</a>
@@ -254,6 +205,42 @@
                     <h6>Payment</h6>
                     <fieldset>
                         <label class="payment-validation text-danger" style="display: none"></label>
+                        <div>
+                            <a href="@Url.Action("Payment", "Shipping", new { id = Model.Shipping.Id })" class="btn btn-sm btn-success">Add New Payment</a>
+                            <span style="float: right; margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                            <span style="float: right; margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                            <span style="float: right; margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Invoice No.</th>
+                                        <th>Amount</th>
+                                        <th>Info</th>
+                                        <th>Notes</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ListPayment)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.InvoiceNo)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Info)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                            <td class="text-center">
+                                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
+                                                @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                         <br />
                         <div style="float: right; margin-bottom: 20px">
                             <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning btn-sm">Back to List</a>
@@ -333,6 +320,27 @@
         //math_total_price();
     }
 
+    //Form Invoice
+    function ViewInvoices(id, no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetInvoiceItems", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: no,
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
     $(document).ready(function () {
 
         var form = $('.steps-validation').show();
@@ -368,25 +376,29 @@
                 }
 
                 if (currentIndex === 0) {
-                    
-                    if ($('#Customers_Id').val() == '') {
+
+                    if ($('#Shipping_Customers_Id').val() == '') {
                         $('.shipping-validation').html('The Customer field is required.').show();
                         return false;
                     }
-                    else if ($('#Origin_Stations_Id').val() == '') {
+                    else if ($('#Shipping_Origin_Stations_Id').val() == '') {
                         $('.shipping-validation').html('The Origin Station field is required.').show();
                         return false;
                     }
-                    else if ($('#Destination_Stations_Id').val() == '') {
+                    else if ($('#Shipping_Destination_Stations_Id').val() == '') {
                         $('.shipping-validation').html('The Destination Station field is required.').show();
                         return false;
                     }
-                    else if ($('#Address').val() == '') {
+                    else if ($('#Shipping_Address').val() == '') {
                         $('.shipping-validation').html('The Destination Address field is required.').show();
                         return false;
                     }
-                    else if ($('#No').val() == '') {
+                    else if ($('#Shipping_No').val() == '') {
                         $('.shipping-validation').html('The No field is required.').show();
+                        return false;
+                    }
+                    else if (datatable.page.info().recordsTotal == 0) {
+                        $('.shipping-validation').html('The Shipping Item is required.').show();
                         return false;
                     }
                     else {
@@ -415,17 +427,25 @@
                             type: "POST",
                             url: '@Url.Action("SaveShipping", "Shipping")',
                             data: {
-                                customer_id: $('#Customers_Id').val(),
-                                no: $('#No').val(),
-                                origin_id: $('#Origin_Stations_Id').val(),
-                                destination_id: $('#Destination_Stations_Id').val(),
-                                address: $('#Address').val(),
-                                notes: $('#Notes').val(),
+                                shipping_id: $('#Shipping_Id').val(),
+                                customer_id: $('#Shipping_Customers_Id').val(),
+                                no: $('#Shipping_No').val(),
+                                origin_id: $('#Shipping_Origin_Stations_Id').val(),
+                                destination_id: $('#Shipping_Destination_Stations_Id').val(),
+                                address: $('#Shipping_Address').val(),
+                                notes: $('#Shipping_Notes').val(),
                                 shipping_items: $('#Items_Content').val()
                             },
                             success: function (data) {
                                 console.log(data);
+                                $('#Shipping_Id').val(data.id);
                                 $('.no-shipping').html(data.no_shipping);
+
+                                if (data.status == 'new') {
+                                    var x = $('<a href="' + '@Url.Content("~")' + 'Shipping/Invoice/' + data.id + '" class="btn btn-sm btn-success">Add New Invoice</a>');
+                                    $('.btn-insert-inv').hide();
+                                    $('.div-insert-inv').append(x);
+                                }
                             }, //end success
                             error: function (result) {
                                 bootbox.alert("Error " + result);
@@ -489,7 +509,7 @@
             selectYears: true
         });
 
-        $('#Customers_Id').change(function () {
+        $('#Shipping_Customers_Id').change(function () {
             if ($(this).val() != '') {
                 $.get('@Url.Action("GetItems", "Shipping")', { customerId: $(this).val() }, function (data) {
                     console.log(data);

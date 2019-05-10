@@ -13,7 +13,7 @@ namespace LintasMVC.Models
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime Timestamp { get; set; }
 
-        [Display(Name = "Order No.")]
+        [Display(Name = "Reff No.")]
         public string No { get; set; }
         public string Customer { get; set; }
 

@@ -258,8 +258,8 @@ namespace LintasMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Orders_Id).FirstOrDefaultAsync();
-                int counter = db.Invoices.AsNoTracking().Where(x => x.Orders_Id == invoicesModels.Orders_Id).Count();
+                OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
+                int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
                 invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
                 db.Invoices.Add(invoicesModels);
@@ -285,13 +285,13 @@ namespace LintasMVC.Controllers
 
             var order = await (from o in db.Orders
                                join c in db.Customers on o.Customers_Id equals c.Id
-                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == invoicesModels.Orders_Id
+                               where o.Status_enumid != OrderStatusEnum.Completed && o.Id == invoicesModels.Ref_Id
                                select new { o, c }).FirstOrDefaultAsync();
             string fullName = order.c.FirstName;
             if (!string.IsNullOrEmpty(order.c.MiddleName)) { fullName += " " + order.c.MiddleName; }
             if (!string.IsNullOrEmpty(order.c.LastName)) { fullName += " " + order.c.LastName; }
 
-            ViewBag.OrderId = invoicesModels.Orders_Id;
+            ViewBag.OrderId = invoicesModels.Ref_Id;
             ViewBag.Order = fullName + " (" + order.o.Timestamp.ToString("yyyyMMdd") + order.o.No + ")";
             return View(invoicesModels);
         }
