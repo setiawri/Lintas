@@ -48,7 +48,7 @@ namespace LintasMVC.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> Create(Guid? id)
+        public async Task<ActionResult> Create(Guid? id, Guid? order)
         {
             var customers = await db.Customers.OrderBy(x => x.FirstName).ToListAsync();
             List<object> newList = new List<object>();
@@ -81,6 +81,29 @@ namespace LintasMVC.Controllers
                 listInvoice = new List<InvoicesModels>();
                 listPayment = new List<PaymentsIndexViewModels>();
                 ViewBag.startIndex = 0;
+
+                if (order != null)
+                {
+                    OrdersModels ordersModels = db.Orders.Where(x => x.Id == order).FirstOrDefault();
+                    //shipping.Customers_Id = ordersModels.Customers_Id;
+                    shipping.Origin_Stations_Id = ordersModels.Origin_Stations_Id;
+                    shipping.Destination_Stations_Id = ordersModels.Destination_Stations_Id;
+                    shipping.Address = ordersModels.Address;
+
+                    List<ShippingItemsModels> list_si = new List<ShippingItemsModels>();
+                    var shippingItem = db.ShippingItems.Where(x => x.Status_enumid == ShippingItemStatusEnum.Open).ToList();
+                    foreach (var item in shippingItem)
+                    {
+                        Guid order_item_id = db.ShippingItemContents.Where(x => x.ShippingItems_Id == item.Id).FirstOrDefault().OrderItems_Id;
+                        Guid order_id = db.OrderItems.Where(x => x.Id == order_item_id).FirstOrDefault().Orders_Id;
+                        if (ordersModels.Customers_Id == db.Orders.Where(x => x.Id == order_id).FirstOrDefault().Customers_Id)
+                        {
+                            list_si.Add(item);
+                        }
+                    }
+                    //ViewBag.listItems = list_si;
+                    ViewBag.custID = ordersModels.Customers_Id;
+                }
             }
             else
             {
@@ -257,7 +280,7 @@ namespace LintasMVC.Controllers
             ViewBag.ShippingId = id;
             ViewBag.Shipping = fullName + " (" + shipping.s.No + ")";
             ViewBag.ListShippingItem = await db.ShippingItems.Where(x => x.Shippings_Id == id && x.Invoiced == false).OrderBy(x => x.No).ToListAsync();
-            ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
+            ViewBag.ListPrice = new SelectList(db.ShippingPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
 
             InvoicesModels invoicesModels = new InvoicesModels();
             return View(invoicesModels);
@@ -317,7 +340,7 @@ namespace LintasMVC.Controllers
             ViewBag.ShippingId = invoicesModels.Ref_Id;
             ViewBag.Shipping = fullName + " (" + shipping.s.No + ")";
             ViewBag.ListShippingItem = await db.ShippingItems.Where(x => x.Shippings_Id == invoicesModels.Ref_Id && x.Invoiced == false).OrderBy(x => x.No).ToListAsync();
-            ViewBag.ListPrice = new SelectList(db.OrderPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
+            ViewBag.ListPrice = new SelectList(db.ShippingPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
             return View(invoicesModels);
         }
 

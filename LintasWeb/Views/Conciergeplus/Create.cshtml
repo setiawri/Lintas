@@ -335,7 +335,15 @@
                                         <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
                                         <td class="text-center">
-                                            <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">Views Package</a>
+                                            @if (item.Status_enumid == LintasMVC.Models.ShippingItemStatusEnum.Closed)
+                                            {
+                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">Views Package</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">Views Package</a> @:|
+                                                @Html.ActionLink("Add Ship", "Create", "Shipping", new { id = Guid.Empty, order = Model.Order.Id }, null)
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -379,7 +387,8 @@
                                         <td>@Html.DisplayFor(modelItem => item.Destination)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                         <td class="text-center">
-                                            <a href="#" onclick="ViewShippingItem('@item.Id', '@item.No')">Views Shipping Items</a>
+                                            <a href="#" onclick="ViewShippingItem('@item.Id', '@item.No')">Views Shipping Items</a> | 
+                                            @Html.ActionLink("Shipping", "Create", "Shipping", new { id = item.Id }, null)
                                         </td>
                                     </tr>
                                 }

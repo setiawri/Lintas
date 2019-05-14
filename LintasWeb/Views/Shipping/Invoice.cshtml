@@ -86,7 +86,7 @@
                                         <button type="button" class="btn btn-success btn-block" onclick="AddItem()"><i class="icon-plus2"></i> Add New Item</button>
                                     </div>
                                     <div class="col-sm-6">
-                                        @Html.DropDownList("ddlPrices", ViewBag.ListPrice as SelectList, "Select Order Price", new { @class = "form-control desc select2" })
+                                        @Html.DropDownList("ddlPrices", ViewBag.ListPrice as SelectList, "Select Shipping Price", new { @class = "form-control desc select2" })
                                     </div>
                                     <div class="col-sm-2">
                                         <button type="button" class="btn btn-secondary btn-block" onclick="AddTemplate()">Add</button>
@@ -158,7 +158,7 @@
 </div>
 <script type="text/javascript">
     var item_no = 100;
-    var key = 'order';
+    var key = 'shipping';
     function AddItem() {
         item_no += 1;
 
@@ -181,7 +181,7 @@
 
     function AddTemplate() {
         if ($('#ddlPrices').val() == '') {
-            bootbox.alert("Please select order price!");
+            bootbox.alert("Please select shipping price!");
         }
         else {
             $.ajax({

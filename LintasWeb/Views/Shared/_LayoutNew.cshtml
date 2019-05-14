@@ -199,6 +199,7 @@
                             || ViewContext.RouteData.Values["Controller"].ToString() == "Stations"
                             || ViewContext.RouteData.Values["Controller"].ToString() == "Customers"
                             || ViewContext.RouteData.Values["Controller"].ToString() == "OrderPrices"
+                            || ViewContext.RouteData.Values["Controller"].ToString() == "ShippingPrices"
                             ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
                             <a href="#" class="nav-link"><i class="icon-server"></i> <span>Data Master</span></a>
                             <ul class="nav nav-group-sub" data-submenu-title="Data Master">
@@ -206,6 +207,7 @@
                                 <li class="nav-item"><a href="@Url.Action("Index", "Countries")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Countries" ? "nav-link active" : "nav-link")">Countries</a></li>
                                 <li class="nav-item"><a href="@Url.Action("Index", "Stations")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Stations" ? "nav-link active" : "nav-link")">Stations</a></li>
                                 <li class="nav-item"><a href="@Url.Action("Index", "OrderPrices")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "OrderPrices" ? "nav-link active" : "nav-link")">Order Prices</a></li>
+                                <li class="nav-item"><a href="@Url.Action("Index", "ShippingPrices")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "ShippingPrices" ? "nav-link active" : "nav-link")">Shipping Prices</a></li>
                             </ul>
                         </li>
                         <!-- /setting -->

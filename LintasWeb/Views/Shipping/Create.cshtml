@@ -28,7 +28,7 @@
             <div class="card">
                 <div class="card-header bg-white header-elements-inline">
                     @Html.HiddenFor(model => model.Shipping.Id)
-                    <h6 class="card-title">No Shipping: <label class="no-shipping"></label></h6>
+                    <h6 class="card-title">No Shipping: <label class="no-shipping">@(Model.Shipping.No == null ? "" : Model.Shipping.No)</label></h6>
                     <div class="header-elements">
                         <div class="list-icons">
                             <a class="list-icons-item" data-action="collapse"></a>
@@ -105,7 +105,7 @@
                             </div>
                         </div>
                         
-                        @if (ViewBag.listItems == null)
+                        @if (ViewBag.startIndex == 0)
                         {
                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
                         }
@@ -126,12 +126,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="data-body">
+                                    @{ int row = 0; }
                                     @if (ViewBag.listItems != null)
                                     {
                                         foreach (var item in ViewBag.listItems)
                                         {
                                             <tr>
-                                                <td></td>
+                                                <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
                                                 <td>@item.No</td>
                                                 <td>@item.Length</td>
                                                 <td>@item.Width</td>
@@ -140,6 +141,7 @@
                                                 <td>@item.Notes</td>
                                                 <td>@item.Id</td>
                                             </tr>
+                                            @(row++)
                                         }
                                     }
                                 </tbody>
@@ -212,7 +214,7 @@
                             <span style="float: right; margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-hover datatable">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -315,6 +317,7 @@
     var dataTable;
 
     function RemoveItem(no) {
+        //alert(no);
         dataTable.row(no).remove().draw();
         //$('#row_' + no).remove();
         //math_total_price();
@@ -536,6 +539,8 @@
             }
         });
 
+        $('#Shipping_Customers_Id').val('@ViewBag.custID').trigger('change');
+
         $('.mdl-btn-add').click(function () {
             var no = $('.mdl-no').val();
             var length = $('.mdl-length').val();
@@ -561,7 +566,7 @@
             }
             else {
                 $('.model-validation').html('').hide();
-                var row_count = datatable.page.info().recordsTotal;
+                var row_count = datatable.page.info().recordsTotal; //alert(row_count);
 
                 dataTable.row.add([
                     '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + row_count + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',

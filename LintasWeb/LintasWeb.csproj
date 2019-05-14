@@ -183,6 +183,7 @@
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\ShippingController.cs" />
+    <Compile Include="Controllers\ShippingPricesController.cs" />
     <Compile Include="Controllers\StationsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
@@ -384,6 +385,10 @@
     <Content Include="Views\Shipping\DeleteInvoice.cshtml" />
     <Content Include="Views\Shipping\Payment.cshtml" />
     <Content Include="Views\Shipping\DeletePayment.cshtml" />
+    <Content Include="Views\ShippingPrices\Index.cshtml" />
+    <Content Include="Views\ShippingPrices\Create.cshtml" />
+    <Content Include="Views\ShippingPrices\Edit.cshtml" />
+    <Content Include="Views\ShippingPrices\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
