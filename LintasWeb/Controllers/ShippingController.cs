@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -74,12 +75,14 @@ namespace LintasMVC.Controllers
             ShippingsModels shipping;
             List<InvoicesModels> listInvoice;
             List<PaymentsIndexViewModels> listPayment;
+            List<ShippingDocumentsViewModels> listDocument;
             ShippingServicesModels ShippingServices = new ShippingServicesModels();
             if (id == null || id == Guid.Empty)
             {
                 shipping = new ShippingsModels();
                 listInvoice = new List<InvoicesModels>();
                 listPayment = new List<PaymentsIndexViewModels>();
+                listDocument = new List<ShippingDocumentsViewModels>();
                 ViewBag.startIndex = 0;
 
                 if (order != null)
@@ -108,7 +111,8 @@ namespace LintasMVC.Controllers
             else
             {
                 shipping = await db.Shippings.Where(x => x.Id == id).FirstOrDefaultAsync();
-                ViewBag.listItems = db.ShippingItems.Where(x => x.Shippings_Id == id).ToList();
+                var shipping_items = db.ShippingItems.Where(x => x.Shippings_Id == id).OrderBy(x => x.No).ToList();
+                ViewBag.listItems = shipping_items;
                 listInvoice = await db.Invoices.Where(x => x.Ref_Id == id).OrderBy(x => x.No).ToListAsync();
                 listPayment = await (from pay in db.Payments
                                      join i in db.Invoices on pay.Invoices_Id equals i.Id
@@ -123,20 +127,38 @@ namespace LintasMVC.Controllers
                                          Notes = pay.Notes
                                      }).ToListAsync();
 
-                int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
-                if (count_inv > 0)
+                listDocument = new List<ShippingDocumentsViewModels>();
+                foreach(var item in shipping_items)
                 {
-                    ViewBag.startIndex = 2;
+                    ShippingDocumentsViewModels sdvm = new ShippingDocumentsViewModels();
+                    sdvm.Id = item.Id;
+                    sdvm.No = item.No;
+                    sdvm.ListFileUploads = db.FileUploads.Where(x => x.Ref_Id == item.Id).ToList();
+                    listDocument.Add(sdvm);
+                }
+
+                int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
+                if (count_inv == 0)
+                {
+                    ViewBag.startIndex = 1;
                 }
                 else
                 {
-                    ViewBag.startIndex = 1;
+                    if (listInvoice.Sum(x => x.TotalAmount) != listInvoice.Sum(x => x.TotalPaid))
+                    {
+                        ViewBag.startIndex = 2;
+                    }
+                    else
+                    {
+                        ViewBag.startIndex = 3;
+                    }
                 }
             }
 
             ShippingServices.Shipping = shipping;
             ShippingServices.ListInvoice = listInvoice;
             ShippingServices.ListPayment = listPayment;
+            ShippingServices.ListDocument = listDocument;
             return View(ShippingServices);
         }
 
@@ -474,6 +496,56 @@ namespace LintasMVC.Controllers
             
             await db.SaveChangesAsync();
             return RedirectToAction("Create", "Shipping", new { id = invoicesModels.Ref_Id });
+        }
+
+        public async Task<ActionResult> UploadDocument(Guid? id)
+        {
+            ShippingItemsModels shippingItemsModels = await db.ShippingItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            FileUploadsModels fileUploadsModels = new FileUploadsModels();
+            fileUploadsModels.Ref_Id = shippingItemsModels.Id;
+            ViewBag.Package = shippingItemsModels.No + " (Dimension: " + shippingItemsModels.Length + "cm x " + shippingItemsModels.Width + "cm x " + shippingItemsModels.Height + "cm)";
+
+            return View(fileUploadsModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UploadDocument([Bind(Include = "Id,Ref_Id,OriginalFilename,Description,Notes")] FileUploadsModels fileUploadsModels, List<HttpPostedFileBase> files)
+        {
+            ShippingItemsModels shippingItemsModels = await db.ShippingItems.Where(x => x.Id == fileUploadsModels.Ref_Id).FirstOrDefaultAsync();
+
+            if (files[0] == null)
+            {
+                ModelState.AddModelError("Document", "Document(s) file is required.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                string Dir = Server.MapPath("~/assets/document/");
+                if (!Directory.Exists(Dir))
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(Dir);
+                }
+
+                foreach (HttpPostedFileBase file in files)
+                {
+                    FileUploadsModels fu = new FileUploadsModels();
+                    fu.Id = Guid.NewGuid();
+                    fu.Ref_Id = fileUploadsModels.Ref_Id;
+                    fu.OriginalFilename = file.FileName;
+                    fu.Description = fileUploadsModels.Description;
+                    fu.Notes = fileUploadsModels.Notes;
+                    db.FileUploads.Add(fu);
+
+                    file.SaveAs(Path.Combine(Dir, fu.Id.ToString() + Path.GetExtension(file.FileName)));
+                }
+                await db.SaveChangesAsync();
+
+                return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });
+            }
+            
+            ViewBag.Package = shippingItemsModels.No + " (Dimension: " + shippingItemsModels.Length + "cm x " + shippingItemsModels.Width + "cm x " + shippingItemsModels.Height + "cm)";
+            return View(fileUploadsModels);
         }
     }
 }

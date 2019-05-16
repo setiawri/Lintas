@@ -251,6 +251,52 @@
                         </div>
                     </fieldset>
                     <!-- /Payment -->
+                    <!-- Documents -->
+                    <h6>Documents</h6>
+                    <fieldset>
+                        <label class="doc-validation text-danger" style="display: none"></label>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No Package</th>
+                                        <th>Document Uploaded</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListDocument != null)
+                                    {
+                                        foreach (var item in Model.ListDocument)
+                                        {
+                                            <tr>
+                                                <td style="vertical-align: top !important">@item.No</td>
+                                                <td style="vertical-align: top !important">
+                                                    @if (item.ListFileUploads != null)
+                                                    {
+                                                        foreach (var subitem in item.ListFileUploads)
+                                                        {
+                                                            @subitem.OriginalFilename <br />
+                                                        }
+                                                    }
+                                                </td>
+                                                <td class="text-center" style="vertical-align: top !important">
+                                                    @Html.ActionLink("Upload", "UploadDocument", new { id = item.Id })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <div style="float: right; margin-bottom: 20px">
+                            <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning btn-sm">Back to List</a>
+                            <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                            <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                        </div>
+                    </fieldset>
+                    <!-- /Invoice -->
                 </form>
             </div>
             <!-- /Step Form -->
@@ -461,10 +507,25 @@
                     }
                 }
                 else if (currentIndex === 1) {
-                    return true;
+                    if (@Model.ListInvoice.Count === 0) {
+                        $('.invoice-validation').html('The Invoice is required.').show();
+                        return false;
+                    }
+                    else {
+                        $('.invoice-validation').html('').hide();
+                        return true;
+                    }
                 }
                 else if (currentIndex === 2) {
-                    return true;
+                    var total_remaining = @Model.ListInvoice.Sum(x => x.TotalAmount) - @Model.ListInvoice.Sum(x => x.TotalPaid);
+                    if (total_remaining > 0) {
+                        $('.payment-validation').html('The Payment still not completed.').show();
+                        return false;
+                    }
+                    else {
+                        $('.payment-validation').html('').hide();
+                        return true;
+                    }
                 }
                 else if (currentIndex === 3) {
                     return true;
@@ -539,7 +600,9 @@
             }
         });
 
-        $('#Shipping_Customers_Id').val('@ViewBag.custID').trigger('change');
+        if ('@ViewBag.custID' != '') {
+            $('#Shipping_Customers_Id').val('@ViewBag.custID').trigger('change');
+        }
 
         $('.mdl-btn-add').click(function () {
             var no = $('.mdl-no').val();

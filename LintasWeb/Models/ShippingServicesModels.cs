@@ -10,5 +10,6 @@ namespace LintasMVC.Models
         public ShippingsModels Shipping { get; set; }
         public List<InvoicesModels> ListInvoice { get; set; }
         public List<PaymentsIndexViewModels> ListPayment { get; set; }
+        public List<ShippingDocumentsViewModels> ListDocument { get; set; }
     }
 }

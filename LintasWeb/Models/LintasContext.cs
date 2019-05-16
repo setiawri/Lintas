@@ -25,5 +25,6 @@ namespace LintasMVC.Models
         public DbSet<ShippingsModels> Shippings { get; set; }
         public DbSet<OrderPricesModels> OrderPrices { get; set; }
         public DbSet<ShippingPricesModels> ShippingPrices { get; set; }
+        public DbSet<FileUploadsModels> FileUploads { get; set; }
     }
 }
