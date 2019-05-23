@@ -1,0 +1,383 @@
+﻿@model LintasMVC.Models.ShipmentsViewModels
+
+@{
+    ViewBag.Root = "Shipments";
+    ViewBag.Title = "Create";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Shipments")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+
+        <!-- Step Form -->
+        <div class="card">
+            <div class="card-header bg-white header-elements-inline">
+                @Html.HiddenFor(model => model.Shipments.Id)
+                <h6 class="card-title">Forwarders Name: <label class="forwarders-name">@(Model.Forwarders.Id == null ? "" : Model.Forwarders.Name)</label></h6>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                        <a class="list-icons-item" data-action="reload"></a>
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+
+            <form class="shipments-form steps-validation" action="#" data-fouc>
+                <!-- Shipments -->
+                <h6>Shipments</h6>
+                <fieldset>
+                    <input type="hidden" id="Shipments_Timestamp" name="Shipments_Timestamp" />
+                    <input type="hidden" id="Items_Content" name="Items_Content" />
+                    <input type="hidden" id="Items_Selected" name="Items_Selected" />
+                    <label class="shipments-validation text-danger" style="display: none"></label>
+
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Forwarders.Name, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Forwarders.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Forwarders.Name, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Phone Number</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Forwarders.Phone1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone 1" } })
+                                            @Html.ValidationMessageFor(model => model.Forwarders.Phone1, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Forwarders.Phone2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone 2" } })
+                                            @Html.ValidationMessageFor(model => model.Forwarders.Phone2, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Forwarders.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.TextAreaFor(model => model.Forwarders.Address, new { @class = "form-control", @rows = 3 })
+                                    @Html.ValidationMessageFor(model => model.Forwarders.Address, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Forwarders.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.TextAreaFor(model => model.Forwarders.Notes, new { @class = "form-control", @rows = 3, @placeholder = "Forwarders Notes" })
+                                    @Html.ValidationMessageFor(model => model.Forwarders.Notes, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipments.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.TextAreaFor(model => model.Shipments.Notes, new { @class = "form-control", @rows = 3, @placeholder = "Shipments Notes" })
+                                    @Html.ValidationMessageFor(model => model.Shipments.Notes, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*@if (ViewBag.startIndex == 0)
+                    {
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                    }*@
+
+                    @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>No</th>
+                                    <th>Length (cm)</th>
+                                    <th>Width (cm)</th>
+                                    <th>Height (cm)</th>
+                                    <th>Weight (gr)</th>
+                                    <th>Notes</th>
+                                    <th class="never">Row</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-body">
+                                @{ int row = 0; }
+                                @if (Model.ListItems != null)
+                                {
+                                    foreach (var item in Model.ListItems)
+                                    {
+                                        <tr>
+                                            <td>@item.Id</td>
+                                            <td>@item.No</td>
+                                            <td>@item.Length</td>
+                                            <td>@item.Width</td>
+                                            <td>@item.Height</td>
+                                            <td>@item.Weight</td>
+                                            <td>@item.Notes</td>
+                                            <td>@(row++)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Index", "Shipments")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step" disabled><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Shipments -->
+                <!-- xx -->
+                <h6>Temp</h6>
+                <fieldset>
+                    <label class="temp-validation text-danger" style="display: none"></label>
+
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Index", "Shipments")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /xx -->
+            </form>
+        </div>
+        <!-- /step Form -->
+
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var form = $('.steps-validation').show();
+
+        // Basic wizard setup
+        form.steps({
+            headerTag: 'h6',
+            bodyTag: 'fieldset',
+            transitionEffect: 'fade',
+            enableAllSteps: false,
+            enablePagination: false,
+            titleTemplate: '<span class="number">#index#</span> #title#',
+            autoFocus: true,
+            startIndex: @ViewBag.startIndex,
+            labels: {
+                previous: '<i class="icon-arrow-left13 mr-2" /> Previous',
+                next: 'Next <i class="icon-arrow-right14 ml-2" />',
+                finish: 'Submit form <i class="icon-arrow-right14 ml-2" />'
+            },
+            onStepChanging: function (event, currentIndex, newIndex) {
+
+                // Allways allow previous action even if the current form is not valid!
+                if (currentIndex > newIndex) {
+                    return true;
+                }
+
+                // Needed in some cases if the user went back (clean up)
+                if (currentIndex < newIndex) {
+
+                    // To remove error styles
+                    form.find('.body:eq(' + newIndex + ') label.error').remove();
+                    form.find('.body:eq(' + newIndex + ') .error').removeClass('error');
+                }
+
+                if (currentIndex === 0) {
+
+                    var ids_selected = datatable.column(0).checkboxes.selected();
+                    if ($('#Forwarders_Name').val() == '') {
+                        $('.shipments-validation').html('The Forwarders Name field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Forwarders_Phone1').val() == '') {
+                        $('.shipments-validation').html('The Forwarders Phone 1 field is required.').show();
+                        return false;
+                    }
+                    else if ('@ViewBag.startIndex' == 0 && ids_selected.length == 0) {
+                        $('.shipments-validation').html('The Items checked is required.').show();
+                        return false;
+                    }
+                    else {
+                        $('.shipments-validation').html('').hide();
+
+                        var arrItem = [];
+                        $('#data-body tr').each(function () {
+                            var current_row = $(this).closest('tr');
+                            var data = datatable.row(current_row).data();
+                            //console.log(data);
+
+                            var id = data[0];
+                            var no = data[1];
+                            var length = parseFloat(data[2]);
+                            var width = parseFloat(data[3]);
+                            var height = parseFloat(data[4]);
+                            var weight = parseFloat(data[5]);
+                            var notes = data[6];
+                            var obj = { id: id, no: no, length: length, width: width, height: height, weight: weight, notes: notes };
+                            arrItem.push(obj);
+                        });
+
+                        $('#Items_Content').val(JSON.stringify(arrItem));
+                        $('#Items_Selected').val(ids_selected.join(","));
+                        $('#Shipments_Timestamp').val('@DateTime.Now');
+
+                        var isSuccess = true;
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("SaveShipments", "Shipments")',
+                            data: {
+                                shipments_id: $('#Shipments_Id').val(),
+                                shipments_timestamp: $('#Shipments_Timestamp').val(),
+                                shipments_notes: $('#Shipments_Notes').val(),
+                                forwarders_name: $('#Forwarders_Name').val(),
+                                forwarders_address: $('#Forwarders_Address').val(),
+                                forwarders_phone1: $('#Forwarders_Phone1').val(),
+                                forwarders_phone2: $('#Forwarders_Phone2').val(),
+                                forwarders_notes: $('#Forwarders_Notes').val(),
+                                id_items: $('#Items_Selected').val()
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                $('#Shipments_Id').val(data.id);
+                                $('.forwarders-name').html(data.name);
+                            }, //end success
+                            error: function (result) {
+                                bootbox.alert("Error " + result);
+                                isSuccess = false;
+                            } //end error
+                        }); //end ajax
+
+                        if (isSuccess) { return true; }
+                        else{ return false; }
+                    }
+                }
+                else if (currentIndex === 1) {
+                    return true;
+                }
+                else if (currentIndex === 2) {
+                    return true;
+                }
+                else if (currentIndex === 3) {
+                    return true;
+                }
+                else if (currentIndex === 4) {
+                    return true;
+                }
+
+                //form.validate().settings.ignore = ':disabled,:hidden';
+                //return form.valid();
+            },
+            onStepChanged: function (event, currentIndex, priorIndex) {
+
+            },
+            onFinishing: function (event, currentIndex) {
+                //form.validate().settings.ignore = ':disabled';
+                //return form.valid();
+
+                if (currentIndex === 5) {
+                    return true;
+                }
+            },
+            onFinished: function (event, currentIndex) {
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+
+        $('.previous-step').click(function () {
+            form.steps('previous');
+        });
+
+        $('.next-step').click(function () {
+            form.steps('next');
+        });
+
+        $('.submit-step').click(function () {
+            form.steps('finish');
+        });
+
+        $('.select2').select2();
+
+        $('.tanggal').pickadate({
+            format: 'yyyy/mm/dd',
+            selectMonths: true,
+            selectYears: true
+        });
+
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [0]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        var datatable = $('.datatable').DataTable({
+            columnDefs: [
+                {
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>';
+                        }
+
+                        return data;
+                    },
+                    checkboxes: {
+                        selectRow: true,
+                        selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    },
+                    orderable: false,
+                    //className: 'select-checkbox',
+                    targets: 0
+                },
+                {
+                    visible: false, targets: [7]
+                }
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child'
+            },
+            pagingType: 'full_numbers',
+            order: [[1, 'asc']]
+        });
+
+    });
+</script>

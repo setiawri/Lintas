@@ -156,6 +156,12 @@
                                 <li class="nav-item"><a href="@Url.Action("Index", "Shipping")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Shipping" ? "nav-link active" : "nav-link")">Shipping Service</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Shipments")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Shipments" ? "nav-link active" : "nav-link")">
+                                <i class="icon-gift"></i>
+                                <span>Shipments</span>
+                            </a>
+                        </li>
                         @*<li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Customers"
                             || ViewContext.RouteData.Values["Controller"].ToString() == "Orders"
                             || ViewContext.RouteData.Values["Controller"].ToString() == "Invoices"

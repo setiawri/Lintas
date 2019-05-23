@@ -182,6 +182,7 @@
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\ShipmentsController.cs" />
     <Compile Include="Controllers\ShippingController.cs" />
     <Compile Include="Controllers\ShippingPricesController.cs" />
     <Compile Include="Controllers\StationsController.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Models\CustomersIndexViewModels.cs" />
     <Compile Include="Models\CustomersModels.cs" />
     <Compile Include="Models\FileUploadsModels.cs" />
+    <Compile Include="Models\ForwardersModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InvoiceItemsModels.cs" />
     <Compile Include="Models\InvoicesIndexViewModels.cs" />
@@ -217,6 +219,8 @@
     <Compile Include="Models\PaymentsIndexViewModels.cs" />
     <Compile Include="Models\PaymentsModels.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
+    <Compile Include="Models\ShipmentsModels.cs" />
+    <Compile Include="Models\ShipmentsViewModels.cs" />
     <Compile Include="Models\ShippingDocumentsViewModels.cs" />
     <Compile Include="Models\ShippingItemContentsModels.cs" />
     <Compile Include="Models\ShippingItemsModels.cs" />
@@ -392,6 +396,8 @@
     <Content Include="Views\ShippingPrices\Edit.cshtml" />
     <Content Include="Views\ShippingPrices\Delete.cshtml" />
     <Content Include="Views\Shipping\UploadDocument.cshtml" />
+    <Content Include="Views\Shipments\Index.cshtml" />
+    <Content Include="Views\Shipments\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

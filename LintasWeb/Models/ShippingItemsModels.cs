@@ -25,5 +25,6 @@ namespace LintasMVC.Models
         [Display(Name = "Status")]
         public ShippingItemStatusEnum Status_enumid { get; set; }
         public bool Invoiced { get; set; }
+        public Guid? Shipments_Id { get; set; }
     }
 }
