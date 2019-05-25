@@ -175,6 +175,7 @@
     <Compile Include="Controllers\ConciergeplusController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\ForwardersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Models\PaymentsIndexViewModels.cs" />
     <Compile Include="Models\PaymentsModels.cs" />
     <Compile Include="Models\RoleViewModels.cs" />
+    <Compile Include="Models\ShipmentLogModels.cs" />
     <Compile Include="Models\ShipmentsModels.cs" />
     <Compile Include="Models\ShipmentsViewModels.cs" />
     <Compile Include="Models\ShippingDocumentsViewModels.cs" />
@@ -259,6 +261,7 @@
     <Content Include="assets\js\plugins\extensions\cookie.js" />
     <Content Include="assets\js\plugins\forms\inputs\inputmask.js" />
     <Content Include="assets\js\plugins\forms\selects\select2.min.js" />
+    <Content Include="assets\js\plugins\forms\styling\switchery.min.js" />
     <Content Include="assets\js\plugins\forms\styling\uniform.min.js" />
     <Content Include="assets\js\plugins\forms\validation\validate.min.js" />
     <Content Include="assets\js\plugins\loaders\blockui.min.js" />
@@ -398,6 +401,12 @@
     <Content Include="Views\Shipping\UploadDocument.cshtml" />
     <Content Include="Views\Shipments\Index.cshtml" />
     <Content Include="Views\Shipments\Create.cshtml" />
+    <Content Include="Views\Forwarders\Index.cshtml" />
+    <Content Include="Views\Forwarders\Create.cshtml" />
+    <Content Include="Views\Forwarders\Edit.cshtml" />
+    <Content Include="Views\Forwarders\Delete.cshtml" />
+    <Content Include="Views\Shipments\Log.cshtml" />
+    <Content Include="Views\Shipments\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

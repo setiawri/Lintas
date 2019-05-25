@@ -28,5 +28,6 @@ namespace LintasMVC.Models
         public DbSet<FileUploadsModels> FileUploads { get; set; }
         public DbSet<ForwardersModels> Forwarders { get; set; }
         public DbSet<ShipmentsModels> Shipments { get; set; }
+        public DbSet<ShipmentLogModels> ShipmentLog { get; set; }
     }
 }

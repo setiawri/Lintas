@@ -13,8 +13,11 @@ namespace LintasMVC.Models
         [Key]
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }
+        [Display(Name = "Forwarders")]
         public Guid Forwarders_Id { get; set; }
         public string Notes { get; set; }
+        [Display(Name = "Status")]
+        public OrderItemStatusEnum Status_enumid { get; set; }
     }
 
     public class ShipmentsIndexViewModels
@@ -23,5 +26,7 @@ namespace LintasMVC.Models
         public DateTime Timestamp { get; set; }
         public string Forwarders { get; set; }
         public string Notes { get; set; }
+        [Display(Name = "Status")]
+        public OrderItemStatusEnum Status_enumid { get; set; }
     }
 }
