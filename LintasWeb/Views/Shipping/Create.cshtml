@@ -276,7 +276,7 @@
                                                     {
                                                         foreach (var subitem in item.ListFileUploads)
                                                         {
-                                                            @subitem.OriginalFilename <br />
+                                                            <a href="@Url.Action("Download", "Shipping", new { id = subitem.Id })">@subitem.Description</a> <br />
                                                         }
                                                     }
                                                 </td>
@@ -296,7 +296,130 @@
                             <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
                         </div>
                     </fieldset>
-                    <!-- /Invoice -->
+                    <!-- /Documents -->
+                    <!-- Shipments -->
+                    <h6>Shipments</h6>
+                    <fieldset>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Forwarders</th>
+                                        <th>Notes</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListShipment != null)
+                                    {
+                                        foreach (var item in Model.ListShipment)
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Forwarders)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                                <td>
+                                                    @if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.Pending)
+                                                    {
+                                                        <span class="badge badge-dark d-block">Pending</span>
+                                                    }
+                                                    else if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.InTransit)
+                                                    {
+                                                        <span class="badge badge-success d-block">In Transit</span>
+                                                    }
+                                                    else if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.Conflict)
+                                                    {
+                                                        <span class="badge badge-danger d-block">Conflict</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-primary d-block">Completed</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <div style="float: right; margin-bottom: 20px">
+                            <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning btn-sm">Back to List</a>
+                            <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                            <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                        </div>
+                    </fieldset>
+                    <!-- /Shipments -->
+                    <!-- Delivery -->
+                    <h6>Pickup/Delivery</h6>
+                    <fieldset>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Length (cm)</th>
+                                        <th>Width (cm)</th>
+                                        <th>Height (cm)</th>
+                                        <th>Weight (gr)</th>
+                                        <th>Notes</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.ListPackage != null)
+                                    {
+                                        foreach (var item in Model.ListPackage)
+                                        {
+                                            <tr>
+                                                <td>@item.No</td>
+                                                <td>@item.Length</td>
+                                                <td>@item.Width</td>
+                                                <td>@item.Height</td>
+                                                <td>@item.Weight</td>
+                                                <td>@item.Notes</td>
+                                                <td>
+                                                    @if (item.Delivery_Status == LintasMVC.Models.DeliveryItemStatusEnum.PickupWaiting)
+                                                    {
+                                                        <span class="badge badge-warning d-block">Waiting for Pickup</span>
+                                                    }
+                                                    else if (item.Delivery_Status == LintasMVC.Models.DeliveryItemStatusEnum.LocalDelivery)
+                                                    {
+                                                        <span class="badge badge-success d-block">Local Delivery</span>
+                                                    }
+                                                    else if (item.Delivery_Status == LintasMVC.Models.DeliveryItemStatusEnum.Conflict)
+                                                    {
+                                                        <span class="badge badge-danger d-block">Conflict</span>
+                                                    }
+                                                    else if (item.Delivery_Status == LintasMVC.Models.DeliveryItemStatusEnum.Completed)
+                                                    {
+                                                        <span class="badge badge-primary d-block">Completed</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-dark d-block">Pending</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <a href="#" onclick="ViewLogs('@item.Id')">Views Log</a> |
+                                                    @Html.ActionLink("Change Status", "DeliveryLog", new { id = item.Id })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <div style="float: right; margin-bottom: 20px">
+                            <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning btn-sm">Back to List</a>
+                            <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                            <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                        </div>
+                    </fieldset>
+                    <!-- /Delivery -->
                 </form>
             </div>
             <!-- /Step Form -->
@@ -380,6 +503,27 @@
             success: function (data) {
                 var dialog = bootbox.alert({
                     title: no,
+                    message: data.content,
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    //Form Delivery
+    function ViewLogs(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetLogs", "Shipping")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: 'History Delivery Logs',
                     message: data.content,
                     backdrop: true
                 });

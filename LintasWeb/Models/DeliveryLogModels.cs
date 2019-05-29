@@ -7,15 +7,14 @@ using System.Web;
 
 namespace LintasMVC.Models
 {
-    [Table("FileUploads")]
-    public class FileUploadsModels  
+    [Table("DeliveryLog")]
+    public class DeliveryLogModels
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid Ref_Id { get; set; }
-        public string OriginalFilename { get; set; }
-        [Required]
+        public Guid ShippingItem_Id { get; set; }
+        public DateTime Timestamp { get; set; }
         public string Description { get; set; }
-        public string Notes { get; set; }
+        public string UserAccounts_Id { get; set; }
     }
 }

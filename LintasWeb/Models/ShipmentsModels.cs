@@ -17,16 +17,17 @@ namespace LintasMVC.Models
         public Guid Forwarders_Id { get; set; }
         public string Notes { get; set; }
         [Display(Name = "Status")]
-        public OrderItemStatusEnum Status_enumid { get; set; }
+        public ShipmentItemStatusEnum Status_enumid { get; set; }
     }
 
     public class ShipmentsIndexViewModels
     {
         public Guid Id { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm}")]
         public DateTime Timestamp { get; set; }
         public string Forwarders { get; set; }
         public string Notes { get; set; }
         [Display(Name = "Status")]
-        public OrderItemStatusEnum Status_enumid { get; set; }
+        public ShipmentItemStatusEnum Status_enumid { get; set; }
     }
 }

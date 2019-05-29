@@ -49,6 +49,32 @@ namespace LintasMVC.Controllers
             return Json(list, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetLogs(Guid id)
+        {
+            List<DeliveryLogModels> devLogs = db.DeliveryLog.Where(x => x.ShippingItem_Id == id).OrderByDescending(x => x.Timestamp).ToList();
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Description</th>
+                                                <th>Created By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (DeliveryLogModels item in devLogs)
+            {
+                message += @"<tr>
+                                <td>" + item.Timestamp.ToString("yyyy/MM/dd HH:mm") + @"</td>
+                                <td>" + item.Description + @"</td>
+                                <td>" + db.User.Where(x => x.Id == item.UserAccounts_Id).FirstOrDefault().Fullname + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         public async Task<ActionResult> Create(Guid? id, Guid? order)
         {
             var customers = await db.Customers.OrderBy(x => x.FirstName).ToListAsync();
@@ -76,6 +102,8 @@ namespace LintasMVC.Controllers
             List<InvoicesModels> listInvoice;
             List<PaymentsIndexViewModels> listPayment;
             List<ShippingDocumentsViewModels> listDocument;
+            List<ShipmentsIndexViewModels> listShipment;
+            List<ShippingItemsModels> listPackage;
             ShippingServicesModels ShippingServices = new ShippingServicesModels();
             if (id == null || id == Guid.Empty)
             {
@@ -83,6 +111,8 @@ namespace LintasMVC.Controllers
                 listInvoice = new List<InvoicesModels>();
                 listPayment = new List<PaymentsIndexViewModels>();
                 listDocument = new List<ShippingDocumentsViewModels>();
+                listShipment = new List<ShipmentsIndexViewModels>();
+                listPackage = new List<ShippingItemsModels>();
                 ViewBag.startIndex = 0;
 
                 if (order != null)
@@ -137,6 +167,21 @@ namespace LintasMVC.Controllers
                     listDocument.Add(sdvm);
                 }
 
+                listShipment = await (from si in db.ShippingItems
+                                      join s in db.Shipments on si.Shipments_Id equals s.Id
+                                      join f in db.Forwarders on s.Forwarders_Id equals f.Id
+                                      where si.Shippings_Id == id
+                                      select new ShipmentsIndexViewModels
+                                      {
+                                          Id = s.Id,
+                                          Timestamp = s.Timestamp,
+                                          Forwarders = f.Name,
+                                          Notes = s.Notes,
+                                          Status_enumid = s.Status_enumid
+                                      }).ToListAsync();
+
+                listPackage = await db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null).OrderBy(x => x.No).ToListAsync();
+
                 int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
                 if (count_inv == 0)
                 {
@@ -150,7 +195,21 @@ namespace LintasMVC.Controllers
                     }
                     else
                     {
-                        ViewBag.startIndex = 3;
+                        if (listShipment.Count == 0)
+                        {
+                            ViewBag.startIndex = 3;
+                        }
+                        else
+                        {
+                            if (db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null && x.Delivery_Status != null).Count() == 0)
+                            {
+                                ViewBag.startIndex = 4;
+                            }
+                            else
+                            {
+                                ViewBag.startIndex = 5;
+                            }
+                        }
                     }
                 }
             }
@@ -159,6 +218,8 @@ namespace LintasMVC.Controllers
             ShippingServices.ListInvoice = listInvoice;
             ShippingServices.ListPayment = listPayment;
             ShippingServices.ListDocument = listDocument;
+            ShippingServices.ListShipment = listShipment;
+            ShippingServices.ListPackage = listPackage;
             return View(ShippingServices);
         }
 
@@ -527,6 +588,15 @@ namespace LintasMVC.Controllers
                     DirectoryInfo di = Directory.CreateDirectory(Dir);
                 }
 
+                var existedDocuments = db.FileUploads.Where(x => x.Ref_Id == fileUploadsModels.Ref_Id).ToList();
+                foreach (var item in existedDocuments)
+                {
+                    db.FileUploads.Remove(item);
+                    string fileName = item.Id.ToString() + "_" + item.Description + Path.GetExtension(item.OriginalFilename);
+                    if (System.IO.File.Exists(Dir + fileName))
+                        System.IO.File.Delete(Dir + fileName);
+                }
+
                 foreach (HttpPostedFileBase file in files)
                 {
                     FileUploadsModels fu = new FileUploadsModels();
@@ -537,7 +607,7 @@ namespace LintasMVC.Controllers
                     fu.Notes = fileUploadsModels.Notes;
                     db.FileUploads.Add(fu);
 
-                    file.SaveAs(Path.Combine(Dir, fu.Id.ToString() + Path.GetExtension(file.FileName)));
+                    file.SaveAs(Path.Combine(Dir, fu.Id.ToString() + "_" + fu.Description + Path.GetExtension(file.FileName)));
                 }
                 await db.SaveChangesAsync();
 
@@ -546,6 +616,45 @@ namespace LintasMVC.Controllers
             
             ViewBag.Package = shippingItemsModels.No + " (Dimension: " + shippingItemsModels.Length + "cm x " + shippingItemsModels.Width + "cm x " + shippingItemsModels.Height + "cm)";
             return View(fileUploadsModels);
+        }
+
+        public ActionResult Download(Guid id)
+        {
+            FileUploadsModels fileUploadsModels = db.FileUploads.Where(x => x.Id == id).FirstOrDefault();
+            string path = Server.MapPath("~/assets/document/" + id.ToString() + "_" + fileUploadsModels.Description + Path.GetExtension(fileUploadsModels.OriginalFilename));
+            string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            return File(path, contentType, Path.GetFileName(path));
+        }
+
+        public async Task<ActionResult> DeliveryLog(Guid? id)
+        {
+            ShippingItemsModels shippingItemsModels = await db.ShippingItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return View(shippingItemsModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeliveryLog([Bind(Include = "Id,Shippings_Id,No,Length,Width,Height,Weight,Notes,Status_enumid,Invoiced,Shipments_Id,Delivery_Status")] ShippingItemsModels shippingItemsModels, string Description)
+        {
+            db.Entry(shippingItemsModels).State = EntityState.Modified;
+
+            DeliveryLogModels deliveryLogModels = new DeliveryLogModels();
+            deliveryLogModels.Id = Guid.NewGuid();
+            deliveryLogModels.ShippingItem_Id = shippingItemsModels.Id;
+            deliveryLogModels.Timestamp = DateTime.Now;
+            if (string.IsNullOrEmpty(Description))
+            {
+                deliveryLogModels.Description = "[" + Enum.GetName(typeof(DeliveryItemStatusEnum), shippingItemsModels.Delivery_Status) + "]";
+            }
+            else
+            {
+                deliveryLogModels.Description = "[" + Enum.GetName(typeof(DeliveryItemStatusEnum), shippingItemsModels.Delivery_Status) + "] " + Description;
+            }
+            deliveryLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
+            db.DeliveryLog.Add(deliveryLogModels);
+
+            await db.SaveChangesAsync();
+            return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });
         }
     }
 }

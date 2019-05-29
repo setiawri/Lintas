@@ -56,9 +56,29 @@
                                     <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Forwarders)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
+                                    <td>
+                                        @if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.Pending)
+                                        {
+                                            <span class="badge badge-dark d-block">Pending</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.InTransit)
+                                        {
+                                            <span class="badge badge-success d-block">In Transit</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShipmentItemStatusEnum.Conflict)
+                                        {
+                                            <span class="badge badge-danger d-block">Conflict</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-primary d-block">Completed</span>
+                                        }
+                                    </td>
                                     <td class="text-center">
-                                        <div class="list-icons">
+                                        <a href="#" onclick="View_Item('@item.Id', '@item.Forwarders')">View Items</a> |
+                                        <a href="#" onclick="View_Log('@item.Id', '@item.Forwarders')">View Logs</a> |
+                                        <a href="@Url.Action("Log", "Shipments", new { id = item.Id })">Change Status</a>
+                                        @*<div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">
                                                     <i class="icon-menu9"></i>
@@ -71,7 +91,7 @@
                                                     <a href="@Url.Action("Delete", "Shipments", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>*@
                                     </td>
                                 </tr>
                             }
@@ -133,8 +153,8 @@
             autoWidth: false,
             columnDefs: [{
                 orderable: false,
-                width: 100,
-                targets: [3]
+                //width: 300,
+                targets: [4]
             }],
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             language: {

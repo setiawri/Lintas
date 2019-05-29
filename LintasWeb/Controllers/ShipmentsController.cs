@@ -141,11 +141,11 @@ namespace LintasMVC.Controllers
             shipmentLogModels.Timestamp = DateTime.Now;
             if (string.IsNullOrEmpty(Description))
             {
-                shipmentLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), shipmentsModels.Status_enumid) + "]";
+                shipmentLogModels.Description = "[" + Enum.GetName(typeof(ShipmentItemStatusEnum), shipmentsModels.Status_enumid) + "]";
             }
             else
             {
-                shipmentLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), shipmentsModels.Status_enumid) + "] " + Description;
+                shipmentLogModels.Description = "[" + Enum.GetName(typeof(ShipmentItemStatusEnum), shipmentsModels.Status_enumid) + "] " + Description;
             }
             shipmentLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.ShipmentLog.Add(shipmentLogModels);

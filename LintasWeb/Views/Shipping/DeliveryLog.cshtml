@@ -1,0 +1,91 @@
+﻿@model LintasMVC.Models.ShippingItemsModels
+
+@{
+    ViewBag.Root = "Shipping";
+    ViewBag.Title = "Delivery Log";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Index", "Shipping")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.Shippings_Id)
+            @Html.HiddenFor(model => model.No)
+            @Html.HiddenFor(model => model.Length)
+            @Html.HiddenFor(model => model.Width)
+            @Html.HiddenFor(model => model.Height)
+            @Html.HiddenFor(model => model.Weight)
+            @Html.HiddenFor(model => model.Notes)
+            @Html.HiddenFor(model => model.Status_enumid)
+            @Html.HiddenFor(model => model.Invoiced)
+            @Html.HiddenFor(model => model.Shipments_Id)
+            <!-- Form inputs -->
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">@ViewBag.Root</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                            <a class="list-icons-item" data-action="reload"></a>
+                            <a class="list-icons-item" data-action="remove"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <fieldset class="mb-3">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</legend>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-3">Description</label>
+                                    <div class="col-lg-9">
+                                        @Html.TextArea("Description", new { @class = "form-control", @rows = 3 })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Delivery_Status, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EnumDropDownListFor(model => model.Delivery_Status, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Delivery_Status, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <a href="@Url.Action("Index", "Shipping")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
+                        <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+			<!-- /form inputs -->
+        }
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2();
+    });
+</script>

@@ -87,7 +87,16 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        <div class="list-icons">
+                                        <a href="#" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')">Views</a> |
+                                        @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
+                                            || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
+                                            || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
+                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
+                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
+                                        {
+                                            <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a>
+                                        }
+                                        @*<div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">
                                                     <i class="icon-menu9"></i>
@@ -95,10 +104,6 @@
 
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     <a href="#" class="dropdown-item" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> View Orders</a>
-                                                    @*@if (item.Status != LintasMVC.Models.OrderStatusEnum.Ordered)
-                                                    {
-                                                        <a href="#" class="dropdown-item" onclick="ViewInvoices('@item.Id', '@item.Customer')"><i class="icon-file-eye2"></i> View Invoices</a>
-                                                    }*@
                                                     @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
                                                         || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
                                                         || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
@@ -110,7 +115,7 @@
                                                     <a href="@Url.Action("Delete", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>*@
                                     </td>
                                 </tr>
                             }
@@ -172,7 +177,7 @@
             autoWidth: false,
             columnDefs: [{
                 orderable: false,
-                width: 100,
+                //width: 100,
                 targets: [6]
             }],
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
