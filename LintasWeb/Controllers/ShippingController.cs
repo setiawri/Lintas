@@ -175,6 +175,7 @@ namespace LintasMVC.Controllers
                                       {
                                           Id = s.Id,
                                           Timestamp = s.Timestamp,
+                                          No = s.No,
                                           Forwarders = f.Name,
                                           Notes = s.Notes,
                                           Status_enumid = s.Status_enumid

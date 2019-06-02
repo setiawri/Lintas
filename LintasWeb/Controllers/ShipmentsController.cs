@@ -15,14 +15,16 @@ namespace LintasMVC.Controllers
     {
         private LintasContext db = new LintasContext();
         
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string no)
         {
+            ViewBag.No = no;
             var data = (from s in db.Shipments
                         join f in db.Forwarders on s.Forwarders_Id equals f.Id
                         select new ShipmentsIndexViewModels
                         {
                             Id = s.Id,
                             Timestamp = s.Timestamp,
+                            No = s.No,
                             Forwarders = f.Name,
                             Notes = s.Notes,
                             Status_enumid = s.Status_enumid
@@ -93,7 +95,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Timestamp,Forwarders_Id,Notes")] ShipmentsModels shipmentsModels, string items_selected)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Timestamp,No,Forwarders_Id,Notes")] ShipmentsModels shipmentsModels, string items_selected)
         {
             if (string.IsNullOrEmpty(items_selected))
             {

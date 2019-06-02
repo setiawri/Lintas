@@ -13,6 +13,8 @@ namespace LintasMVC.Models
         [Key]
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }
+        [Required]
+        public string No { get; set; }
         [Display(Name = "Forwarders")]
         public Guid Forwarders_Id { get; set; }
         public string Notes { get; set; }
@@ -25,6 +27,7 @@ namespace LintasMVC.Models
         public Guid Id { get; set; }
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm}")]
         public DateTime Timestamp { get; set; }
+        public string No { get; set; }
         public string Forwarders { get; set; }
         public string Notes { get; set; }
         [Display(Name = "Status")]

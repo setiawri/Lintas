@@ -43,6 +43,7 @@
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Timestamp)</th>
+                                <th>@Html.DisplayNameFor(model => model.No)</th>
                                 <th>@Html.DisplayNameFor(model => model.Forwarders)</th>
                                 <th>@Html.DisplayNameFor(model => model.Notes)</th>
                                 <th>@Html.DisplayNameFor(model => model.Status_enumid)</th>
@@ -54,6 +55,7 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.No)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Forwarders)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                     <td>
@@ -154,7 +156,7 @@
             columnDefs: [{
                 orderable: false,
                 //width: 300,
-                targets: [4]
+                targets: [5]
             }],
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             language: {
@@ -165,9 +167,21 @@
             }
         });
 
-        $('.datatable').DataTable({
-            pagingType: 'full_numbers',
-            order: [[0, 'desc']]
-        });
+        if ('@ViewBag.No' == '') {
+            $('.datatable').DataTable({
+                pagingType: 'full_numbers',
+                order: [[0, 'desc']]
+            });
+        }
+        else {
+            $('.datatable').DataTable({
+                pagingType: 'full_numbers',
+                order: [[0, 'desc']],
+                search: {
+                    search: '@ViewBag.No'
+                }
+            });
+        }
+        
     });
 </script>

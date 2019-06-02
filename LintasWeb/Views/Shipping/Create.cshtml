@@ -305,9 +305,11 @@
                                 <thead>
                                     <tr>
                                         <th>Timestamp</th>
+                                        <th>No</th>
                                         <th>Forwarders</th>
                                         <th>Notes</th>
                                         <th>Status</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -317,6 +319,7 @@
                                         {
                                             <tr>
                                                 <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.No)</td>
                                                 <td>@Html.DisplayFor(modelItem => item.Forwarders)</td>
                                                 <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                                 <td>
@@ -336,6 +339,9 @@
                                                     {
                                                         <span class="badge badge-primary d-block">Completed</span>
                                                     }
+                                                </td>
+                                                <td class="text-center">
+                                                    @Html.ActionLink("View", "Index", "Shipments", new { no = item.No }, null)
                                                 </td>
                                             </tr>
                                         }
