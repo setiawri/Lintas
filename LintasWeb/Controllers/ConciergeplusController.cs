@@ -26,6 +26,7 @@ namespace LintasMVC.Controllers
                                                 <th>Qty</th>
                                                 <th>Amount</th>
                                                 <th>Notes</th>
+                                                <th>Tracking No</th>
                                             </tr>
                                         </thead>
                                         <tbody>";
@@ -36,6 +37,7 @@ namespace LintasMVC.Controllers
                                 <td>" + item.Qty.ToString("#,##0") + @"</td>
                                 <td>" + item.Amount.ToString("#,##0.00") + @"</td>
                                 <td>" + item.Notes + @"</td>
+                                <td>" + item.TrackingNo + @"</td>
                             </tr>";
             }
             message += "</tbody></table></div>";
@@ -443,7 +445,15 @@ namespace LintasMVC.Controllers
                     oi.Notes = item.note;
                     oi.Status_enumid = OrderItemStatusEnum.Pending;
                     oi.Invoiced = false;
+                    oi.TrackingNo = Common.Master.GetTrackingNo(Common.Master.GetRandomHexNumber(10));
                     db.OrderItems.Add(oi);
+
+                    TrackingModels tr = new TrackingModels();
+                    tr.Id = Guid.NewGuid();
+                    tr.Ref_Id = oi.Id; //Order Items Id
+                    tr.Timestamp = DateTime.Now;
+                    tr.Description = "Orders Created";
+                    db.Tracking.Add(tr);
                 }
             }
             else
@@ -821,6 +831,17 @@ namespace LintasMVC.Controllers
                     OrdersModels ordersModels = await db.Orders.Where(x => x.Id == invoice.Ref_Id).FirstOrDefaultAsync();
                     ordersModels.Status_enumid = OrderStatusEnum.PaymentCompleted;
                     db.Entry(ordersModels).State = EntityState.Modified;
+
+                    List<OrderItemsModels> list_item = db.OrderItems.Where(x => x.Orders_Id == ordersModels.Id).ToList();
+                    foreach (var item in list_item)
+                    {
+                        TrackingModels tr = new TrackingModels();
+                        tr.Id = Guid.NewGuid();
+                        tr.Ref_Id = item.Id;
+                        tr.Timestamp = DateTime.Now;
+                        tr.Description = "Payment Completed";
+                        db.Tracking.Add(tr);
+                    }
                 }
 
                 await db.SaveChangesAsync();
@@ -932,6 +953,13 @@ namespace LintasMVC.Controllers
             else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
             {
                 orderItemsModels.ReceiveTimestamp = DateTime.Now;
+
+                TrackingModels tr = new TrackingModels();
+                tr.Id = Guid.NewGuid();
+                tr.Ref_Id = orderItemsModels.Id;
+                tr.Timestamp = DateTime.Now;
+                tr.Description = "Item Received from Supplier";
+                db.Tracking.Add(tr);
             }
             orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
             db.Entry(orderItemsModels).State = EntityState.Modified;

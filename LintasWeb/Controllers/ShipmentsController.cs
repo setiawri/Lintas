@@ -114,6 +114,17 @@ namespace LintasMVC.Controllers
                     ShippingItemsModels model = await db.ShippingItems.Where(x => x.Id.ToString() == s).FirstOrDefaultAsync();
                     model.Shipments_Id = shipmentsModels.Id;
                     db.Entry(model).State = EntityState.Modified;
+
+                    List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == model.Id).ToList();
+                    foreach (var item in list_item)
+                    {
+                        TrackingModels tr = new TrackingModels();
+                        tr.Id = Guid.NewGuid();
+                        tr.Ref_Id = item.OrderItems_Id;
+                        tr.Timestamp = DateTime.Now;
+                        tr.Description = "Item sent to Forwarders";
+                        db.Tracking.Add(tr);
+                    }
                 }
 
                 await db.SaveChangesAsync();
@@ -133,7 +144,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Log([Bind(Include = "Id,Timestamp,Forwarders_Id,Notes,Status_enumid")] ShipmentsModels shipmentsModels, string Description)
+        public async Task<ActionResult> Log([Bind(Include = "Id,Timestamp,No,Forwarders_Id,Notes,Status_enumid")] ShipmentsModels shipmentsModels, string Description)
         {
             db.Entry(shipmentsModels).State = EntityState.Modified;
 
@@ -151,6 +162,21 @@ namespace LintasMVC.Controllers
             }
             shipmentLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.ShipmentLog.Add(shipmentLogModels);
+
+            if (shipmentsModels.Status_enumid == ShipmentItemStatusEnum.Completed)
+            {
+                ShippingItemsModels shippingItemsModels = db.ShippingItems.Where(x => x.Shipments_Id == shipmentsModels.Id).FirstOrDefault();
+                List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
+                foreach (var item in list_item)
+                {
+                    TrackingModels tr = new TrackingModels();
+                    tr.Id = Guid.NewGuid();
+                    tr.Ref_Id = item.OrderItems_Id;
+                    tr.Timestamp = DateTime.Now;
+                    tr.Description = "Received at Destination Station";
+                    db.Tracking.Add(tr);
+                }
+            }
 
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

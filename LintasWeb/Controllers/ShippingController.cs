@@ -338,6 +338,17 @@ namespace LintasMVC.Controllers
                         shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
                         shippingItemsModels.Invoiced = false;
                         db.Entry(shippingItemsModels).State = EntityState.Modified;
+
+                        List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
+                        foreach (var subitem in list_item)
+                        {
+                            TrackingModels tr = new TrackingModels();
+                            tr.Id = Guid.NewGuid();
+                            tr.Ref_Id = subitem.OrderItems_Id;
+                            tr.Timestamp = DateTime.Now;
+                            tr.Description = "Item Shipped";
+                            db.Tracking.Add(tr);
+                        }
                     }
                 }
             }
@@ -653,6 +664,23 @@ namespace LintasMVC.Controllers
             }
             deliveryLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.DeliveryLog.Add(deliveryLogModels);
+
+            if (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery || shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.Completed)
+            {
+                List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
+                foreach (var item in list_item)
+                {
+                    TrackingModels tr = new TrackingModels();
+                    tr.Id = Guid.NewGuid();
+                    tr.Ref_Id = item.OrderItems_Id;
+                    tr.Timestamp = DateTime.Now;
+                    tr.Description = 
+                        (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery)
+                        ? "Sent Out to Local Courier"
+                        : "Pick up by Customer";
+                    db.Tracking.Add(tr);
+                }
+            }
 
             await db.SaveChangesAsync();
             return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });

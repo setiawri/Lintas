@@ -30,5 +30,6 @@ namespace LintasMVC.Models
         public DbSet<ShipmentsModels> Shipments { get; set; }
         public DbSet<ShipmentLogModels> ShipmentLog { get; set; }
         public DbSet<DeliveryLogModels> DeliveryLog { get; set; }
+        public DbSet<TrackingModels> Tracking { get; set; }
     }
 }
