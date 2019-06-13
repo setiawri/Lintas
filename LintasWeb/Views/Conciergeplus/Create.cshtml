@@ -193,8 +193,8 @@
                                             <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
                                             <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                             <td class="text-center" style="color: black">
-                                                <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
-                                                @Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })
+                                                <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">View</a>
+                                                @*@Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })*@
                                             </td>
                                         </tr>
                                     }
@@ -215,10 +215,10 @@
                 <fieldset>
                     <label class="payment-validation text-danger" style="display: none"></label>
                     <div>
+                        <span style="margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                        <span style="margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                        <span style="margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
                         <a href="@Url.Action("Payment", "Conciergeplus", new { id = Model.Order.Id })" class="btn btn-sm btn-success">Add New Payment</a>
-                        <span style="float: right; margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
-                        <span style="float: right; margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
-                        <span style="float: right; margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover datatable">
@@ -229,7 +229,7 @@
                                     <th>Amount</th>
                                     <th>Info</th>
                                     <th>Notes</th>
-                                    <th class="text-center">Action</th>
+                                    @*<th class="text-center">Action</th>*@
                                 </tr>
                             </thead>
                             <tbody>
@@ -241,10 +241,10 @@
                                         <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Info)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                        <td class="text-center">
-                                            @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
+                                        @*<td class="text-center">
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                             @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
-                                        </td>
+                                        </td>*@
                                     </tr>
                                 }
                             </tbody>
@@ -268,9 +268,10 @@
                                 <tr>
                                     <th>Description</th>
                                     <th>Qty</th>
+                                    <th>Received</th>
                                     <th>Amount</th>
                                     <th>Purchase Date</th>
-                                    <th>Receive Date</th>
+                                    <th>Received All</th>
                                     <th>Status</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -281,13 +282,18 @@
                                     <tr>
                                         <td>@Html.DisplayFor(modelItem => item.Description)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.ReceivedQty)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                                         <td>@Html.DisplayFor(modelItem => item.PurchaseTimestamp)</td>
                                         <td>@Html.DisplayFor(modelItem => item.ReceiveTimestamp)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
                                         <td class="text-center">
-                                            <a href="#" onclick="ViewLogs('@item.Id')">Views Log</a> |
-                                            @Html.ActionLink("Change Status", "OrderItemLog", new { id = item.Id })
+                                            @if (item.Qty != item.ReceivedQty)
+                                            {
+                                                <a href="#" onclick="StopPurchasing('@item.Id')">Stop</a> @:|
+                                            }
+                                            <a href="#" onclick="ViewLogs('@item.Id')">Log</a> |
+                                            @Html.ActionLink("Update", "OrderItemLog", new { id = item.Id })
                                         </td>
                                     </tr>
                                 }
@@ -337,12 +343,12 @@
                                         <td class="text-center">
                                             @if (item.Status_enumid == LintasMVC.Models.ShippingItemStatusEnum.Closed)
                                             {
-                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">Views Package</a>
+                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">View</a>
                                             }
                                             else
                                             {
-                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">Views Package</a> @:|
-                                                @Html.ActionLink("Add Ship", "Create", "Shipping", new { id = Guid.Empty, order = Model.Order.Id }, null)
+                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">View</a> @:|
+                                                @Html.ActionLink("Ship", "Create", "Shipping", new { id = Guid.Empty, order = Model.Order.Id }, null)
                                             }
                                         </td>
                                     </tr>
@@ -488,6 +494,22 @@
     }
 
     //Form Purchasing
+    function StopPurchasing(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("StopPurchasing", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                window.location.reload();
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
     function ViewLogs(id) {
         $.ajax({
             type: "POST",

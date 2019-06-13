@@ -118,8 +118,8 @@
                                                         <td><input type="text" class="form-control desc" value="@item.No" /></td>
                                                         <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
                                                         <td><input type="text" class="form-control note" value="@item.Notes" /></td>
+                                                        <td style="display: none">@(row++)</td>
                                                     </tr>
-                                                    @(row++)
                                                 }
                                             }
                                             else

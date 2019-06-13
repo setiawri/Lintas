@@ -18,10 +18,15 @@ namespace LintasMVC.Models
         public string Description { get; set; }
         public int Qty { get; set; }
 
+        [Display(Name = "Received")]
+        public int ReceivedQty { get; set; }
+
         [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public decimal Amount { get; set; }
         public string Notes { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm}")]
         public DateTime? PurchaseTimestamp { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm}")]
         public DateTime? ReceiveTimestamp { get; set; }
 
         [Display(Name = "Status")]

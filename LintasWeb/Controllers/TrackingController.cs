@@ -11,8 +11,9 @@ namespace LintasMVC.Controllers
     {
         private LintasContext db = new LintasContext();
 
-        public ActionResult Index()
+        public ActionResult Index(string no)
         {
+            ViewBag.NoTracking = no;
             return View();
         }
 

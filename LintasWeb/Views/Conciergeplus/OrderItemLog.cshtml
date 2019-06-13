@@ -28,6 +28,7 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.OrderItem.Id)
+            @Html.HiddenFor(model => model.OrderItem.Amount)
             <!-- Form inputs -->
             <div class="card">
                 <div class="card-header header-elements-inline">
@@ -53,20 +54,21 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-form-label col-lg-2">Qty / Amount</label>
+                            <label class="col-form-label col-lg-2">Qty / Status</label>
                             <div class="col-lg-5">
                                 <div class="form-group row">
                                     <div class="col-lg-5">
                                         @Html.EditorFor(model => model.OrderItem.Qty, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                                     </div>
                                     <div class="col-lg-7">
-                                        @Html.EditorFor(model => model.OrderItem.Amount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                        @Html.EnumDropDownListFor(model => model.OrderItem.Status_enumid, new { @class = "form-control" })
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-5">
                                 @Html.ValidationMessageFor(model => model.OrderItem.Qty, "", new { @class = "text-danger" })
-                                @Html.ValidationMessageFor(model => model.OrderItem.Amount, "", new { @class = "text-danger" })
+                                @Html.ValidationMessage("Received", "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.OrderItem.Status_enumid, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div class="form-group row">
@@ -76,15 +78,6 @@
                             </div>
                             <div class="col-lg-5">
                                 @Html.ValidationMessage("DescriptionLog", "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            @Html.LabelFor(model => model.OrderItem.Status_enumid, htmlAttributes: new { @class = "col-form-label col-lg-2" })
-                            <div class="col-lg-5">
-                                @Html.EnumDropDownListFor(model => model.OrderItem.Status_enumid, new { @class = "form-control" })
-                            </div>
-                            <div class="col-lg-5">
-                                @Html.ValidationMessageFor(model => model.OrderItem.Status_enumid, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div>
@@ -135,6 +128,15 @@
 
 </div>
 <script type="text/javascript">
+    function isReceived(status_id) {
+        if (status_id == 2) {
+            document.getElementById('OrderItem_Qty').readOnly = false;
+        }
+        else {
+            document.getElementById('OrderItem_Qty').readOnly = true;
+        }
+    }
+
     $(document).ready(function () {
         $('.select2').select2();
 
@@ -142,6 +144,12 @@
             format: 'yyyy/mm/dd',
             selectMonths: true,
             selectYears: true
+        });
+
+        isReceived($('#OrderItem_Status_enumid').val());
+
+        $('#OrderItem_Status_enumid').change(function () {
+            isReceived($('#OrderItem_Status_enumid').val());            
         });
     });
 </script>

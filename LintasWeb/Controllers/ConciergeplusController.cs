@@ -37,7 +37,7 @@ namespace LintasMVC.Controllers
                                 <td>" + item.Qty.ToString("#,##0") + @"</td>
                                 <td>" + item.Amount.ToString("#,##0.00") + @"</td>
                                 <td>" + item.Notes + @"</td>
-                                <td>" + item.TrackingNo + @"</td>
+                                <td><a href='" + Url.Content("~") + "Tracking/?no=" + item.TrackingNo + "' target='_blank'>" + item.TrackingNo + @"</a></td>
                             </tr>";
             }
             message += "</tbody></table></div>";
@@ -130,6 +130,18 @@ namespace LintasMVC.Controllers
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult StopPurchasing(Guid id)
+        {
+            OrderItemsModels orderItemsModels = db.OrderItems.Where(x => x.Id == id).FirstOrDefault();
+            orderItemsModels.Qty = orderItemsModels.ReceivedQty;
+            orderItemsModels.ReceiveTimestamp = DateTime.Now;
+            orderItemsModels.Status_enumid = OrderItemStatusEnum.Received;
+            db.Entry(orderItemsModels).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new { result = "200" }, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetPackage(Guid id)
         {
             var list = (from sic in db.ShippingItemContents
@@ -203,16 +215,18 @@ namespace LintasMVC.Controllers
 
         public JsonResult GetPrices(string key, Guid id)
         {
-            decimal amount = 0; string notes = "";
+            decimal amount = 0; string notes;
             if (key == "order")
             {
                 amount = db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Amount;
-                notes = db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
+                notes = string.IsNullOrEmpty(db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Notes) ? "" 
+                    : db.OrderPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
             }
             else
             {
                 amount = db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Amount;
-                notes = db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
+                notes = string.IsNullOrEmpty(db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Notes) ? "" 
+                    : db.ShippingPrices.Where(x => x.Id == id).FirstOrDefault().Notes;
             }
 
             return Json(new { amount = amount, notes = notes }, JsonRequestBehavior.AllowGet);
@@ -398,7 +412,9 @@ namespace LintasMVC.Controllers
                     }
                 }
 
-                ViewBag.startIndex = (int)ordersModels.Status_enumid + 1;
+                ViewBag.startIndex = (ordersModels.Status_enumid == OrderStatusEnum.Shipping)
+                    ? (int)ordersModels.Status_enumid
+                    : (int)ordersModels.Status_enumid + 1;
             }
             conciergeplusModels.Order = ordersModels;
             conciergeplusModels.ListInvoice = listInvoice;
@@ -785,7 +801,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
+                    Name = inv.No + " " + inv.Notes + " [" + string.Format("{0:N2}", inv.TotalAmount) + "] Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
             
@@ -859,7 +875,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
+                    Name = inv.No + " " + inv.Notes + " [" + string.Format("{0:N2}", inv.TotalAmount) + "] Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
 
@@ -946,48 +962,77 @@ namespace LintasMVC.Controllers
         public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels, string DescriptionLog)
         {
             OrderItemsModels orderItemsModels = await db.OrderItems.AsNoTracking().Where(x => x.Id == orderItemLogViewModels.OrderItem.Id).FirstOrDefaultAsync();
-            if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
+            if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
             {
-                orderItemsModels.PurchaseTimestamp = DateTime.Now;
+                if (orderItemLogViewModels.OrderItem.Qty > orderItemsModels.Qty - orderItemsModels.ReceivedQty)
+                {
+                    ModelState.AddModelError("Received", "Max Received Qty is " + (orderItemsModels.Qty - orderItemsModels.ReceivedQty));
+                }
             }
-            else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
+
+            if (ModelState.IsValid)
             {
-                orderItemsModels.ReceiveTimestamp = DateTime.Now;
+                if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
+                {
+                    orderItemsModels.PurchaseTimestamp = DateTime.Now;
+                    orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
+                }
+                else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Conflict)
+                {
+                    orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
+                }
+                else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
+                {
+                    if (orderItemsModels.Qty == orderItemsModels.ReceivedQty + orderItemLogViewModels.OrderItem.Qty)
+                    {
+                        orderItemsModels.ReceiveTimestamp = DateTime.Now;
+                        orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
+                    }
+                    orderItemsModels.ReceivedQty += orderItemLogViewModels.OrderItem.Qty;
 
-                TrackingModels tr = new TrackingModels();
-                tr.Id = Guid.NewGuid();
-                tr.Ref_Id = orderItemsModels.Id;
-                tr.Timestamp = DateTime.Now;
-                tr.Description = "Item Received from Supplier";
-                db.Tracking.Add(tr);
+                    TrackingModels tr = new TrackingModels();
+                    tr.Id = Guid.NewGuid();
+                    tr.Ref_Id = orderItemsModels.Id;
+                    tr.Timestamp = DateTime.Now;
+                    tr.Description = orderItemLogViewModels.OrderItem.Qty + " Item Received from Supplier";
+                    db.Tracking.Add(tr);
+                }
+                db.Entry(orderItemsModels).State = EntityState.Modified;
+
+                OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
+                orderItemLogModels.Id = Guid.NewGuid();
+                orderItemLogModels.OrderItems_Id = orderItemLogViewModels.OrderItem.Id;
+                orderItemLogModels.Timestamp = DateTime.Now;
+                if (string.IsNullOrEmpty(DescriptionLog))
+                {
+                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "]";
+                }
+                else
+                {
+                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "] " + DescriptionLog;
+                }
+                orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
+                db.OrderItemLog.Add(orderItemLogModels);
+
+                OrdersModels ordersModels = db.Orders.Where(x => x.Id == orderItemsModels.Orders_Id).FirstOrDefault();
+                ordersModels.Status_enumid = OrderStatusEnum.Purchasing;
+                db.Entry(ordersModels).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+
+                return RedirectToAction("Create", "Conciergeplus", new { id = orderItemsModels.Orders_Id });
             }
-            orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
-            db.Entry(orderItemsModels).State = EntityState.Modified;
 
-            OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
-            orderItemLogModels.Id = Guid.NewGuid();
-            orderItemLogModels.OrderItems_Id = orderItemLogViewModels.OrderItem.Id;
-            orderItemLogModels.Timestamp = DateTime.Now;
-            if (string.IsNullOrEmpty(DescriptionLog))
-            {
-                orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "]";
-            }
-            else
-            {
-                orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "] " + DescriptionLog;
-            }
-            orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
-            db.OrderItemLog.Add(orderItemLogModels);
-
-            await db.SaveChangesAsync();
-
-            return RedirectToAction("Create", "Conciergeplus", new { id = orderItemsModels.Orders_Id });
+            List<OrderItemLogModels> listOrderItemLog = await db.OrderItemLog.Where(x => x.OrderItems_Id == orderItemsModels.Id).OrderByDescending(x => x.Timestamp).ToListAsync();
+            orderItemLogViewModels.OrderItem = orderItemsModels;
+            orderItemLogViewModels.ListOrderItemLog = listOrderItemLog;
+            return View(orderItemLogViewModels);
         }
 
         public async Task<ActionResult> Package(Guid id)
         {
             ViewBag.OrderId = id;
-            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
+            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id && x.Qty == x.ReceivedQty).ToListAsync();
             return View();
         }
 
@@ -1027,7 +1072,7 @@ namespace LintasMVC.Controllers
                 }
 
                 OrdersModels ordersModels = await db.Orders.Where(x => x.Id == Order_Id).FirstOrDefaultAsync();
-                ordersModels.Status_enumid = OrderStatusEnum.Purchasing;
+                ordersModels.Status_enumid = OrderStatusEnum.Packaging;
                 db.Entry(ordersModels).State = EntityState.Modified;
 
                 await db.SaveChangesAsync();
@@ -1036,7 +1081,7 @@ namespace LintasMVC.Controllers
             }
 
             ViewBag.OrderId = Order_Id;
-            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == Order_Id).ToListAsync();
+            ViewBag.listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == Order_Id && x.Qty == x.ReceivedQty).ToListAsync();
             return View(shippingItemsModels);
         }
 

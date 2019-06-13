@@ -77,9 +77,9 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" onclick="View_Item('@item.Id', '@item.Forwarders')">View Items</a> |
-                                        <a href="#" onclick="View_Log('@item.Id', '@item.Forwarders')">View Logs</a> |
-                                        <a href="@Url.Action("Log", "Shipments", new { id = item.Id })">Change Status</a>
+                                        <a href="#" onclick="View_Item('@item.Id', '@item.Forwarders')">View</a> |
+                                        <a href="#" onclick="View_Log('@item.Id', '@item.Forwarders')">Log</a> |
+                                        <a href="@Url.Action("Log", "Shipments", new { id = item.Id })">Update</a>
                                         @*<div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">

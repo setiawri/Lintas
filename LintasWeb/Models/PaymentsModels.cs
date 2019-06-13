@@ -22,7 +22,7 @@ namespace LintasMVC.Models
         public decimal Amount { get; set; }
 
         [Required]
-        [Display(Name = "Info")]
+        [Display(Name = "Confirmation No.")]
         public string PaymentInfo { get; set; }
         public string Notes { get; set; }
     }

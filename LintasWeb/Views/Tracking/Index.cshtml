@@ -100,30 +100,39 @@
 </html>
 
 <script type="text/javascript">
+    function getTracking() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetData", "Tracking")',
+            data: {
+                no: $('.tracking-no').val()
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.status == '200') {
+                    $('.alert-404').hide();
+                    $('#data-body').append(data.result);
+                }
+                else {
+                    $('.alert-404').show();
+                    $('#data-body').empty();
+                }
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
     $(document).ready(function () {
+        if ('@ViewBag.NoTracking' != '') {
+            $('.tracking-no').val('@ViewBag.NoTracking');
+            getTracking();
+        }
+
         $('#btnSearch').click(function () {
             //$('.alert-404').toggle();
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("GetData", "Tracking")',
-                data: {
-                    no: $('.tracking-no').val()
-                },
-                success: function (data) {
-                    console.log(data);
-                    if (data.status == '200') {
-                        $('.alert-404').hide();
-                        $('#data-body').append(data.result);
-                    }
-                    else {
-                        $('.alert-404').show();
-                        $('#data-body').empty();
-                    }
-                }, //end success
-                error: function (result) {
-                    bootbox.alert("Error " + result);
-                } //end error
-            }); //end ajax
+            getTracking();
         });
     });
 </script>

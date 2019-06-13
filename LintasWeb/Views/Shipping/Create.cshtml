@@ -186,8 +186,8 @@
                                                 <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
                                                 <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                                 <td class="text-center" style="color: black">
-                                                    <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">Views</a> |
-                                                    @Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })
+                                                    <a href="#" onclick="ViewInvoices('@item.Id', '@item.No')">View</a>
+                                                    @*@Html.ActionLink("Delete", "DeleteInvoice", new { id = item.Id })*@
                                                 </td>
                                             </tr>
                                         }
@@ -208,10 +208,10 @@
                     <fieldset>
                         <label class="payment-validation text-danger" style="display: none"></label>
                         <div>
+                            <span style="margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                            <span style="margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
+                            <span style="margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
                             <a href="@Url.Action("Payment", "Shipping", new { id = Model.Shipping.Id })" class="btn btn-sm btn-success">Add New Payment</a>
-                            <span style="float: right; margin: 5px" class="badge badge-flat border-danger text-danger-600 text-uppercase">Total Remaining: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount) - Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
-                            <span style="float: right; margin: 5px" class="badge badge-flat border-success text-success-600 text-uppercase">Total Paid: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalPaid)))</span>
-                            <span style="float: right; margin: 5px" class="badge badge-flat border-primary text-primary-600 text-uppercase">Total Invoice: @(string.Format("{0:N2}", Model.ListInvoice.Sum(x => x.TotalAmount))) ( @Model.ListInvoice.Count Invoice )</span>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -222,7 +222,7 @@
                                         <th>Amount</th>
                                         <th>Info</th>
                                         <th>Notes</th>
-                                        <th class="text-center">Action</th>
+                                        @*<th class="text-center">Action</th>*@
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -234,10 +234,10 @@
                                             <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                                             <td>@Html.DisplayFor(modelItem => item.Info)</td>
                                             <td>@Html.DisplayFor(modelItem => item.Notes)</td>
-                                            <td class="text-center">
-                                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |*@
+                                            @*<td class="text-center">
+                                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                                 @Html.ActionLink("Delete", "DeletePayment", new { id = item.Id })
-                                            </td>
+                                            </td>*@
                                         </tr>
                                     }
                                 </tbody>
@@ -409,8 +409,8 @@
                                                     }
                                                 </td>
                                                 <td>
-                                                    <a href="#" onclick="ViewLogs('@item.Id')">Views Log</a> |
-                                                    @Html.ActionLink("Change Status", "DeliveryLog", new { id = item.Id })
+                                                    <a href="#" onclick="ViewLogs('@item.Id')">Log</a> |
+                                                    @Html.ActionLink("Update", "DeliveryLog", new { id = item.Id })
                                                 </td>
                                             </tr>
                                         }

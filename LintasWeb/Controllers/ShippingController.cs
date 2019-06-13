@@ -342,6 +342,11 @@ namespace LintasMVC.Controllers
                         List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
                         foreach (var subitem in list_item)
                         {
+                            OrderItemsModels orderItemsModels = db.OrderItems.Where(x => x.Id == subitem.OrderItems_Id).FirstOrDefault();
+                            OrdersModels ordersModels = db.Orders.Where(x => x.Id == orderItemsModels.Orders_Id).FirstOrDefault();
+                            ordersModels.Status_enumid = OrderStatusEnum.Shipping;
+                            db.Entry(ordersModels).State = EntityState.Modified;
+
                             TrackingModels tr = new TrackingModels();
                             tr.Id = Guid.NewGuid();
                             tr.Ref_Id = subitem.OrderItems_Id;

@@ -77,6 +77,10 @@
                                         {
                                             <span class="badge bg-purple d-block">Purchasing</span>
                                         }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.Packaging)
+                                        {
+                                            <span class="badge bg-brown d-block">Packaging</span>
+                                        }
                                         else if (item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
                                         {
                                             <span class="badge badge-info d-block">Shipping</span>
@@ -92,6 +96,7 @@
                                             || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
                                             || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
                                             || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
+                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Packaging
                                             || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
                                         {
                                             <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a>
