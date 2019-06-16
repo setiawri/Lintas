@@ -393,7 +393,7 @@
                                         <td>@Html.DisplayFor(modelItem => item.Destination)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                         <td class="text-center">
-                                            <a href="#" onclick="ViewShippingItem('@item.Id', '@item.No')">Views Shipping Items</a> | 
+                                            <a href="#" onclick="ViewShippingItem('@item.Id', '@item.No')">View</a> | 
                                             @Html.ActionLink("Shipping", "Create", "Shipping", new { id = item.Id }, null)
                                         </td>
                                     </tr>
@@ -519,6 +519,7 @@
             },
             success: function (data) {
                 var dialog = bootbox.alert({
+                    size: 'large',
                     title: 'History Logs Item',
                     message: data.content,
                     backdrop: true

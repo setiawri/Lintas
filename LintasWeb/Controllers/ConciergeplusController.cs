@@ -133,10 +133,20 @@ namespace LintasMVC.Controllers
         public JsonResult StopPurchasing(Guid id)
         {
             OrderItemsModels orderItemsModels = db.OrderItems.Where(x => x.Id == id).FirstOrDefault();
+
+            OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
+            orderItemLogModels.Id = Guid.NewGuid();
+            orderItemLogModels.OrderItems_Id = id;
+            orderItemLogModels.Timestamp = DateTime.Now;
+            orderItemLogModels.Description = "[Stopped] Order Qty changed from " + orderItemsModels.Qty + " to " + orderItemsModels.ReceivedQty;
+            orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
+            db.OrderItemLog.Add(orderItemLogModels);
+
             orderItemsModels.Qty = orderItemsModels.ReceivedQty;
             orderItemsModels.ReceiveTimestamp = DateTime.Now;
             orderItemsModels.Status_enumid = OrderItemStatusEnum.Received;
             db.Entry(orderItemsModels).State = EntityState.Modified;
+
             db.SaveChanges();
 
             return Json(new { result = "200" }, JsonRequestBehavior.AllowGet);
@@ -362,7 +372,7 @@ namespace LintasMVC.Controllers
                 //                          Notes = s.Notes
                 //                      }).ToListAsync();
 
-                var list_shipping = await db.Shippings.OrderBy(x => x.Timestamp).ToListAsync();
+                var list_shipping = await db.Shippings.OrderByDescending(x => x.Timestamp).ToListAsync();
                 listShipping = new List<ShippingsViewModels>();
                 foreach (var item in list_shipping)
                 {
@@ -411,10 +421,32 @@ namespace LintasMVC.Controllers
                         }
                     }
                 }
+                
+                //bool isPurchasingCompleted = false;
+                //foreach (var item in db.OrderItems.Where(x => x.Orders_Id == id).ToList())
+                //{
+                //    if (item.Status_enumid == OrderItemStatusEnum.Received && item.Qty == item.ReceivedQty)
+                //    {
+                //        isPurchasingCompleted = true;
+                //    }
+                //    else { isPurchasingCompleted = false; }
 
-                ViewBag.startIndex = (ordersModels.Status_enumid == OrderStatusEnum.Shipping)
-                    ? (int)ordersModels.Status_enumid
-                    : (int)ordersModels.Status_enumid + 1;
+                //    if (!isPurchasingCompleted)
+                //        break;
+                //}
+
+                ViewBag.startIndex = (ordersModels.Status_enumid == OrderStatusEnum.Ordered
+                    || ordersModels.Status_enumid == OrderStatusEnum.WaitingPayment
+                    || ordersModels.Status_enumid == OrderStatusEnum.PaymentCompleted) 
+                    ? (int)ordersModels.Status_enumid + 1 : (int)ordersModels.Status_enumid;
+
+                //ViewBag.startIndex = (ordersModels.Status_enumid == OrderStatusEnum.Shipping)
+                //    ? (int)ordersModels.Status_enumid //last step is shipping
+                //    : (ordersModels.Status_enumid != OrderStatusEnum.Purchasing)
+                //        ? (int)ordersModels.Status_enumid + 1 //normal
+                //        : (isPurchasingCompleted) 
+                //            ? (int)ordersModels.Status_enumid + 1 //purchasing completed
+                //            : (int)ordersModels.Status_enumid; //purchasing not completed
             }
             conciergeplusModels.Order = ordersModels;
             conciergeplusModels.ListInvoice = listInvoice;
@@ -959,12 +991,12 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels, string DescriptionLog)
+        public async Task<ActionResult> OrderItemLog([Bind(Include = "OrderItem")] OrderItemLogViewModels orderItemLogViewModels, int Remaining, string DescriptionLog)
         {
             OrderItemsModels orderItemsModels = await db.OrderItems.AsNoTracking().Where(x => x.Id == orderItemLogViewModels.OrderItem.Id).FirstOrDefaultAsync();
             if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
             {
-                if (orderItemLogViewModels.OrderItem.Qty > orderItemsModels.Qty - orderItemsModels.ReceivedQty)
+                if (Remaining > orderItemsModels.Qty - orderItemsModels.ReceivedQty)
                 {
                     ModelState.AddModelError("Received", "Max Received Qty is " + (orderItemsModels.Qty - orderItemsModels.ReceivedQty));
                 }
@@ -972,6 +1004,7 @@ namespace LintasMVC.Controllers
 
             if (ModelState.IsValid)
             {
+                string qtyReceived = "";
                 if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
                 {
                     orderItemsModels.PurchaseTimestamp = DateTime.Now;
@@ -983,18 +1016,20 @@ namespace LintasMVC.Controllers
                 }
                 else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Received)
                 {
-                    if (orderItemsModels.Qty == orderItemsModels.ReceivedQty + orderItemLogViewModels.OrderItem.Qty)
+                    qtyReceived = " " + Remaining.ToString();
+
+                    if (orderItemsModels.Qty == orderItemsModels.ReceivedQty + Remaining)
                     {
                         orderItemsModels.ReceiveTimestamp = DateTime.Now;
                         orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
                     }
-                    orderItemsModels.ReceivedQty += orderItemLogViewModels.OrderItem.Qty;
+                    orderItemsModels.ReceivedQty += Remaining;
 
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
                     tr.Ref_Id = orderItemsModels.Id;
                     tr.Timestamp = DateTime.Now;
-                    tr.Description = orderItemLogViewModels.OrderItem.Qty + " Item Received from Supplier";
+                    tr.Description = Remaining + " Item Received from Supplier";
                     db.Tracking.Add(tr);
                 }
                 db.Entry(orderItemsModels).State = EntityState.Modified;
@@ -1005,11 +1040,11 @@ namespace LintasMVC.Controllers
                 orderItemLogModels.Timestamp = DateTime.Now;
                 if (string.IsNullOrEmpty(DescriptionLog))
                 {
-                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "]";
+                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + qtyReceived + "]";
                 }
                 else
                 {
-                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + "] " + DescriptionLog;
+                    orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + qtyReceived + "] " + DescriptionLog;
                 }
                 orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
                 db.OrderItemLog.Add(orderItemLogModels);

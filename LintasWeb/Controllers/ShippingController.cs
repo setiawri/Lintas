@@ -489,7 +489,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
+                    Name = inv.No + " " + inv.Notes + " [" + string.Format("{0:N2}", inv.TotalAmount) + "] Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
 
@@ -535,7 +535,7 @@ namespace LintasMVC.Controllers
                 newList.Add(new
                 {
                     Id = inv.Id,
-                    Name = inv.No + " - " + inv.Notes + " (" + string.Format("{0:N2}", inv.TotalAmount) + ") Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
+                    Name = inv.No + " " + inv.Notes + " [" + string.Format("{0:N2}", inv.TotalAmount) + "] Due " + string.Format("{0:N2}", inv.TotalAmount - inv.TotalPaid)
                 });
             }
 

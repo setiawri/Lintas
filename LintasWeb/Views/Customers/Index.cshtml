@@ -61,7 +61,7 @@
                                     <td>@Html.DisplayFor(modelItem => item.Address)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Zipcode)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Countries)</td>
-                                    <td class="text-center">
+                                    @*<td class="text-center">
                                         <div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">
@@ -74,11 +74,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </td>
-                                    @*<td>
+                                    </td>*@
+                                    <td class="text-center">
                                         @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                         @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                                    </td>*@
+                                    </td>
                                 </tr>
                             }
                         </tbody>

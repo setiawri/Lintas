@@ -58,7 +58,8 @@
                             <div class="col-lg-5">
                                 <div class="form-group row">
                                     <div class="col-lg-5">
-                                        @Html.EditorFor(model => model.OrderItem.Qty, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                        @Html.Editor("Remaining", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @Value = Model.OrderItem.Qty - Model.OrderItem.ReceivedQty } })
+                                        @*@Html.EditorFor(model => model.OrderItem.Qty, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })*@
                                     </div>
                                     <div class="col-lg-7">
                                         @Html.EnumDropDownListFor(model => model.OrderItem.Status_enumid, new { @class = "form-control" })
@@ -81,7 +82,7 @@
                             </div>
                         </div>
                         <div>
-                            <a href="@Url.Action("Index", "Conciergeplus")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
+                            <a href="@Url.Action("Create", "Conciergeplus", new { id = Model.OrderItem.Orders_Id })" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
                             <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
                         </div>
                         <br />
@@ -130,10 +131,10 @@
 <script type="text/javascript">
     function isReceived(status_id) {
         if (status_id == 2) {
-            document.getElementById('OrderItem_Qty').readOnly = false;
+            document.getElementById('Remaining').readOnly = false;
         }
         else {
-            document.getElementById('OrderItem_Qty').readOnly = true;
+            document.getElementById('Remaining').readOnly = true;
         }
     }
 

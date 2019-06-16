@@ -256,6 +256,7 @@
     <Content Include="assets\css\tables\datatable\awesome-bootstrap-checkbox.css" />
     <Content Include="assets\css\tables\datatable\checkboxes.css" />
     <Content Include="assets\images\logo_light.png" />
+    <Content Include="assets\images\placeholders\user.png" />
     <Content Include="assets\js\app.js" />
     <Content Include="assets\js\bootstrap-datetimepicker.min.js" />
     <Content Include="assets\js\demo_pages\form_wizard.js" />
