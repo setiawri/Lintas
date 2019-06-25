@@ -38,7 +38,7 @@ namespace LintasMVC.Controllers
                     if (item.tr.Description.Contains("Orders")) { icon = "icon-copy"; }
                     else if (item.tr.Description.Contains("Payment")) { icon = "icon-cash"; }
                     else if (item.tr.Description.Contains("Supplier")) { icon = "icon-profile"; }
-                    else if (item.tr.Description.Contains("Shipped")) { icon = "icon-airplane2"; }
+                    else if (item.tr.Description.Contains("Processed")) { icon = "icon-airplane2"; }
                     else if (item.tr.Description.Contains("Forwarders")) { icon = "icon-box"; }
                     else if (item.tr.Description.Contains("Station")) { icon = "icon-office"; }
                     else if (item.tr.Description.Contains("Courier")) { icon = "icon-truck"; }

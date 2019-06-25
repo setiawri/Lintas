@@ -276,7 +276,7 @@
                                                     {
                                                         foreach (var subitem in item.ListFileUploads)
                                                         {
-                                                            <a href="@Url.Action("Download", "Shipping", new { id = subitem.Id })">@subitem.Description</a> <br />
+                                                            <a href="@Url.Action("Download", "Shipping", new { id = subitem.Id })">@subitem.Description</a> @:| <a href="@Url.Action("DeleteDocumentUpload", "Shipping", new { id = subitem.Id })">Delete</a> <br />
                                                         }
                                                     }
                                                 </td>

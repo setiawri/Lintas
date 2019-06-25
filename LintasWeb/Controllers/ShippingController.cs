@@ -351,7 +351,7 @@ namespace LintasMVC.Controllers
                             tr.Id = Guid.NewGuid();
                             tr.Ref_Id = subitem.OrderItems_Id;
                             tr.Timestamp = DateTime.Now;
-                            tr.Description = "Item Shipped";
+                            tr.Description = "Processed for Shipping";
                             db.Tracking.Add(tr);
                         }
                     }
@@ -605,14 +605,14 @@ namespace LintasMVC.Controllers
                     DirectoryInfo di = Directory.CreateDirectory(Dir);
                 }
 
-                var existedDocuments = db.FileUploads.Where(x => x.Ref_Id == fileUploadsModels.Ref_Id).ToList();
-                foreach (var item in existedDocuments)
-                {
-                    db.FileUploads.Remove(item);
-                    string fileName = item.Id.ToString() + "_" + item.Description + Path.GetExtension(item.OriginalFilename);
-                    if (System.IO.File.Exists(Dir + fileName))
-                        System.IO.File.Delete(Dir + fileName);
-                }
+                //var existedDocuments = db.FileUploads.Where(x => x.Ref_Id == fileUploadsModels.Ref_Id).ToList();
+                //foreach (var item in existedDocuments)
+                //{
+                //    db.FileUploads.Remove(item);
+                //    string fileName = item.Id.ToString() + "_" + item.Description + Path.GetExtension(item.OriginalFilename);
+                //    if (System.IO.File.Exists(Dir + fileName))
+                //        System.IO.File.Delete(Dir + fileName);
+                //}
 
                 foreach (HttpPostedFileBase file in files)
                 {
@@ -641,6 +641,22 @@ namespace LintasMVC.Controllers
             string path = Server.MapPath("~/assets/document/" + id.ToString() + "_" + fileUploadsModels.Description + Path.GetExtension(fileUploadsModels.OriginalFilename));
             string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             return File(path, contentType, Path.GetFileName(path));
+        }
+
+        public ActionResult DeleteDocumentUpload(Guid id)
+        {
+            FileUploadsModels fileUploadsModels = db.FileUploads.Where(x => x.Id == id).FirstOrDefault();
+            db.FileUploads.Remove(fileUploadsModels);
+
+            string Dir = Server.MapPath("~/assets/document/");
+            string fileName = fileUploadsModels.Id.ToString() + "_" + fileUploadsModels.Description + Path.GetExtension(fileUploadsModels.OriginalFilename);
+            if (System.IO.File.Exists(Dir + fileName))
+                System.IO.File.Delete(Dir + fileName);
+
+            db.SaveChanges();
+
+            ShippingItemsModels shippingItemsModels = db.ShippingItems.Where(x => x.Id == fileUploadsModels.Ref_Id).FirstOrDefault();
+            return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });
         }
 
         public async Task<ActionResult> DeliveryLog(Guid? id)
