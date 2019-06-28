@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -333,6 +334,37 @@ namespace LintasMVC.Controllers
             }
 
             return View(shipmentsReportModels);
+        }
+
+        public async Task<ActionResult> Excel(Guid id)
+        {
+            var data = await (from sr in db.ShipmentsReport
+                              join si in db.ShippingItems on sr.ShippingItems_Id equals si.Id
+                              join s in db.Shipments on si.Shipments_Id equals s.Id
+                              where s.Id == id
+                              select new { sr }).ToListAsync();
+            List<ShipmentsReportModels> listReport = new List<ShipmentsReportModels>();
+            foreach (var item in data)
+            {
+                ShipmentsReportModels sr = item.sr;
+                listReport.Add(sr);
+            }
+
+            Common.ExportExcel ee = new Common.ExportExcel();
+
+            var fileDownloadName = db.Shipments.Where(x => x.Id == id).FirstOrDefault().No + ".xls";
+            var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            var package = ee.ForwarderReports(listReport);
+
+            var fileStream = new MemoryStream();
+            package.SaveAs(fileStream);
+            fileStream.Position = 0;
+
+            var fsr = new FileStreamResult(fileStream, contentType);
+            fsr.FileDownloadName = fileDownloadName;
+
+            return fsr;
         }
     }
 }
