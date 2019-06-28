@@ -43,6 +43,7 @@ namespace LintasMVC.Controllers
                                                 <th>Dimension (cm)</th>
                                                 <th>Weight (gr)</th>
                                                 <th>Notes</th>
+                                                <th>Document</th>
                                             </tr>
                                         </thead>
                                         <tbody>";
@@ -53,6 +54,7 @@ namespace LintasMVC.Controllers
                                 <td>" + item.Length + " x " + item.Width + " x " + item.Height + @"</td>
                                 <td>" + item.Weight.ToString("#,##0") + @"</td>
                                 <td>" + item.Notes + @"</td>
+                                <td><a href='" + Url.Content("~") + "Shipments/Report/" + item.Id + @"'>Edit</a></td>
                             </tr>";
             }
             message += "</tbody></table></div>";
@@ -114,6 +116,23 @@ namespace LintasMVC.Controllers
                     ShippingItemsModels model = await db.ShippingItems.Where(x => x.Id.ToString() == s).FirstOrDefaultAsync();
                     model.Shipments_Id = shipmentsModels.Id;
                     db.Entry(model).State = EntityState.Modified;
+
+                    ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == model.Shippings_Id).FirstOrDefaultAsync();
+
+                    ShipmentsReportModels shipmentsReportModels = new ShipmentsReportModels();
+                    shipmentsReportModels.Id = Guid.NewGuid();
+                    shipmentsReportModels.ShippingItems_Id = model.Id;
+                    shipmentsReportModels.ParcelWeight = model.Weight;
+                    shipmentsReportModels.ParcelLong = model.Length;
+                    shipmentsReportModels.ParcelWide = model.Width;
+                    shipmentsReportModels.ParcelHigh = model.Height;
+                    shipmentsReportModels.ConsignmentDate = DateTime.Today;
+                    shipmentsReportModels.ParcelQty = 1;
+                    shipmentsReportModels.ProductQty = 1;
+                    var customer = db.Customers.Where(x => x.Id == shippingsModels.Customers_Id).FirstOrDefault();
+                    shipmentsReportModels.ConsigneeName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
+                    shipmentsReportModels.ConsigneeAddress1 = shippingsModels.Address;
+                    db.ShipmentsReport.Add(shipmentsReportModels);
 
                     List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == model.Id).ToList();
                     foreach (var item in list_item)
@@ -294,6 +313,26 @@ namespace LintasMVC.Controllers
 
             await db.SaveChangesAsync();
             return Json(new { status = status, id = shipmentsModels.Id, name = forwarders_name }, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> Report(Guid id)
+        {
+            ShipmentsReportModels shipmentsReportModels = await db.ShipmentsReport.Where(x => x.ShippingItems_Id == id).FirstOrDefaultAsync();
+            return View(shipmentsReportModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Report([Bind(Include = "Id,ShippingItems_Id,WaybillNumber,ServiceNumber,ConversionNumber,OriginCountry,ParcelWeight,ParcelLong,ParcelWide,ParcelHigh,ParcelVolume,ConsignmentDate,TaxConsigneeNumber,ConsigneeName,ConsigneeCompany,ConsigneePhone,ConsigneeMobile,ConsigneeFax,ConsigneeEmail,ConsigneePostalCode,ConsigneeCountry,ConsigneeCountryCode,ConsigneeState,ConsigneeCity,ConsigneeAddress1,ConsigneeAddress2,ShipperName,ShipperCompany,ShipperPhone,ShipperMobile,ShipperFax,ShipperEmail,ShipperPostalCode,ShipperCountry,ShipperCountryCode,ShipperState,ShipperCity,ShipperAddress1,ShipperAddress2,ParcelQty,ProductQty,ProductDescription,DeclarationPrice,Currency,BillingCode,BillingAccount,BrokerName,BrokerPhone,HsCode,FreightCost,Insurance,BagNo,PaymentType")] ShipmentsReportModels shipmentsReportModels)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(shipmentsReportModels).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+
+            return View(shipmentsReportModels);
         }
     }
 }

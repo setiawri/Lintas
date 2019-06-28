@@ -226,6 +226,7 @@
     <Compile Include="Models\ShipmentItemStatusEnum.cs" />
     <Compile Include="Models\ShipmentLogModels.cs" />
     <Compile Include="Models\ShipmentsModels.cs" />
+    <Compile Include="Models\ShipmentsReportModels.cs" />
     <Compile Include="Models\ShipmentsViewModels.cs" />
     <Compile Include="Models\ShippingDocumentsViewModels.cs" />
     <Compile Include="Models\ShippingItemContentsModels.cs" />
@@ -415,6 +416,7 @@
     <Content Include="Views\Shipments\Delete.cshtml" />
     <Content Include="Views\Shipping\DeliveryLog.cshtml" />
     <Content Include="Views\Tracking\Index.cshtml" />
+    <Content Include="Views\Shipments\Report.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
