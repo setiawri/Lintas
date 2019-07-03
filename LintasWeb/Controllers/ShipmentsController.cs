@@ -135,12 +135,24 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ConsigneeAddress1 = shippingsModels.Address;
                     db.ShipmentsReport.Add(shipmentsReportModels);
 
-                    List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == model.Id).ToList();
-                    foreach (var item in list_item)
+                    if (string.IsNullOrEmpty(model.TrackingNo))
+                    {
+                        List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == model.Id).ToList();
+                        foreach (var item in list_item)
+                        {
+                            TrackingModels tr = new TrackingModels();
+                            tr.Id = Guid.NewGuid();
+                            tr.Ref_Id = item.OrderItems_Id;
+                            tr.Timestamp = DateTime.Now;
+                            tr.Description = "Item sent to Forwarders";
+                            db.Tracking.Add(tr);
+                        }
+                    }
+                    else //manual package
                     {
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
-                        tr.Ref_Id = item.OrderItems_Id;
+                        tr.Ref_Id = model.Id; //Shipping Items Id
                         tr.Timestamp = DateTime.Now;
                         tr.Description = "Item sent to Forwarders";
                         db.Tracking.Add(tr);
@@ -186,12 +198,25 @@ namespace LintasMVC.Controllers
             if (shipmentsModels.Status_enumid == ShipmentItemStatusEnum.Completed)
             {
                 ShippingItemsModels shippingItemsModels = db.ShippingItems.Where(x => x.Shipments_Id == shipmentsModels.Id).FirstOrDefault();
-                List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
-                foreach (var item in list_item)
+
+                if (string.IsNullOrEmpty(shippingItemsModels.TrackingNo))
+                {
+                    List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
+                    foreach (var item in list_item)
+                    {
+                        TrackingModels tr = new TrackingModels();
+                        tr.Id = Guid.NewGuid();
+                        tr.Ref_Id = item.OrderItems_Id;
+                        tr.Timestamp = DateTime.Now;
+                        tr.Description = "Received at Destination Station";
+                        db.Tracking.Add(tr);
+                    }
+                }
+                else //manual package
                 {
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
-                    tr.Ref_Id = item.OrderItems_Id;
+                    tr.Ref_Id = shippingItemsModels.Id; //shipping items id
                     tr.Timestamp = DateTime.Now;
                     tr.Description = "Received at Destination Station";
                     db.Tracking.Add(tr);

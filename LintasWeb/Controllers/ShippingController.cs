@@ -329,7 +329,15 @@ namespace LintasMVC.Controllers
                         shippingItemsModels.Notes = item.notes;
                         shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
                         shippingItemsModels.Invoiced = false;
+                        shippingItemsModels.TrackingNo = Common.Master.GetTrackingNo(Common.Master.GetRandomHexNumber(10)); //generate tracking no for manual package
                         db.ShippingItems.Add(shippingItemsModels);
+
+                        TrackingModels tr = new TrackingModels();
+                        tr.Id = Guid.NewGuid();
+                        tr.Ref_Id = shippingItemsModels.Id; //Shipping Items Id
+                        tr.Timestamp = DateTime.Now;
+                        tr.Description = "Processed for Shipping";
+                        db.Tracking.Add(tr);
                     }
                     else
                     {
@@ -667,7 +675,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeliveryLog([Bind(Include = "Id,Shippings_Id,No,Length,Width,Height,Weight,Notes,Status_enumid,Invoiced,Shipments_Id,Delivery_Status")] ShippingItemsModels shippingItemsModels, string Description)
+        public async Task<ActionResult> DeliveryLog([Bind(Include = "Id,Shippings_Id,No,Length,Width,Height,Weight,Notes,Status_enumid,Invoiced,Shipments_Id,Delivery_Status,TrackingNo")] ShippingItemsModels shippingItemsModels, string Description)
         {
             db.Entry(shippingItemsModels).State = EntityState.Modified;
 
@@ -688,14 +696,29 @@ namespace LintasMVC.Controllers
 
             if (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery || shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.Completed)
             {
-                List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
-                foreach (var item in list_item)
+                if (string.IsNullOrEmpty(shippingItemsModels.TrackingNo))
+                {
+                    List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
+                    foreach (var item in list_item)
+                    {
+                        TrackingModels tr = new TrackingModels();
+                        tr.Id = Guid.NewGuid();
+                        tr.Ref_Id = item.OrderItems_Id;
+                        tr.Timestamp = DateTime.Now;
+                        tr.Description =
+                            (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery)
+                            ? "Sent Out to Local Courier"
+                            : "Pick up by Customer";
+                        db.Tracking.Add(tr);
+                    }
+                }
+                else //manual package
                 {
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
-                    tr.Ref_Id = item.OrderItems_Id;
+                    tr.Ref_Id = shippingItemsModels.Id; //shipping item id
                     tr.Timestamp = DateTime.Now;
-                    tr.Description = 
+                    tr.Description =
                         (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery)
                         ? "Sent Out to Local Courier"
                         : "Pick up by Customer";
@@ -705,6 +728,23 @@ namespace LintasMVC.Controllers
 
             await db.SaveChangesAsync();
             return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });
+        }
+
+        public async Task<ActionResult> Label(Guid id)
+        {
+            ShippingItemsModels shippingItemsModels = await db.ShippingItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var shipping = (from s in db.Shippings
+                            join os in db.Stations on s.Origin_Stations_Id equals os.Id
+                            join ds in db.Stations on s.Destination_Stations_Id equals ds.Id
+                            join c in db.Customers on s.Customers_Id equals c.Id
+                            where s.Id == shippingItemsModels.Shippings_Id
+                            select new { s, os, ds, c }).FirstOrDefault();
+            ViewBag.Origin = shipping.os.Name;
+            ViewBag.Destination = shipping.ds.Name;
+            ViewBag.Customer = shipping.c.FirstName + " " + shipping.c.MiddleName + " " + shipping.c.LastName;
+            ViewBag.Address = shipping.s.Address;
+
+            return View(shippingItemsModels);
         }
     }
 }

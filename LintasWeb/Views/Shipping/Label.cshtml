@@ -1,0 +1,127 @@
+﻿@model LintasMVC.Models.ShippingItemsModels
+
+@{
+    Layout = null;
+    ViewBag.Title = "Label";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title</title>
+    <!-- Global stylesheets -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/bootstrap_limitless.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/layout.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/components.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/colors.min.css" rel="stylesheet" type="text/css">
+    <!-- /global stylesheets -->
+    <!-- Core JS files -->
+    <script src="~/assets/js/main/jquery.min.js"></script>
+    <script src="~/assets/js/main/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/plugins/loaders/blockui.min.js"></script>
+    <!-- /core JS files -->
+    <!-- Theme JS files -->
+    <script src="~/assets/js/plugins/forms/wizards/steps.min.js"></script>
+    <script src="~/assets/js/plugins/forms/styling/uniform.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+    <script src="~/assets/js/plugins/barcode/JsBarcode.all.min.js"></script>
+    <!-- /theme JS files -->
+</head>
+<body class="bg-slate-800">
+    <!-- Page content -->
+    <div class="page-content">
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Content area -->
+            <div class="content">
+                <!-- Invoice template -->
+                <div class="card">
+                    <div class="card-header bg-transparent header-elements-inline">
+                        <h6 class="card-title">@Model.No</h6>
+                        <div class="header-elements">
+                            <button type="button" class="btn btn-light btn-sm ml-3" onclick="print_exec()"><i class="icon-printer mr-2"></i> Print</button>
+                        </div>
+                    </div>
+
+                    <div class="card-body" id="print-area">
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="table-responsive">
+                                    <table class="table table-lg table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4" align="center">
+                                                    <svg class="barcode"
+                                                         jsbarcode-height="60"
+                                                         jsbarcode-value="@Model.No"
+                                                         jsbarcode-textmargin="0"
+                                                         jsbarcode-fontoptions="bold">
+                                                    </svg>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Length: @Model.Length cm</td>
+                                                <td>Width: @Model.Width cm</td>
+                                                <td>Height: @Model.Height cm</td>
+                                                <td>Weight: @Model.Weight gr</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">Origin: @ViewBag.Origin</td>
+                                                <td colspan="2">Destination: @ViewBag.Destination</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3">
+                                                    Customer Info: <br />
+                                                    @ViewBag.Customer <br />
+                                                    @ViewBag.Address
+                                                </td>
+                                                <td>
+                                                    Notes: <br />
+                                                    @Model.Notes
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="text-muted">Configure your printer setting to get actual size of label.</span>
+                    </div>
+                </div>
+                <!-- /invoice template -->
+            </div>
+            <!-- /content area -->
+        </div>
+        <!-- /main content -->
+    </div>
+    <!-- /page content -->
+
+    <script type="text/javascript">
+        function print_exec() {
+            var printContents = document.getElementById('print-area').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+        }
+
+        $(document).ready(function () {
+            JsBarcode('.barcode').init();
+        });
+    </script>
+</body>
+</html>

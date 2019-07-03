@@ -45,13 +45,15 @@ namespace LintasMVC.Common
 
         public static string GetTrackingNo(string no)
         {
-            int count = 0;
+            int count_oi = 0;
+            int count_si = 0;
             using (var ctx = new LintasContext())
             {
-                count = ctx.OrderItems.Where(x => x.TrackingNo == no).ToList().Count;
+                count_oi = ctx.OrderItems.Where(x => x.TrackingNo == no).ToList().Count;
+                count_si = ctx.ShippingItems.Where(x => x.TrackingNo == no).ToList().Count;
             }
 
-            if (count == 0)
+            if (count_oi == 0 && count_si == 0)
                 return no;
 
             return GetTrackingNo(GetRandomHexNumber(10));

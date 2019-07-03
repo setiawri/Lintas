@@ -271,6 +271,7 @@
     <Content Include="assets\js\main\bootstrap.bundle.min.js" />
     <Content Include="assets\js\main\jquery.min.js" />
     <Content Include="assets\js\moment.min.js" />
+    <Content Include="assets\js\plugins\barcode\JsBarcode.all.min.js" />
     <Content Include="assets\js\plugins\extensions\cookie.js" />
     <Content Include="assets\js\plugins\forms\inputs\inputmask.js" />
     <Content Include="assets\js\plugins\forms\selects\select2.min.js" />
@@ -423,6 +424,7 @@
     <Content Include="Views\Shipping\DeliveryLog.cshtml" />
     <Content Include="Views\Tracking\Index.cshtml" />
     <Content Include="Views\Shipments\Report.cshtml" />
+    <Content Include="Views\Shipping\Label.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

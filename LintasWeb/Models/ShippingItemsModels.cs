@@ -29,5 +29,6 @@ namespace LintasMVC.Models
 
         [Display(Name = "Delivery Status")]
         public DeliveryItemStatusEnum? Delivery_Status { get; set; }
+        public string TrackingNo { get; set; }
     }
 }

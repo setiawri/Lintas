@@ -343,7 +343,8 @@
                                         <td class="text-center">
                                             @if (item.Status_enumid == LintasMVC.Models.ShippingItemStatusEnum.Closed)
                                             {
-                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">View</a>
+                                                <a href="#" onclick="ViewPackage('@item.Id', '@item.No')">View</a> @:|
+                                                @Html.ActionLink("Label", "Label", "Shipping", new { id = item.Id }, new { @target = "_blank" })
                                             }
                                             else
                                             {

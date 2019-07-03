@@ -192,6 +192,7 @@ namespace LintasMVC.Controllers
                                                 <th>Dimension (cm)</th>
                                                 <th>Weight (gr)</th>
                                                 <th>Notes</th>
+                                                <th>Tracking No</th>
                                             </tr>
                                         </thead>
                                         <tbody>";
@@ -202,6 +203,7 @@ namespace LintasMVC.Controllers
                                 <td>" + item.Length + " x " + item.Width + " x " + item.Height + @"</td>
                                 <td>" + item.Weight.ToString("#,##0") + @"</td>
                                 <td>" + item.Notes + @"</td>
+                                <td><a href='" + Url.Content("~") + "Tracking/?no=" + item.TrackingNo + "' target='_blank'>" + item.TrackingNo + @"</a></td>
                             </tr>";
             }
             message += "</tbody></table></div>";

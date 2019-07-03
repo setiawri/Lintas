@@ -100,7 +100,8 @@
                 var dialog = bootbox.alert({
                     title: 'Shipping No: ' + no + ' ( ' + origin + ' - ' + destination + ' )',
                     message: data.content,
-                    backdrop: true
+                    backdrop: true,
+                    size: 'large'
                 });
             }, //end success
             error: function (result) {

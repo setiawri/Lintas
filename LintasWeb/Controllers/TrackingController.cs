@@ -25,13 +25,45 @@ namespace LintasMVC.Controllers
                         orderby tr.Timestamp descending
                         select new { tr }).ToList();
 
-            string status = (data.Count > 0) ? "200" : "404";
+            var data2 = (from si in db.ShippingItems
+                         join tr in db.Tracking on si.Id equals tr.Ref_Id
+                         where si.TrackingNo == no
+                         orderby tr.Timestamp descending
+                         select new { tr }).ToList();
+
+            string status = (data.Count == 0 && data2.Count == 0) ? "404" : "200";
 
             string result = "";
             if (data.Count > 0)
             {
                 int row = 0;
                 foreach (var item in data)
+                {
+                    string color = (row > 0) ? "text-danger" : "text-success";
+                    string icon = "";
+                    if (item.tr.Description.Contains("Orders")) { icon = "icon-copy"; }
+                    else if (item.tr.Description.Contains("Payment")) { icon = "icon-cash"; }
+                    else if (item.tr.Description.Contains("Supplier")) { icon = "icon-profile"; }
+                    else if (item.tr.Description.Contains("Processed")) { icon = "icon-airplane2"; }
+                    else if (item.tr.Description.Contains("Forwarders")) { icon = "icon-box"; }
+                    else if (item.tr.Description.Contains("Station")) { icon = "icon-office"; }
+                    else if (item.tr.Description.Contains("Courier")) { icon = "icon-truck"; }
+                    else { icon = "icon-check"; }
+
+                    result += @"<tr>
+                                    <td class='text-center'>
+                                        <i class='" + icon + @" " + color + @"'></i>
+                                    </td>
+                                    <td>[ " + item.tr.Timestamp.ToString("yyyy/MM/dd HH:mm") + " ] " + item.tr.Description + @"</td>
+                                </tr>";
+                    row++;
+                }
+            }
+
+            if (data2.Count > 0)
+            {
+                int row = 0;
+                foreach (var item in data2)
                 {
                     string color = (row > 0) ? "text-danger" : "text-success";
                     string icon = "";
