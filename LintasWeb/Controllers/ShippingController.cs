@@ -28,7 +28,8 @@ namespace LintasMVC.Controllers
                             Timestamp = s.Timestamp,
                             Origin = o.Name,
                             Destination = d.Name,
-                            Notes = s.Notes
+                            Notes = s.Notes,
+                            Status_enumid = s.Status_enumid
                         }).ToListAsync();
             return View(await data);
         }
@@ -73,6 +74,17 @@ namespace LintasMVC.Controllers
             message += "</tbody></table></div>";
 
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult CancelShipping(Guid id)
+        {
+            ShippingsModels shippingsModels = db.Shippings.Where(x => x.Id == id).FirstOrDefault();
+            shippingsModels.Status_enumid = ShippingStatusEnum.Cancelled;
+            db.Entry(shippingsModels).State = EntityState.Modified;
+            db.SaveChanges();
+            string status = "200";
+
+            return Json(status, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<ActionResult> Create(Guid? id, Guid? order)
@@ -183,36 +195,38 @@ namespace LintasMVC.Controllers
 
                 listPackage = await db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null).OrderBy(x => x.No).ToListAsync();
 
-                int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
-                if (count_inv == 0)
-                {
-                    ViewBag.startIndex = 1;
-                }
-                else
-                {
-                    if (listInvoice.Sum(x => x.TotalAmount) != listInvoice.Sum(x => x.TotalPaid))
-                    {
-                        ViewBag.startIndex = 2;
-                    }
-                    else
-                    {
-                        if (listShipment.Count == 0)
-                        {
-                            ViewBag.startIndex = 3;
-                        }
-                        else
-                        {
-                            if (db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null && x.Delivery_Status != null).Count() == 0)
-                            {
-                                ViewBag.startIndex = 4;
-                            }
-                            else
-                            {
-                                ViewBag.startIndex = 5;
-                            }
-                        }
-                    }
-                }
+                ViewBag.startIndex = (int)shipping.Status_enumid;
+
+                //int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
+                //if (count_inv == 0)
+                //{
+                //    ViewBag.startIndex = 1;
+                //}
+                //else
+                //{
+                //    if (listInvoice.Sum(x => x.TotalAmount) != listInvoice.Sum(x => x.TotalPaid))
+                //    {
+                //        ViewBag.startIndex = 2;
+                //    }
+                //    else
+                //    {
+                //        if (listShipment.Count == 0)
+                //        {
+                //            ViewBag.startIndex = 3;
+                //        }
+                //        else
+                //        {
+                //            if (db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null && x.Delivery_Status != null).Count() == 0)
+                //            {
+                //                ViewBag.startIndex = 4;
+                //            }
+                //            else
+                //            {
+                //                ViewBag.startIndex = 5;
+                //            }
+                //        }
+                //    }
+                //}
             }
 
             ShippingServices.Shipping = shipping;
@@ -224,74 +238,74 @@ namespace LintasMVC.Controllers
             return View(ShippingServices);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Customers_Id,No,Timestamp,Origin_Stations_Id,Destination_Stations_Id,Address,Notes")] ShippingsModels shippingsModels, string Items_Content)
-        {
-            if (string.IsNullOrEmpty(Items_Content))
-            {
-                ModelState.AddModelError("Items", "No items selected for this package.");
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Create([Bind(Include = "Id,Customers_Id,No,Timestamp,Origin_Stations_Id,Destination_Stations_Id,Address,Notes")] ShippingsModels shippingsModels, string Items_Content)
+        //{
+        //    if (string.IsNullOrEmpty(Items_Content))
+        //    {
+        //        ModelState.AddModelError("Items", "No items selected for this package.");
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                shippingsModels.Id = Guid.NewGuid();
-                shippingsModels.Timestamp = DateTime.Now;
-                db.Shippings.Add(shippingsModels);
+        //    if (ModelState.IsValid)
+        //    {
+        //        shippingsModels.Id = Guid.NewGuid();
+        //        shippingsModels.Timestamp = DateTime.Now;
+        //        db.Shippings.Add(shippingsModels);
 
-                List<ShippingItemDetails> listDetails = JsonConvert.DeserializeObject<List<ShippingItemDetails>>(Items_Content);
-                foreach (var item in listDetails)
-                {
-                    ShippingItemsModels shippingItemsModels;
-                    if (string.IsNullOrEmpty(item.id))
-                    {
-                        shippingItemsModels = new ShippingItemsModels();
-                        shippingItemsModels.Id = Guid.NewGuid();
-                        shippingItemsModels.Shippings_Id = shippingsModels.Id;
-                        shippingItemsModels.No = item.no;
-                        shippingItemsModels.Length = item.length;
-                        shippingItemsModels.Width = item.width;
-                        shippingItemsModels.Height = item.height;
-                        shippingItemsModels.Weight = item.weight;
-                        shippingItemsModels.Notes = item.notes;
-                        shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
-                        db.ShippingItems.Add(shippingItemsModels);
-                    }
-                    else
-                    {
-                        shippingItemsModels = await db.ShippingItems.Where(x => x.Id.ToString() == item.id).FirstOrDefaultAsync();
-                        shippingItemsModels.Shippings_Id = shippingsModels.Id;
-                        shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
-                        db.Entry(shippingItemsModels).State = EntityState.Modified;
-                    }
-                }
+        //        List<ShippingItemDetails> listDetails = JsonConvert.DeserializeObject<List<ShippingItemDetails>>(Items_Content);
+        //        foreach (var item in listDetails)
+        //        {
+        //            ShippingItemsModels shippingItemsModels;
+        //            if (string.IsNullOrEmpty(item.id))
+        //            {
+        //                shippingItemsModels = new ShippingItemsModels();
+        //                shippingItemsModels.Id = Guid.NewGuid();
+        //                shippingItemsModels.Shippings_Id = shippingsModels.Id;
+        //                shippingItemsModels.No = item.no;
+        //                shippingItemsModels.Length = item.length;
+        //                shippingItemsModels.Width = item.width;
+        //                shippingItemsModels.Height = item.height;
+        //                shippingItemsModels.Weight = item.weight;
+        //                shippingItemsModels.Notes = item.notes;
+        //                shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
+        //                db.ShippingItems.Add(shippingItemsModels);
+        //            }
+        //            else
+        //            {
+        //                shippingItemsModels = await db.ShippingItems.Where(x => x.Id.ToString() == item.id).FirstOrDefaultAsync();
+        //                shippingItemsModels.Shippings_Id = shippingsModels.Id;
+        //                shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
+        //                db.Entry(shippingItemsModels).State = EntityState.Modified;
+        //            }
+        //        }
 
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
+        //        await db.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
 
-            var customers = db.Customers.OrderBy(x => x.FirstName).ToList();
-            List<object> newList = new List<object>();
-            foreach (var customer in customers)
-            {
-                var fName = customer.FirstName;
-                var mName = customer.MiddleName;
-                var lName = customer.LastName;
-                string fullName = fName;
-                if (!string.IsNullOrEmpty(mName)) { fullName += " " + mName; }
-                if (!string.IsNullOrEmpty(lName)) { fullName += " " + lName; }
+        //    var customers = db.Customers.OrderBy(x => x.FirstName).ToList();
+        //    List<object> newList = new List<object>();
+        //    foreach (var customer in customers)
+        //    {
+        //        var fName = customer.FirstName;
+        //        var mName = customer.MiddleName;
+        //        var lName = customer.LastName;
+        //        string fullName = fName;
+        //        if (!string.IsNullOrEmpty(mName)) { fullName += " " + mName; }
+        //        if (!string.IsNullOrEmpty(lName)) { fullName += " " + lName; }
 
-                newList.Add(new
-                {
-                    Id = customer.Id,
-                    Name = fullName
-                });
-            }
+        //        newList.Add(new
+        //        {
+        //            Id = customer.Id,
+        //            Name = fullName
+        //        });
+        //    }
 
-            ViewBag.listCustomers = new SelectList(newList, "Id", "Name");
-            ViewBag.listStations = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
-            return View(shippingsModels);
-        }
+        //    ViewBag.listCustomers = new SelectList(newList, "Id", "Name");
+        //    ViewBag.listStations = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
+        //    return View(shippingsModels);
+        //}
 
         public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string no, Guid origin_id, Guid destination_id, string address, string notes, string shipping_items)
         {
@@ -310,6 +324,7 @@ namespace LintasMVC.Controllers
                 shippingsModels.Destination_Stations_Id = destination_id;
                 shippingsModels.Address = address;
                 shippingsModels.Notes = notes;
+                shippingsModels.Status_enumid = ShippingStatusEnum.Shipping;
                 db.Shippings.Add(shippingsModels);
 
                 List<ShippingItemDetails> listDetails = JsonConvert.DeserializeObject<List<ShippingItemDetails>>(shipping_items);
@@ -406,6 +421,9 @@ namespace LintasMVC.Controllers
             if (ModelState.IsValid)
             {
                 ShippingsModels shippingsModels = await db.Shippings.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
+                shippingsModels.Status_enumid = ShippingStatusEnum.WaitingPayment;
+                db.Entry(shippingsModels).State = EntityState.Modified;
+
                 int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
                 invoicesModels.No = shippingsModels.Timestamp.ToString("yyyyMMdd") + shippingsModels.No + counter;
@@ -510,10 +528,11 @@ namespace LintasMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Payment([Bind(Include = "Id,Invoices_Id,Timestamp,Amount,PaymentInfo,Notes")] PaymentsModels paymentsModels, Guid Shipping_Id)
         {
+            decimal remaining = 0;
             var invoice = db.Invoices.AsNoTracking().Where(x => x.Id == paymentsModels.Invoices_Id).FirstOrDefault();
             if (invoice != null)
             {
-                decimal remaining = invoice.TotalAmount - invoice.TotalPaid;
+                remaining = invoice.TotalAmount - invoice.TotalPaid;
                 if (paymentsModels.Amount > remaining)
                 {
                     ModelState.AddModelError("Max", "The Maximum payment is " + string.Format("{0:N2}", remaining));
@@ -530,6 +549,13 @@ namespace LintasMVC.Controllers
 
                 decimal sum_invoice_amount = db.Invoices.Where(x => x.Ref_Id == invoice.Ref_Id).Sum(x => x.TotalAmount);
                 decimal sum_invoice_paid = db.Invoices.Where(x => x.Ref_Id == invoice.Ref_Id).Sum(x => x.TotalPaid) + paymentsModels.Amount;
+
+                if (paymentsModels.Amount == remaining)
+                {
+                    ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == Shipping_Id).FirstOrDefaultAsync();
+                    shippingsModels.Status_enumid = ShippingStatusEnum.Documents;
+                    db.Entry(shippingsModels).State = EntityState.Modified;
+                }
 
                 await db.SaveChangesAsync();
 
@@ -634,6 +660,14 @@ namespace LintasMVC.Controllers
 
                     file.SaveAs(Path.Combine(Dir, fu.Id.ToString() + "_" + fu.Description + Path.GetExtension(file.FileName)));
                 }
+
+                ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == shippingItemsModels.Shippings_Id).FirstOrDefaultAsync();
+                if ((int)shippingsModels.Status_enumid <= 3)
+                {
+                    shippingsModels.Status_enumid = ShippingStatusEnum.OnShipments;
+                    db.Entry(shippingsModels).State = EntityState.Modified;
+                }
+
                 await db.SaveChangesAsync();
 
                 return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });
@@ -725,6 +759,17 @@ namespace LintasMVC.Controllers
                     db.Tracking.Add(tr);
                 }
             }
+
+            ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == shippingItemsModels.Shippings_Id).FirstOrDefaultAsync();
+            if (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.Completed)
+            {
+                shippingsModels.Status_enumid = ShippingStatusEnum.Completed;
+            }
+            else
+            {
+                shippingsModels.Status_enumid = ShippingStatusEnum.OnDelivery;
+            }
+            db.Entry(shippingsModels).State = EntityState.Modified;
 
             await db.SaveChangesAsync();
             return RedirectToAction("Create", "Shipping", new { id = shippingItemsModels.Shippings_Id });

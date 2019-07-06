@@ -91,16 +91,27 @@
                                     {
                                         foreach (var item in ViewBag.listItems)
                                         {
-                                            <tr>
-                                                <td>@item.Id</td>
-                                                <td>@item.No</td>
-                                                <td>@item.Length</td>
-                                                <td>@item.Width</td>
-                                                <td>@item.Height</td>
-                                                <td>@item.Weight</td>
-                                                <td>@item.Notes</td>
-                                                <td>@(row++)</td>
-                                            </tr>
+                                            bool isPaymentCompleted = false;
+                                            using (var ctx = new LintasMVC.Models.LintasContext())
+                                            {
+                                                Guid shippingsId = item.Shippings_Id;
+                                                var inv = ctx.Invoices.Where(x => x.Ref_Id == shippingsId).FirstOrDefault();
+                                                if (inv.TotalAmount == inv.TotalPaid) { isPaymentCompleted = true; }
+                                            }
+
+                                            if (isPaymentCompleted)
+                                            {
+                                                <tr>
+                                                    <td>@item.Id</td>
+                                                    <td>@item.No</td>
+                                                    <td>@item.Length</td>
+                                                    <td>@item.Width</td>
+                                                    <td>@item.Height</td>
+                                                    <td>@item.Weight</td>
+                                                    <td>@item.Notes</td>
+                                                    <td>@(row++)</td>
+                                                </tr>
+                                            }
                                         }
                                     }
                                 </tbody>

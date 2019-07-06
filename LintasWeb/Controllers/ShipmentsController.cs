@@ -92,7 +92,7 @@ namespace LintasMVC.Controllers
         public ActionResult Create()
         {
             ViewBag.listForwarders = new SelectList(db.Forwarders.Where(x => x.Active == true).OrderBy(x => x.Name).ToList(), "Id", "Name");
-            ViewBag.listItems = db.ShippingItems.Where(x => x.Shipments_Id == null).OrderBy(x => x.No).ToList();
+            ViewBag.listItems = db.ShippingItems.Where(x => x.Shipments_Id == null && x.Invoiced == true).OrderBy(x => x.No).ToList();
             return View();
         }
 
@@ -164,7 +164,7 @@ namespace LintasMVC.Controllers
             }
 
             ViewBag.listForwarders = new SelectList(db.Forwarders.Where(x => x.Active == true).OrderBy(x => x.Name).ToList(), "Id", "Name");
-            ViewBag.listItems = db.ShippingItems.Where(x => x.Shipments_Id == null).OrderBy(x => x.No).ToList();
+            ViewBag.listItems = db.ShippingItems.Where(x => x.Shipments_Id == null && x.Invoiced == true).OrderBy(x => x.No).ToList();
             return View(shipmentsModels);
         }
 

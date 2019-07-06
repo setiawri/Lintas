@@ -47,6 +47,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Origin)</th>
                                 <th>@Html.DisplayNameFor(model => model.Destination)</th>
                                 <th>@Html.DisplayNameFor(model => model.Notes)</th>
+                                <th>@Html.DisplayNameFor(model => model.Status_enumid)</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -59,9 +60,47 @@
                                     <td>@Html.DisplayFor(modelItem => item.Origin)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Destination)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                    <td>
+                                        @if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.Cancelled)
+                                        {
+                                            <span class="badge badge-dark d-block">Cancelled</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.Shipping)
+                                        {
+                                            <span class="badge bg-orange d-block">Shipping</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.WaitingPayment)
+                                        {
+                                            <span class="badge badge-warning d-block">Waiting Payment</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.Documents)
+                                        {
+                                            <span class="badge bg-purple d-block">Documents</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.OnShipments)
+                                        {
+                                            <span class="badge bg-brown d-block">On Shipments</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.OnDelivery)
+                                        {
+                                            <span class="badge badge-success d-block">On Delivery</span>
+                                        }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.Completed)
+                                        {
+                                            <span class="badge badge-primary d-block">Completed</span>
+                                        }
+                                    </td>
                                     <td class="text-center">
-                                        <a href="#" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Views</a> |
-                                        <a href="@Url.Action("Create", "Shipping", new { id = item.Id })">Edit</a>
+                                        @if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.Cancelled)
+                                        {
+                                            <a href="#" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Views</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Views</a> @:|
+                                            <a href="@Url.Action("Create", "Shipping", new { id = item.Id })">Edit</a> @:|
+                                            <a href="#" onclick="Cancelled('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Cancel</a>
+                                        }
                                         @*<div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">
@@ -110,6 +149,39 @@
         }); //end ajax
     }
 
+    function Cancelled(id, no, origin, destination) {
+        bootbox.confirm({
+            message: "Are you sure want to cancel Shipping No: " + no + " ( " + origin + " - " + destination + " ) ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("CancelShipping", "Shipping")',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            location.reload();
+                        }, //end success
+                        error: function (result) {
+                            bootbox.alert("Error " + result);
+                        } //end error
+                    }); //end ajax
+                }
+            }
+        });
+    }
+
     $(document).ready(function () {
         // Setting datatable defaults
         $.extend($.fn.dataTable.defaults, {
@@ -117,7 +189,7 @@
             columnDefs: [{
                 orderable: false,
                 //width: 100,
-                targets: [5]
+                targets: [6]
             }],
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             language: {

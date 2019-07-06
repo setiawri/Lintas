@@ -29,6 +29,7 @@ namespace LintasMVC.Models
         [Required]
         public string Address { get; set; }
         public string Notes { get; set; }
+        public ShippingStatusEnum Status_enumid { get; set; }
     }
 
     public class ShippingsViewModels
@@ -45,6 +46,9 @@ namespace LintasMVC.Models
         public string Origin { get; set; }
         public string Destination { get; set; }
         public string Notes { get; set; }
+
+        [Display(Name = "Status")]
+        public ShippingStatusEnum Status_enumid { get; set; }
     }
 
     public class ShippingItemDetails

@@ -241,6 +241,7 @@
     <Compile Include="Models\ShippingPricesModels.cs" />
     <Compile Include="Models\ShippingServicesModels.cs" />
     <Compile Include="Models\ShippingsModels.cs" />
+    <Compile Include="Models\ShippingStatusEnum.cs" />
     <Compile Include="Models\StationsIndexViewModels.cs" />
     <Compile Include="Models\StationsModels.cs" />
     <Compile Include="Models\TrackingModels.cs" />
