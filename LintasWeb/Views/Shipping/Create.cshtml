@@ -47,6 +47,16 @@
                         
                         <div class="form-group row">
                             <div class="col-lg-6">
+                                <div class="form-check mb-1">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" id="chkCustomer" class="check-styled-primary" data-fouc>
+                                        Send to Customer's Address
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Shipping.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
@@ -57,6 +67,17 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Company, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Company, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Company, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
                                     @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
                                         @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
@@ -64,8 +85,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
                                     <label class="col-form-label col-lg-3">Stations</label>
@@ -83,15 +102,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Notes, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
@@ -100,6 +110,114 @@
                                     <div class="col-lg-9">
                                         @Html.TextAreaFor(model => model.Shipping.Address, new { @class = "form-control", @rows = 3 })
                                         @Html.ValidationMessageFor(model => model.Shipping.Address, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Address2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.TextAreaFor(model => model.Shipping.Address2, new { @class = "form-control", @rows = 3 })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Address2, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.City, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.City, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.City, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.State, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.State, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.State, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Country, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        <div class="row">
+                                            <div class="col-lg-8">
+                                                @Html.EditorFor(model => model.Shipping.Country, new { htmlAttributes = new { @class = "form-control", @placeholder = "Country" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Country, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-lg-4">
+                                                @Html.EditorFor(model => model.Shipping.CountryCode, new { htmlAttributes = new { @class = "form-control", @placeholder = "Code" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.CountryCode, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.PostalCode, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.PostalCode, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Phone1, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Phone1, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Phone1, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Phone2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Phone2, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Phone2, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Fax, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Fax, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Fax, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Email, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Email, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Notes, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -117,6 +235,7 @@
                                     <tr>
                                         <th></th>
                                         <th>No</th>
+                                        <th>Description</th>
                                         <th>Length (cm)</th>
                                         <th>Width (cm)</th>
                                         <th>Height (cm)</th>
@@ -134,6 +253,7 @@
                                             <tr>
                                                 <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
                                                 <td>@item.No</td>
+                                                <td>@item.Description</td>
                                                 <td>@item.Length</td>
                                                 <td>@item.Width</td>
                                                 <td>@item.Height</td>
@@ -449,6 +569,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">Description</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control mdl-desc">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-form-label col-sm-3">Dimension (cm)</label>
                                     <div class="col-sm-3">
                                         <input type="number" placeholder="Length" class="form-control mdl-length">
@@ -496,6 +622,20 @@
         dataTable.row(no).remove().draw();
         //$('#row_' + no).remove();
         //math_total_price();
+    }
+
+    function ClearCustomer() {
+        $('#Shipping_Address').val('');
+        $('#Shipping_Address2').val('');
+        $('#Shipping_City').val('');
+        $('#Shipping_State').val('');
+        $('#Shipping_Country').val('');
+        $('#Shipping_CountryCode').val('');
+        $('#Shipping_PostalCode').val('');
+        $('#Shipping_Phone1').val('');
+        $('#Shipping_Phone2').val('');
+        $('#Shipping_Fax').val('');
+        $('#Shipping_Email').val('');
     }
 
     //Form Invoice
@@ -580,6 +720,10 @@
                         $('.shipping-validation').html('The Customer field is required.').show();
                         return false;
                     }
+                    else if ($('#Shipping_No').val() == '') {
+                        $('.shipping-validation').html('The No field is required.').show();
+                        return false;
+                    }
                     else if ($('#Shipping_Origin_Stations_Id').val() == '') {
                         $('.shipping-validation').html('The Origin Station field is required.').show();
                         return false;
@@ -589,11 +733,31 @@
                         return false;
                     }
                     else if ($('#Shipping_Address').val() == '') {
-                        $('.shipping-validation').html('The Destination Address field is required.').show();
+                        $('.shipping-validation').html('The Address 1 field is required.').show();
                         return false;
                     }
-                    else if ($('#Shipping_No').val() == '') {
-                        $('.shipping-validation').html('The No field is required.').show();
+                    else if ($('#Shipping_City').val() == '') {
+                        $('.shipping-validation').html('The City field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_State').val() == '') {
+                        $('.shipping-validation').html('The State field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Country').val() == '') {
+                        $('.shipping-validation').html('The Country field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_CountryCode').val() == '') {
+                        $('.shipping-validation').html('The Country Code field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_PostalCode').val() == '') {
+                        $('.shipping-validation').html('The Postal Code field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Phone1').val() == '') {
+                        $('.shipping-validation').html('The Mobile field is required.').show();
                         return false;
                     }
                     else if (datatable.page.info().recordsTotal == 0) {
@@ -609,14 +773,15 @@
                             var data = datatable.row(current_row).data();
                             console.log(data);
 
-                            var id = data[7];
+                            var id = data[8];
                             var no = data[1];
-                            var length = parseFloat(data[2]);
-                            var width = parseFloat(data[3]);
-                            var height = parseFloat(data[4]);
-                            var weight = parseFloat(data[5]);
-                            var notes = data[6];
-                            var obj = { id: id, no: no, length: length, width: width, height: height, weight: weight, notes: notes };
+                            var desc = data[2];
+                            var length = parseFloat(data[3]);
+                            var width = parseFloat(data[4]);
+                            var height = parseFloat(data[5]);
+                            var weight = parseFloat(data[6]);
+                            var notes = data[7];
+                            var obj = { id: id, no: no, desc: desc, length: length, width: width, height: height, weight: weight, notes: notes };
                             arrItem.push(obj);
                         });
                         $('#Items_Content').val(JSON.stringify(arrItem));
@@ -628,10 +793,21 @@
                             data: {
                                 shipping_id: $('#Shipping_Id').val(),
                                 customer_id: $('#Shipping_Customers_Id').val(),
+                                company: $('#Shipping_Company').val(),
                                 no: $('#Shipping_No').val(),
                                 origin_id: $('#Shipping_Origin_Stations_Id').val(),
                                 destination_id: $('#Shipping_Destination_Stations_Id').val(),
                                 address: $('#Shipping_Address').val(),
+                                address2: $('#Shipping_Address2').val(),
+                                city: $('#Shipping_City').val(),
+                                state: $('#Shipping_State').val(),
+                                country: $('#Shipping_Country').val(),
+                                country_code: $('#Shipping_CountryCode').val(),
+                                postal_code: $('#Shipping_PostalCode').val(),
+                                mobile: $('#Shipping_Phone1').val(),
+                                phone: $('#Shipping_Phone2').val(),
+                                fax: $('#Shipping_Fax').val(),
+                                email: $('#Shipping_Email').val(),
                                 notes: $('#Shipping_Notes').val(),
                                 shipping_items: $('#Items_Content').val()
                             },
@@ -723,6 +899,10 @@
             selectYears: true
         });
 
+        $('.check-styled-primary').uniform({
+            wrapperClass: 'border-primary-600 text-primary-800'
+        });
+
         $('#Shipping_Customers_Id').change(function () {
             if ($(this).val() != '') {
                 $.get('@Url.Action("GetItems", "Shipping")', { customerId: $(this).val() }, function (data) {
@@ -734,6 +914,7 @@
                             dataTable.row.add([
                                 '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + index + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
                                 row.No,
+                                row.Description,
                                 row.Length,
                                 row.Width,
                                 row.Height,
@@ -754,8 +935,45 @@
             $('#Shipping_Customers_Id').val('@ViewBag.custID').trigger('change');
         }
 
+        $('#chkCustomer').click(function () {
+            if ($(this).prop('checked') == false) {
+                ClearCustomer();
+            }
+            else {
+                if ($('#Shipping_Customers_Id').val() == '') {
+                    ClearCustomer();
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("AutofillingCustomer", "Shipping")',
+                        data: {
+                            customer_id: $('#Shipping_Customers_Id').val()
+                        },
+                        success: function (data) {
+                            $('#Shipping_Address').val(data.cust_model.Address);
+                            $('#Shipping_Address2').val(data.cust_model.Address2);
+                            $('#Shipping_City').val(data.cust_model.City);
+                            $('#Shipping_State').val(data.cust_model.State);
+                            $('#Shipping_Country').val(data.country_model.Name);
+                            $('#Shipping_CountryCode').val(data.country_model.Code);
+                            $('#Shipping_PostalCode').val(data.cust_model.Zipcode);
+                            $('#Shipping_Phone1').val(data.cust_model.Phone1);
+                            $('#Shipping_Phone2').val(data.cust_model.Phone2);
+                            $('#Shipping_Fax').val(data.cust_model.Fax);
+                            $('#Shipping_Email').val(data.cust_model.Email);
+                        }, //end success
+                        error: function (result) {
+                            bootbox.alert("Error " + result);
+                        } //end error
+                    }); //end ajax
+                }
+            }
+        });
+
         $('.mdl-btn-add').click(function () {
             var no = $('.mdl-no').val();
+            var desc = $('.mdl-desc').val();
             var length = $('.mdl-length').val();
             var width = $('.mdl-width').val();
             var height = $('.mdl-height').val();
@@ -764,6 +982,9 @@
 
             if (no == '') {
                 $('.model-validation').html('The No field is required.').show();
+            }
+            else if (desc == '') {
+                $('.model-validation').html('The Description field is required.').show();
             }
             else if (length == '' || length == 0) {
                 $('.model-validation').html('The Length field is required.').show();
@@ -784,6 +1005,7 @@
                 dataTable.row.add([
                     '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + row_count + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
                     no,
+                    desc,
                     parseFloat(length),
                     parseFloat(width),
                     parseFloat(height),
@@ -817,7 +1039,7 @@
         var datatable = $('.datatable').DataTable({
             columnDefs: [
                 {
-                    visible: false, targets: [7]
+                    visible: false, targets: [8]
                 }
             ],
             //select: {

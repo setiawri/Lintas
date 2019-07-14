@@ -27,7 +27,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Address,Phone1,Phone2,Notes,Active")] ForwardersModels forwardersModels)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Address,Phone1,Phone2,Notes,BillingCode,BillingAccount,Active")] ForwardersModels forwardersModels)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +57,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Address,Phone1,Phone2,Notes,Active")] ForwardersModels forwardersModels)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Address,Phone1,Phone2,Notes,BillingCode,BillingAccount,Active")] ForwardersModels forwardersModels)
         {
             if (ModelState.IsValid)
             {

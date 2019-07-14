@@ -28,7 +28,7 @@ namespace LintasMVC.Controllers
                             MiddleName = cst.MiddleName,
                             LastName = cst.LastName,
                             Address = cst.Address,
-                            Zipcode = cst.Zipcode,
+                            City = cst.City,
                             Countries = cty.Name
                         }).ToListAsync();
             return View(await data);
@@ -46,7 +46,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,FirstName,MiddleName,LastName,Address,Phone1,Phone2,Zipcode,Countries_Id,Notes")] CustomersModels customersModels)
+        public async Task<ActionResult> Create([Bind(Include = "Id,FirstName,MiddleName,LastName,Address,Address2,City,State,Phone1,Phone2,Zipcode,Countries_Id,Fax,Email,Notes")] CustomersModels customersModels)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,FirstName,MiddleName,LastName,Address,Phone1,Phone2,Zipcode,Countries_Id,Notes")] CustomersModels customersModels)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,FirstName,MiddleName,LastName,Address,Address2,City,State,Phone1,Phone2,Zipcode,Countries_Id,Fax,Email,Notes")] CustomersModels customersModels)
         {
             if (ModelState.IsValid)
             {
@@ -107,7 +107,7 @@ namespace LintasMVC.Controllers
                             MiddleName = cst.MiddleName,
                             LastName = cst.LastName,
                             Address = cst.Address,
-                            Zipcode = cst.Zipcode,
+                            City = cst.City,
                             Countries = cty.Name
                         }).FirstOrDefaultAsync();
 

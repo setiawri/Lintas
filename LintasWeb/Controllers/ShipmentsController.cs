@@ -132,7 +132,25 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ProductQty = 1;
                     var customer = db.Customers.Where(x => x.Id == shippingsModels.Customers_Id).FirstOrDefault();
                     shipmentsReportModels.ConsigneeName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
+                    shipmentsReportModels.ConsigneeCompany = shippingsModels.Company;
+                    shipmentsReportModels.ConsigneePhone = shippingsModels.Phone2;
+                    shipmentsReportModels.ConsigneeMobile = shippingsModels.Phone1;
+                    shipmentsReportModels.ConsigneeFax = shippingsModels.Fax;
+                    shipmentsReportModels.ConsigneeEmail = shippingsModels.Email;
+                    shipmentsReportModels.ConsigneePostalCode = shippingsModels.PostalCode;
+                    shipmentsReportModels.ConsigneeCountry = shippingsModels.Country;
+                    shipmentsReportModels.ConsigneeCountryCode = shippingsModels.CountryCode;
+                    shipmentsReportModels.ConsigneeState = shippingsModels.State;
+                    shipmentsReportModels.ConsigneeCity = shippingsModels.City;
                     shipmentsReportModels.ConsigneeAddress1 = shippingsModels.Address;
+                    shipmentsReportModels.ConsigneeAddress2 = shippingsModels.Address2;
+                    shipmentsReportModels.ProductDescription = model.Description;
+                    shipmentsReportModels.Currency = "AUD$";
+                    var forwarder = db.Forwarders.Where(x => x.Id == shipmentsModels.Forwarders_Id).FirstOrDefault();
+                    shipmentsReportModels.BillingCode = forwarder.BillingCode;
+                    shipmentsReportModels.BillingAccount = forwarder.BillingAccount;
+                    shipmentsReportModels.BrokerName = forwarder.Name;
+                    shipmentsReportModels.BrokerPhone = forwarder.Phone1;
                     db.ShipmentsReport.Add(shipmentsReportModels);
 
                     if (string.IsNullOrEmpty(model.TrackingNo))

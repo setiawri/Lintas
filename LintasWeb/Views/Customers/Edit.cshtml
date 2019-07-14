@@ -79,6 +79,51 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            @Html.LabelFor(model => model.Address2, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.TextAreaFor(model => model.Address2, new { @class = "form-control", @rows = 3 })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.State, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Countries_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.DropDownListFor(model => model.Countries_Id, ViewBag.listCountries as SelectList, "Select Country", new { @class = "form-control select2" })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Countries_Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.Zipcode, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.Zipcode, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.Zipcode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             @Html.LabelFor(model => model.Phone1, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                             <div class="col-lg-5">
                                 @Html.EditorFor(model => model.Phone1, new { htmlAttributes = new { @class = "form-control" } })
@@ -97,21 +142,21 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            @Html.LabelFor(model => model.Zipcode, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            @Html.LabelFor(model => model.Fax, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                             <div class="col-lg-5">
-                                @Html.EditorFor(model => model.Zipcode, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.Fax, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                             <div class="col-lg-5">
-                                @Html.ValidationMessageFor(model => model.Zipcode, "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.Fax, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div class="form-group row">
-                            @Html.LabelFor(model => model.Countries_Id, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                             <div class="col-lg-5">
-                                @Html.DropDownListFor(model => model.Countries_Id, ViewBag.listCountries as SelectList, "Select Country", new { @class = "form-control select2" })
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                             <div class="col-lg-5">
-                                @Html.ValidationMessageFor(model => model.Countries_Id, "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div class="form-group row">

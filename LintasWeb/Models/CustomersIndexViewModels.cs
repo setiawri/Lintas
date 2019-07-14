@@ -20,9 +20,8 @@ namespace LintasMVC.Models
         public string LastName { get; set; }
         
         public string Address { get; set; }
-
-        [Display(Name = "Zip Code")]
-        public string Zipcode { get; set; }
+        
+        public string City { get; set; }
 
         public string Countries { get; set; }
     }

@@ -33,7 +33,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Notes")] CountriesModels countriesModels)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Code,Notes")] CountriesModels countriesModels)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Notes")] CountriesModels countriesModels)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Code,Notes")] CountriesModels countriesModels)
         {
             if (ModelState.IsValid)
             {

@@ -44,6 +44,11 @@ namespace LintasMVC.Common
             ws.Column(2).Width = 40;
             ws.Column(3).Width = 20;
             ws.Column(4).Width = 20;
+            ws.Column(5).Width = 20;
+            ws.Column(6).Width = 20;
+            ws.Column(7).Width = 20;
+            ws.Column(8).Width = 20;
+            ws.Column(9).Width = 20;
 
             //header table
             ws.Cells[1, 1].Value = "NO";
@@ -131,7 +136,7 @@ namespace LintasMVC.Common
                 ws.Cells[row_index, col_1st_package].Value = item.ParcelWide; row_index++;
                 ws.Cells[row_index, col_1st_package].Value = item.ParcelHigh; row_index++;
                 ws.Cells[row_index, col_1st_package].Value = item.ParcelVolume; row_index++;
-                ws.Cells[row_index, col_1st_package].Value = item.ConsignmentDate; row_index++;
+                ws.Cells[row_index, col_1st_package].Value = item.ConsignmentDate; ws.Cells[row_index, col_1st_package].Style.Numberformat.Format = "yyyy/MM/dd"; row_index++;
                 ws.Cells[row_index, col_1st_package].Value = item.TaxConsigneeNumber; row_index++;
                 ws.Cells[row_index, col_1st_package].Value = item.ConsigneeName; row_index++;
                 ws.Cells[row_index, col_1st_package].Value = item.ConsigneeCompany; row_index++;

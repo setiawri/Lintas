@@ -1087,8 +1087,8 @@ namespace LintasMVC.Controllers
                 shippingItemsModels.Id = Guid.NewGuid();
                 shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Open;
                 shippingItemsModels.Invoiced = false;
-                db.ShippingItems.Add(shippingItemsModels);
 
+                int row = 1; string description = "";
                 string[] arrID = Items_Selected.Split(',');
                 foreach (string s in arrID)
                 {
@@ -1106,7 +1106,14 @@ namespace LintasMVC.Controllers
                         }
                     }
                     db.ShippingItemContents.Add(shippingItemContentsModels);
+
+                    if (row == 1) { description += db.OrderItems.Where(x => x.Id.ToString() == s).FirstOrDefault().Description; }
+                    else { description += ", " + db.OrderItems.Where(x => x.Id.ToString() == s).FirstOrDefault().Description; }
+                    row++;
                 }
+
+                shippingItemsModels.Description = description;
+                db.ShippingItems.Add(shippingItemsModels);
 
                 OrdersModels ordersModels = await db.Orders.Where(x => x.Id == Order_Id).FirstOrDefaultAsync();
                 ordersModels.Status_enumid = OrderStatusEnum.Packaging;

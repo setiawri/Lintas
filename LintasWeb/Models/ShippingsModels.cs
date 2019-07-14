@@ -26,8 +26,34 @@ namespace LintasMVC.Models
         [Display(Name = "Destination")]
         public Guid Destination_Stations_Id { get; set; }
 
+        public string Company { get; set; }
+
         [Required]
+        [Display(Name = "Address 1")]
         public string Address { get; set; }
+
+        [Display(Name = "Address 2")]
+        public string Address2 { get; set; }
+
+        public string City { get; set; }
+        public string State { get; set; }
+
+        [Display(Name = "Postal Code")]
+        public string PostalCode { get; set; }
+
+        public string Country { get; set; }
+
+        [Display(Name = "Country Code")]
+        public string CountryCode { get; set; }
+
+        [Display(Name = "Mobile")]
+        public string Phone1 { get; set; }
+
+        [Display(Name = "Phone")]
+        public string Phone2 { get; set; }
+
+        public string Fax { get; set; }
+        public string Email { get; set; }
         public string Notes { get; set; }
         public ShippingStatusEnum Status_enumid { get; set; }
     }
@@ -55,6 +81,7 @@ namespace LintasMVC.Models
     {
         public string id { get; set; }
         public string no { get; set; }
+        public string desc { get; set; }
         public int length { get; set; }
         public int width { get; set; }
         public int height { get; set; }

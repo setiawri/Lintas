@@ -25,21 +25,33 @@ namespace LintasMVC.Models
         public string LastName { get; set; }
 
         [Required]
+        [Display(Name = "Address 1")]
         public string Address { get; set; }
 
+        [Display(Name = "Address 2")]
+        public string Address2 { get; set; }
+
         [Required]
-        [Display(Name = "Phone 1")]
+        public string City { get; set; }
+
+        [Required]
+        public string State { get; set; }
+
+        [Required]
+        [Display(Name = "Mobile")]
         public string Phone1 { get; set; }
 
-        [Display(Name = "Phone 2")]
+        [Display(Name = "Phone")]
         public string Phone2 { get; set; }
 
-        [Display(Name = "Zip Code")]
+        [Display(Name = "Postal Code")]
         public string Zipcode { get; set; }
 
         [Required]
         [Display(Name = "Countries")]
         public Guid Countries_Id { get; set; }
+        public string Fax { get; set; }
+        public string Email { get; set; }
         public string Notes { get; set; }
     }
 }

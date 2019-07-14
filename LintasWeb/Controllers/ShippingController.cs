@@ -87,6 +87,14 @@ namespace LintasMVC.Controllers
             return Json(status, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult AutofillingCustomer(Guid customer_id)
+        {
+            var cust_model = db.Customers.Where(x => x.Id == customer_id).FirstOrDefault();
+            var country_model = db.Countries.Where(x => x.Id == cust_model.Countries_Id).FirstOrDefault();
+
+            return Json(new { cust_model = cust_model, country_model = country_model }, JsonRequestBehavior.AllowGet);
+        }
+
         public async Task<ActionResult> Create(Guid? id, Guid? order)
         {
             var customers = await db.Customers.OrderBy(x => x.FirstName).ToListAsync();
@@ -307,7 +315,7 @@ namespace LintasMVC.Controllers
         //    return View(shippingsModels);
         //}
 
-        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string no, Guid origin_id, Guid destination_id, string address, string notes, string shipping_items)
+        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string company, string no, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string notes, string shipping_items)
         {
             string status;
             ShippingsModels shippingsModels;
@@ -318,11 +326,22 @@ namespace LintasMVC.Controllers
                 shippingsModels = new ShippingsModels();
                 shippingsModels.Id = Guid.NewGuid();
                 shippingsModels.Customers_Id = customer_id;
+                shippingsModels.Company = company;
                 shippingsModels.No = no;
                 shippingsModels.Timestamp = DateTime.Now;
                 shippingsModels.Origin_Stations_Id = origin_id;
                 shippingsModels.Destination_Stations_Id = destination_id;
                 shippingsModels.Address = address;
+                shippingsModels.Address2 = address2;
+                shippingsModels.City = city;
+                shippingsModels.State = state;
+                shippingsModels.Country = country;
+                shippingsModels.CountryCode = country_code;
+                shippingsModels.PostalCode = postal_code;
+                shippingsModels.Phone1 = mobile;
+                shippingsModels.Phone2 = phone;
+                shippingsModels.Fax = fax;
+                shippingsModels.Email = email;
                 shippingsModels.Notes = notes;
                 shippingsModels.Status_enumid = ShippingStatusEnum.Shipping;
                 db.Shippings.Add(shippingsModels);
@@ -345,6 +364,7 @@ namespace LintasMVC.Controllers
                         shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
                         shippingItemsModels.Invoiced = false;
                         shippingItemsModels.TrackingNo = Common.Master.GetTrackingNo(Common.Master.GetRandomHexNumber(10)); //generate tracking no for manual package
+                        shippingItemsModels.Description = item.desc;
                         db.ShippingItems.Add(shippingItemsModels);
 
                         TrackingModels tr = new TrackingModels();
