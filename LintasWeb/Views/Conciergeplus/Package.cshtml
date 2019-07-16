@@ -58,15 +58,15 @@
                                 <div class="form-group row">
                                     <label class="col-form-label col-lg-3">Dimension (cm)</label>
                                     <div class="col-lg-3">
-                                        @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @class = "form-control", @placeholder = "Length" } })
+                                        @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @class = "form-control", @placeholder = "Length", @min = 1 } })
                                         @Html.ValidationMessageFor(model => model.Length, "", new { @class = "text-danger" })
                                     </div>
                                     <div class="col-lg-3">
-                                        @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @class = "form-control", @placeholder = "Width" } })
+                                        @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @class = "form-control", @placeholder = "Width", @min = 1 } })
                                         @Html.ValidationMessageFor(model => model.Width, "", new { @class = "text-danger" })
                                     </div>
                                     <div class="col-lg-3">
-                                        @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @class = "form-control", @placeholder = "Height" } })
+                                        @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @class = "form-control", @placeholder = "Height", @min = 1 } })
                                         @Html.ValidationMessageFor(model => model.Height, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                                 <div class="form-group row">
                                     <label class="col-form-label col-lg-3">Weight (gr)</label>
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @class = "form-control", @min = 1 } })
                                         @Html.ValidationMessageFor(model => model.Weight, "", new { @class = "text-danger" })
                                     </div>
                                 </div>

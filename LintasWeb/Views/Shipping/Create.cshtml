@@ -47,45 +47,6 @@
                         
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <div class="form-check mb-1">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" id="chkCustomer" class="check-styled-primary" data-fouc>
-                                        Send to Customer's Address
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.DropDownListFor(model => model.Shipping.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Customers_Id, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Company, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Company, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Company, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.No, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
                                 <div class="form-group row">
                                     <label class="col-form-label col-lg-3">Stations</label>
                                     <div class="col-lg-9">
@@ -106,9 +67,48 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Customers_Id, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.DropDownListFor(model => model.Shipping.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Customers_Id, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-check mb-1">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" id="chkCustomer" class="check-styled-primary" data-fouc>
+                                        Send to Customer's Address
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.No, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.Company, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.Company, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.Company, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <div class="form-group row">
                                     @Html.LabelFor(model => model.Shipping.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.TextAreaFor(model => model.Shipping.Address, new { @class = "form-control", @rows = 3 })
+                                        @Html.EditorFor(model => model.Shipping.Address, new { htmlAttributes = new { @class = "form-control" } })
                                         @Html.ValidationMessageFor(model => model.Shipping.Address, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
@@ -117,7 +117,7 @@
                                 <div class="form-group row">
                                     @Html.LabelFor(model => model.Shipping.Address2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.TextAreaFor(model => model.Shipping.Address2, new { @class = "form-control", @rows = 3 })
+                                        @Html.EditorFor(model => model.Shipping.Address2, new { htmlAttributes = new { @class = "form-control" } })
                                         @Html.ValidationMessageFor(model => model.Shipping.Address2, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
@@ -174,39 +174,35 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Phone1, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <label class="col-form-label col-lg-3">Mobile / Phone</label>
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Phone1, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Phone1, "", new { @class = "text-danger" })
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                @Html.EditorFor(model => model.Shipping.Phone1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Mobile" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Phone1, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-lg-6">
+                                                @Html.EditorFor(model => model.Shipping.Phone2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Phone2, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Phone2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <label class="col-form-label col-lg-3">Fax / Email</label>
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Phone2, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Phone2, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Fax, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Fax, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Fax, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.Email, htmlAttributes: new { @class = "col-form-label col-lg-3" })
-                                    <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.Email, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.Email, "", new { @class = "text-danger" })
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                @Html.EditorFor(model => model.Shipping.Fax, new { htmlAttributes = new { @class = "form-control", @placeholder = "Fax" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Fax, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="col-lg-6">
+                                                @Html.EditorFor(model => model.Shipping.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+                                                @Html.ValidationMessageFor(model => model.Shipping.Email, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -577,19 +573,19 @@
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3">Dimension (cm)</label>
                                     <div class="col-sm-3">
-                                        <input type="number" placeholder="Length" class="form-control mdl-length">
+                                        <input type="number" placeholder="Length" class="form-control mdl-length" min="1">
                                     </div>
                                     <div class="col-sm-3">
-                                        <input type="number" placeholder="Width" class="form-control mdl-width">
+                                        <input type="number" placeholder="Width" class="form-control mdl-width" min="1">
                                     </div>
                                     <div class="col-sm-3">
-                                        <input type="number" placeholder="Height" class="form-control mdl-height">
+                                        <input type="number" placeholder="Height" class="form-control mdl-height" min="1">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3">Weight (gr)</label>
                                     <div class="col-sm-9">
-                                        <input type="number" class="form-control mdl-weight">
+                                        <input type="number" class="form-control mdl-weight" min="1">
                                     </div>
                                 </div>
                                 <div class="form-group row">

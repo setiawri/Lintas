@@ -462,7 +462,7 @@ namespace LintasMVC.Controllers
             return View(conciergeplusModels);
         }
 
-        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string address, string notes, string order_items)
+        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string company, string notes, string order_items)
         {
             string status;
             OrdersModels ordersModels;
@@ -479,6 +479,17 @@ namespace LintasMVC.Controllers
                 ordersModels.Origin_Stations_Id = origin_id;
                 ordersModels.Destination_Stations_Id = destination_id;
                 ordersModels.Address = address;
+                ordersModels.Address2 = address2;
+                ordersModels.City = city;
+                ordersModels.State = state;
+                ordersModels.PostalCode = postal_code;
+                ordersModels.Country = country;
+                ordersModels.CountryCode = country_code;
+                ordersModels.Phone1 = mobile;
+                ordersModels.Phone2 = phone;
+                ordersModels.Fax = fax;
+                ordersModels.Email = email;
+                ordersModels.Company = company;
                 ordersModels.Notes = notes;
                 ordersModels.Status_enumid = OrderStatusEnum.Ordered;
                 db.Orders.Add(ordersModels);

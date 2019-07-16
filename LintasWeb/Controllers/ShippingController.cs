@@ -141,7 +141,19 @@ namespace LintasMVC.Controllers
                     //shipping.Customers_Id = ordersModels.Customers_Id;
                     shipping.Origin_Stations_Id = ordersModels.Origin_Stations_Id;
                     shipping.Destination_Stations_Id = ordersModels.Destination_Stations_Id;
+                    shipping.Company = ordersModels.Company;
                     shipping.Address = ordersModels.Address;
+                    shipping.Address2 = ordersModels.Address2;
+                    shipping.City = ordersModels.City;
+                    shipping.State = ordersModels.State;
+                    shipping.Country = ordersModels.Country;
+                    shipping.CountryCode = ordersModels.CountryCode;
+                    shipping.PostalCode = ordersModels.PostalCode;
+                    shipping.Phone1 = ordersModels.Phone1;
+                    shipping.Phone2 = ordersModels.Phone2;
+                    shipping.Fax = ordersModels.Fax;
+                    shipping.Email = ordersModels.Email;
+                    shipping.Notes = ordersModels.Notes;
 
                     List<ShippingItemsModels> list_si = new List<ShippingItemsModels>();
                     var shippingItem = db.ShippingItems.Where(x => x.Status_enumid == ShippingItemStatusEnum.Open).ToList();

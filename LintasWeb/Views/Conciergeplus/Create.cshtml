@@ -49,23 +49,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Order Date: <span class="text-danger">*</span></label>
-                                @Html.EditorFor(model => model.Order.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = Model.Order.No == null ? DateTime.Today.ToString("yyyy/MM/dd") : Model.Order.Timestamp.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Customer: <span class="text-danger">*</span></label>
-                                <a href="@Url.Action("Create", "Customers")" class="btn btn-link" style="right: 0; position: absolute">Add New Customer</a>
-                                @Html.DropDownListFor(model => model.Order.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label>Stations: <span class="text-danger">*</span></label>
                                 <a href="@Url.Action("Create", "Stations")" class="btn btn-link" style="right: 0; position: absolute">Add New Station</a>
                                 <div class="row">
@@ -82,11 +65,10 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Notes:</label>
-                                @Html.EditorFor(model => model.Order.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                <label>Order Date: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = Model.Order.No == null ? DateTime.Today.ToString("yyyy/MM/dd") : Model.Order.Timestamp.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
                             </div>
                         </div>
                     </div>
@@ -94,9 +76,128 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Destination Address: <span class="text-danger">*</span></label>
-                                @*@Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })*@
-                                @Html.TextAreaFor(model => model.Order.Address, new { @class = "form-control", @rows = 3 })
+                                <label>Customer: <span class="text-danger">*</span></label>
+                                <a href="@Url.Action("Create", "Customers")" class="btn btn-link" style="right: 0; position: absolute">Add New Customer</a>
+                                @Html.DropDownListFor(model => model.Order.Customers_Id, ViewBag.listCustomers as SelectList, "Select Customer", new { @class = "form-control select2" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="form-check mb-1 mt-1">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" id="chkCustomer" class="check-styled-primary" data-fouc>
+                                        Send to Customer's Address
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Address 1: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Address 2: </label>
+                                @Html.EditorFor(model => model.Order.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>City: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.City, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>State: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.State, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Country / Country Code: <span class="text-danger">*</span></label>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.Country, new { htmlAttributes = new { @class = "form-control", @placeholder = "Country" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.CountryCode, new { htmlAttributes = new { @class = "form-control", @placeholder = "Country Code" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Postal Code: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mobile <span class="text-danger">*</span> / Phone: </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.Phone1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Mobile" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.Phone2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fax / Email: </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.Fax, new { htmlAttributes = new { @class = "form-control", @placeholder = "Fax" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Order.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Company:</label>
+                                @Html.EditorFor(model => model.Order.Company, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Notes:</label>
+                                @Html.EditorFor(model => model.Order.Notes, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </div>
                     </div>
@@ -420,6 +521,20 @@
 </div>
 <script type="text/javascript">
     //Form Order
+    function ClearCustomer() {
+        $('#Order_Address').val('');
+        $('#Order_Address2').val('');
+        $('#Order_City').val('');
+        $('#Order_State').val('');
+        $('#Order_Country').val('');
+        $('#Order_CountryCode').val('');
+        $('#Order_PostalCode').val('');
+        $('#Order_Phone1').val('');
+        $('#Order_Phone2').val('');
+        $('#Order_Fax').val('');
+        $('#Order_Email').val('');
+    }
+
     var order_item_no = 100;
     function AddOrderItem() {
         order_item_no += 1;
@@ -638,7 +753,31 @@
                         return false;
                     }
                     else if ($('#Order_Address').val() == '') {
-                        $('.order-validation').html('The Destination Address field is required.').show();
+                        $('.order-validation').html('The Address 1 field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_City').val() == '') {
+                        $('.order-validation').html('The City field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_State').val() == '') {
+                        $('.order-validation').html('The State field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_Country').val() == '') {
+                        $('.order-validation').html('The Country field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_CountryCode').val() == '') {
+                        $('.order-validation').html('The Country Code field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_PostalCode').val() == '') {
+                        $('.order-validation').html('The Postal Code field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Order_Phone1').val() == '') {
+                        $('.order-validation').html('The Mobile field is required.').show();
                         return false;
                     }
                     else if(!isValid) {
@@ -659,6 +798,17 @@
                                 origin_id: $('#Order_Origin_Stations_Id').val(),
                                 destination_id: $('#Order_Destination_Stations_Id').val(),
                                 address: $('#Order_Address').val(),
+                                address2: $('#Order_Address2').val(),
+                                city: $('#Order_City').val(),
+                                state: $('#Order_State').val(),
+                                country: $('#Order_Country').val(),
+                                country_code: $('#Order_CountryCode').val(),
+                                postal_code: $('#Order_PostalCode').val(),
+                                mobile: $('#Order_Phone1').val(),
+                                phone: $('#Order_Phone2').val(),
+                                fax: $('#Order_Fax').val(),
+                                email: $('#Order_Email').val(),
+                                company: $('#Order_Company').val(),
                                 notes: $('#Order_Notes').val(),
                                 order_items: $('#OrderItems').val()
                             },
@@ -750,6 +900,46 @@
         $('.select2').select2();
         $('.form-control-select2').select2({
             minimumResultsForSearch: Infinity
+        });
+
+        $('.check-styled-primary').uniform({
+            wrapperClass: 'border-primary-600 text-primary-800'
+        });
+
+        $('#chkCustomer').click(function () {
+            if ($(this).prop('checked') == false) {
+                ClearCustomer();
+            }
+            else {
+                if ($('#Order_Customers_Id').val() == '') {
+                    ClearCustomer();
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("AutofillingCustomer", "Shipping")',
+                        data: {
+                            customer_id: $('#Order_Customers_Id').val()
+                        },
+                        success: function (data) {
+                            $('#Order_Address').val(data.cust_model.Address);
+                            $('#Order_Address2').val(data.cust_model.Address2);
+                            $('#Order_City').val(data.cust_model.City);
+                            $('#Order_State').val(data.cust_model.State);
+                            $('#Order_Country').val(data.country_model.Name);
+                            $('#Order_CountryCode').val(data.country_model.Code);
+                            $('#Order_PostalCode').val(data.cust_model.Zipcode);
+                            $('#Order_Phone1').val(data.cust_model.Phone1);
+                            $('#Order_Phone2').val(data.cust_model.Phone2);
+                            $('#Order_Fax').val(data.cust_model.Fax);
+                            $('#Order_Email').val(data.cust_model.Email);
+                        }, //end success
+                        error: function (result) {
+                            bootbox.alert("Error " + result);
+                        } //end error
+                    }); //end ajax
+                }
+            }
         });
 
         order_math_total_price();
