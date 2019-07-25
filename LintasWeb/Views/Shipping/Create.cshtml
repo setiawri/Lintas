@@ -210,6 +210,15 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.TaxNumber, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.TaxNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.TaxNumber, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group row">
                                     @Html.LabelFor(model => model.Shipping.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
                                         @Html.EditorFor(model => model.Shipping.Notes, new { htmlAttributes = new { @class = "form-control" } })
@@ -621,6 +630,7 @@
     }
 
     function ClearCustomer() {
+        $('#Shipping_Company').val('');
         $('#Shipping_Address').val('');
         $('#Shipping_Address2').val('');
         $('#Shipping_City').val('');
@@ -804,6 +814,7 @@
                                 phone: $('#Shipping_Phone2').val(),
                                 fax: $('#Shipping_Fax').val(),
                                 email: $('#Shipping_Email').val(),
+                                tax_number: $('#Shipping_TaxNumber').val(),
                                 notes: $('#Shipping_Notes').val(),
                                 shipping_items: $('#Items_Content').val()
                             },
@@ -947,6 +958,7 @@
                             customer_id: $('#Shipping_Customers_Id').val()
                         },
                         success: function (data) {
+                            $('#Shipping_Company').val(data.cust_model.Company);
                             $('#Shipping_Address').val(data.cust_model.Address);
                             $('#Shipping_Address2').val(data.cust_model.Address2);
                             $('#Shipping_City').val(data.cust_model.City);

@@ -24,6 +24,8 @@ namespace LintasMVC.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
+        public string Company { get; set; }
+
         [Required]
         [Display(Name = "Address 1")]
         public string Address { get; set; }

@@ -17,6 +17,8 @@ namespace LintasMVC.Models
         public string No { get; set; }
         [Display(Name = "Forwarders")]
         public Guid Forwarders_Id { get; set; }
+        [Display(Name = "Airway Bill")]
+        public string AWB { get; set; }
         public string Notes { get; set; }
         [Display(Name = "Status")]
         public ShipmentItemStatusEnum Status_enumid { get; set; }
@@ -32,5 +34,12 @@ namespace LintasMVC.Models
         public string Notes { get; set; }
         [Display(Name = "Status")]
         public ShipmentItemStatusEnum Status_enumid { get; set; }
+    }
+
+    public class ShipmentsDetails
+    {
+        public string price { get; set; }
+        public string courier { get; set; }
+        public string id { get; set; }
     }
 }

@@ -28,6 +28,7 @@
             @Html.AntiForgeryToken()
             <input type="hidden" id="Timestamp" name="Timestamp" value="@DateTime.Now" />
             <input type="hidden" id="items_selected" name="items_selected" />
+            <input type="hidden" id="Items_List" name="Items_List" />
             <!-- Form inputs -->
             <div class="card">
                 <div class="card-header header-elements-inline">
@@ -62,6 +63,15 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            @Html.LabelFor(model => model.AWB, htmlAttributes: new { @class = "col-form-label col-lg-2" })
+                            <div class="col-lg-5">
+                                @Html.EditorFor(model => model.AWB, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.ValidationMessageFor(model => model.AWB, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-form-label col-lg-2" })
                             <div class="col-lg-5">
                                 @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
@@ -77,16 +87,18 @@
                                     <tr>
                                         <th></th>
                                         <th>No</th>
-                                        <th>Length (cm)</th>
+                                        <th>Price</th>
+                                        <th>Courier</th>
+                                        <th>Dimension (cm)</th>
+                                        @*<th>Length (cm)</th>
                                         <th>Width (cm)</th>
-                                        <th>Height (cm)</th>
+                                        <th>Height (cm)</th>*@
                                         <th>Weight (gr)</th>
                                         <th>Notes</th>
                                         <th class="never">Row</th>
                                     </tr>
                                 </thead>
                                 <tbody id="data-body">
-                                    @{ int row = 0; }
                                     @if (ViewBag.listItems != null)
                                     {
                                         foreach (var item in ViewBag.listItems)
@@ -104,12 +116,15 @@
                                                 <tr>
                                                     <td>@item.Id</td>
                                                     <td>@item.No</td>
-                                                    <td>@item.Length</td>
+                                                    <td><input type="text" class="form-control price" /></td>
+                                                    <td><input type="text" class="form-control courier" /></td>
+                                                    <td>@item.Length x @item.Width x @item.Height</td>
+                                                    @*<td>@item.Length</td>
                                                     <td>@item.Width</td>
-                                                    <td>@item.Height</td>
+                                                    <td>@item.Height</td>*@
                                                     <td>@item.Weight</td>
                                                     <td>@item.Notes</td>
-                                                    <td>@(row++)</td>
+                                                    <td>@item.Id</td>
                                                 </tr>
                                             }
                                         }
@@ -122,6 +137,7 @@
                     <div>
                         <a href="@Url.Action("Index", "Shipments")" class="btn btn-warning">Cancel <i class="icon-cross2 ml-2"></i></a>
                         <button type="submit" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                        <button type="button" class="btn btn-secondary" id="test">Test <i class="icon-paperplane ml-2"></i></button>
                     </div>
                 </div>
             </div>
@@ -193,6 +209,24 @@
             //e.preventDefault();
             var ids_selected = datatable.column(0).checkboxes.selected();
             $('#items_selected').val(ids_selected.join(","));
+
+            var arrItem = [];
+            $('#data-body tr').each(function () {
+                var price = parseFloat($(this).find('input.price').val());
+                var courier = $(this).find('input.courier').val();
+                var id = datatable.row(this).data()[7];
+                var obj = { price: price, courier: courier, id: id };
+                arrItem.push(obj);
+            });
+            $('#Items_List').val(JSON.stringify(arrItem));
+        });
+
+        $('#test').click(function () {
+            $('#data-body tr').each(function () {
+                //console.log($(this));
+                var id = datatable.row(this).data()[7];
+                alert(id);
+            });
         });
 
     });

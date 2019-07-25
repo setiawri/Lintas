@@ -31,5 +31,7 @@ namespace LintasMVC.Models
         public DeliveryItemStatusEnum? Delivery_Status { get; set; }
         public string TrackingNo { get; set; }
         public string Description { get; set; }
+        public decimal? DeclaredPrice { get; set; }
+        public string CourierInfo { get; set; }
     }
 }

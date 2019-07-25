@@ -41,6 +41,8 @@ namespace LintasMVC.Controllers
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Declared Price</th>
+                                                <th>Courier Info</th>
                                                 <th>Dimension (cm)</th>
                                                 <th>Weight (gr)</th>
                                                 <th>Notes</th>
@@ -50,8 +52,11 @@ namespace LintasMVC.Controllers
                                         <tbody>";
             foreach (var item in list)
             {
+                string price = (item.DeclaredPrice.HasValue) ? item.DeclaredPrice.Value.ToString("#,##0.00") : "0";
                 message += @"<tr>
                                 <td>" + item.No + @"</td>
+                                <td>" + price + @"</td>
+                                <td>" + item.CourierInfo + @"</td>
                                 <td>" + item.Length + " x " + item.Width + " x " + item.Height + @"</td>
                                 <td>" + item.Weight.ToString("#,##0") + @"</td>
                                 <td>" + item.Notes + @"</td>
@@ -98,7 +103,7 @@ namespace LintasMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Timestamp,No,Forwarders_Id,Notes")] ShipmentsModels shipmentsModels, string items_selected)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Timestamp,No,Forwarders_Id,AWB,Notes")] ShipmentsModels shipmentsModels, string items_selected, string Items_List)
         {
             if (string.IsNullOrEmpty(items_selected))
             {
@@ -114,23 +119,41 @@ namespace LintasMVC.Controllers
                 string[] array_ids = items_selected.Split(',');
                 foreach (string s in array_ids)
                 {
+                    decimal declared_price = 0; string courier_info = "";
+
+                    List<ShipmentsDetails> item_list = JsonConvert.DeserializeObject<List<ShipmentsDetails>>(Items_List);
+                    foreach (var item in item_list)
+                    {
+                        if (item.id == s)
+                        {
+                            declared_price = string.IsNullOrEmpty(item.price) ? 0 : decimal.Parse(item.price);
+                            courier_info = item.courier;
+                            break;
+                        }
+                    }
+                    
                     ShippingItemsModels model = await db.ShippingItems.Where(x => x.Id.ToString() == s).FirstOrDefaultAsync();
                     model.Shipments_Id = shipmentsModels.Id;
+                    model.DeclaredPrice = declared_price;
+                    model.CourierInfo = courier_info;
                     db.Entry(model).State = EntityState.Modified;
 
                     ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == model.Shippings_Id).FirstOrDefaultAsync();
+                    var customer = db.Customers.Where(x => x.Id == shippingsModels.Customers_Id).FirstOrDefault();
+                    var country = db.Countries.Where(x => x.Id == customer.Countries_Id).FirstOrDefault();
 
                     ShipmentsReportModels shipmentsReportModels = new ShipmentsReportModels();
                     shipmentsReportModels.Id = Guid.NewGuid();
                     shipmentsReportModels.ShippingItems_Id = model.Id;
+                    shipmentsReportModels.WaybillNumber = shipmentsModels.AWB;
+                    shipmentsReportModels.OriginCountry = db.Countries.Where(x => x.Id == db.Stations.Where(y => y.Id == shippingsModels.Origin_Stations_Id).FirstOrDefault().Countries_Id).FirstOrDefault().Name;
                     shipmentsReportModels.ParcelWeight = model.Weight;
                     shipmentsReportModels.ParcelLong = model.Length;
                     shipmentsReportModels.ParcelWide = model.Width;
                     shipmentsReportModels.ParcelHigh = model.Height;
                     shipmentsReportModels.ConsignmentDate = DateTime.Today;
-                    shipmentsReportModels.ParcelQty = 1;
-                    shipmentsReportModels.ProductQty = 1;
-                    var customer = db.Customers.Where(x => x.Id == shippingsModels.Customers_Id).FirstOrDefault();
+                    shipmentsReportModels.TaxConsigneeNumber = shippingsModels.TaxNumber;
+                    
                     shipmentsReportModels.ConsigneeName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
                     shipmentsReportModels.ConsigneeCompany = shippingsModels.Company;
                     shipmentsReportModels.ConsigneePhone = shippingsModels.Phone2;
@@ -144,7 +167,25 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ConsigneeCity = shippingsModels.City;
                     shipmentsReportModels.ConsigneeAddress1 = shippingsModels.Address;
                     shipmentsReportModels.ConsigneeAddress2 = shippingsModels.Address2;
+
+                    shipmentsReportModels.ShipperName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
+                    shipmentsReportModels.ShipperCompany = "";
+                    shipmentsReportModels.ShipperPhone = customer.Phone2;
+                    shipmentsReportModels.ShipperMobile = customer.Phone1;
+                    shipmentsReportModels.ShipperFax = customer.Fax;
+                    shipmentsReportModels.ShipperEmail = customer.Email;
+                    shipmentsReportModels.ShipperPostalCode = customer.Zipcode;
+                    shipmentsReportModels.ShipperCountry = country.Name;
+                    shipmentsReportModels.ShipperCountryCode = country.Code;
+                    shipmentsReportModels.ShipperState = customer.State;
+                    shipmentsReportModels.ShipperCity = customer.City;
+                    shipmentsReportModels.ShipperAddress1 = customer.Address;
+                    shipmentsReportModels.ShipperAddress2 = customer.Address2;
+
+                    shipmentsReportModels.ParcelQty = 1;
+                    shipmentsReportModels.ProductQty = 1;
                     shipmentsReportModels.ProductDescription = model.Description;
+                    shipmentsReportModels.DeclarationPrice = declared_price;
                     shipmentsReportModels.Currency = "AUD$";
                     var forwarder = db.Forwarders.Where(x => x.Id == shipmentsModels.Forwarders_Id).FirstOrDefault();
                     shipmentsReportModels.BillingCode = forwarder.BillingCode;

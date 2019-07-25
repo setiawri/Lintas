@@ -42,6 +42,10 @@ namespace LintasMVC.Models
         public string Phone2 { get; set; }
         public string Fax { get; set; }
         public string Email { get; set; }
+
+        [Display(Name = "Tax Number")]
+        public string TaxNumber { get; set; }
+
         public string Notes { get; set; }
         public OrderStatusEnum Status_enumid { get; set; }
     }

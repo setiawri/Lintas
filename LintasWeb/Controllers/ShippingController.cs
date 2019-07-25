@@ -153,6 +153,7 @@ namespace LintasMVC.Controllers
                     shipping.Phone2 = ordersModels.Phone2;
                     shipping.Fax = ordersModels.Fax;
                     shipping.Email = ordersModels.Email;
+                    shipping.TaxNumber = ordersModels.TaxNumber;
                     shipping.Notes = ordersModels.Notes;
 
                     List<ShippingItemsModels> list_si = new List<ShippingItemsModels>();
@@ -327,7 +328,7 @@ namespace LintasMVC.Controllers
         //    return View(shippingsModels);
         //}
 
-        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string company, string no, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string notes, string shipping_items)
+        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string company, string no, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string tax_number, string notes, string shipping_items)
         {
             string status;
             ShippingsModels shippingsModels;
@@ -354,6 +355,7 @@ namespace LintasMVC.Controllers
                 shippingsModels.Phone2 = phone;
                 shippingsModels.Fax = fax;
                 shippingsModels.Email = email;
+                shippingsModels.TaxNumber = tax_number;
                 shippingsModels.Notes = notes;
                 shippingsModels.Status_enumid = ShippingStatusEnum.Shipping;
                 db.Shippings.Add(shippingsModels);

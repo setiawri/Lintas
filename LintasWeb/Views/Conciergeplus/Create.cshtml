@@ -97,6 +97,15 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
+                                <label>Company:</label>
+                                @Html.EditorFor(model => model.Order.Company, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <label>Address 1: <span class="text-danger">*</span></label>
                                 @Html.EditorFor(model => model.Order.Address, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
@@ -190,8 +199,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company:</label>
-                                @Html.EditorFor(model => model.Order.Company, new { htmlAttributes = new { @class = "form-control" } })
+                                <label>Tax Number:</label>
+                                @Html.EditorFor(model => model.Order.TaxNumber, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -522,6 +531,7 @@
 <script type="text/javascript">
     //Form Order
     function ClearCustomer() {
+        $('#Order_Company').val('');
         $('#Order_Address').val('');
         $('#Order_Address2').val('');
         $('#Order_City').val('');
@@ -809,6 +819,7 @@
                                 fax: $('#Order_Fax').val(),
                                 email: $('#Order_Email').val(),
                                 company: $('#Order_Company').val(),
+                                tax_number: $('#Order_TaxNumber').val(),
                                 notes: $('#Order_Notes').val(),
                                 order_items: $('#OrderItems').val()
                             },
@@ -922,6 +933,7 @@
                             customer_id: $('#Order_Customers_Id').val()
                         },
                         success: function (data) {
+                            $('#Order_Company').val(data.cust_model.Company);
                             $('#Order_Address').val(data.cust_model.Address);
                             $('#Order_Address2').val(data.cust_model.Address2);
                             $('#Order_City').val(data.cust_model.City);

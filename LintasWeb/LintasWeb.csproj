@@ -263,6 +263,7 @@
     <Content Include="assets\css\icons\icomoon\styles.css" />
     <Content Include="assets\css\tables\datatable\awesome-bootstrap-checkbox.css" />
     <Content Include="assets\css\tables\datatable\checkboxes.css" />
+    <Content Include="assets\images\lintas-logo.png" />
     <Content Include="assets\images\logo_light.png" />
     <Content Include="assets\images\placeholders\user.png" />
     <Content Include="assets\js\app.js" />
