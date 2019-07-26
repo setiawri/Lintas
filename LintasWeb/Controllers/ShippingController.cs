@@ -216,7 +216,14 @@ namespace LintasMVC.Controllers
 
                 listPackage = await db.ShippingItems.Where(x => x.Shippings_Id == id && x.Shipments_Id != null).OrderBy(x => x.No).ToListAsync();
 
-                ViewBag.startIndex = (int)shipping.Status_enumid;
+                if (shipping.Status_enumid == ShippingStatusEnum.ShipmentComplete)
+                {
+                    ViewBag.startIndex = 5; //go to step Pickup/Delivery
+                }
+                else
+                {
+                    ViewBag.startIndex = (int)shipping.Status_enumid;
+                }
 
                 //int count_inv = await db.Invoices.Where(x => x.Ref_Id == id).CountAsync();
                 //if (count_inv == 0)

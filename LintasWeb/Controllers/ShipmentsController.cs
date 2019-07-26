@@ -256,6 +256,7 @@ namespace LintasMVC.Controllers
 
             if (shipmentsModels.Status_enumid == ShipmentItemStatusEnum.Completed)
             {
+                bool isShipmentComplete = false;
                 ShippingItemsModels shippingItemsModels = db.ShippingItems.Where(x => x.Shipments_Id == shipmentsModels.Id).FirstOrDefault();
 
                 if (string.IsNullOrEmpty(shippingItemsModels.TrackingNo))
@@ -279,6 +280,43 @@ namespace LintasMVC.Controllers
                     tr.Timestamp = DateTime.Now;
                     tr.Description = "Received at Destination Station";
                     db.Tracking.Add(tr);
+                }
+
+                //check shipping item in same shipping
+                var list_shipment_same_shipping = (from si in db.ShippingItems
+                                                   join s in db.Shipments on si.Shipments_Id equals s.Id
+                                                   join f in db.Forwarders on s.Forwarders_Id equals f.Id
+                                                   where si.Shippings_Id == shippingItemsModels.Shippings_Id && si.Id != shippingItemsModels.Id
+                                                   select new ShipmentsIndexViewModels
+                                                   {
+                                                       Id = s.Id,
+                                                       Timestamp = s.Timestamp,
+                                                       No = s.No,
+                                                       Forwarders = f.Name,
+                                                       Notes = s.Notes,
+                                                       Status_enumid = s.Status_enumid
+                                                   }).ToList();
+                if (list_shipment_same_shipping.Count == 0) { isShipmentComplete = true; }
+                else
+                {
+                    foreach (var subitem in list_shipment_same_shipping)
+                    {
+                        if (subitem.Status_enumid == ShipmentItemStatusEnum.Completed)
+                        {
+                            isShipmentComplete = true;
+                        }
+                        else
+                        {
+                            isShipmentComplete = false; break;
+                        }
+                    }
+                }
+
+                if (isShipmentComplete)
+                {
+                    ShippingsModels shippingsModels = db.Shippings.Where(x => x.Id == shippingItemsModels.Shippings_Id).FirstOrDefault();
+                    shippingsModels.Status_enumid = ShippingStatusEnum.ShipmentComplete;
+                    db.Entry(shippingsModels).State = EntityState.Modified;
                 }
             }
 

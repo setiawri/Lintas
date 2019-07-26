@@ -81,6 +81,10 @@
                                         {
                                             <span class="badge bg-brown d-block">On Shipments</span>
                                         }
+                                        else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.ShipmentComplete)
+                                        {
+                                            <span class="badge bg-pink d-block">Shipment Complete</span>
+                                        }
                                         else if (item.Status_enumid == LintasMVC.Models.ShippingStatusEnum.OnDelivery)
                                         {
                                             <span class="badge badge-success d-block">On Delivery</span>

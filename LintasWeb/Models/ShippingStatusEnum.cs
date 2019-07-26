@@ -13,6 +13,7 @@ namespace LintasMVC.Models
         Documents,
         OnShipments,
         OnDelivery,
+        ShipmentComplete,
         Completed
     }
 }
