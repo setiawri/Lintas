@@ -17,7 +17,7 @@ namespace LintasMVC.Controllers
 
         public JsonResult GetOrderItems(Guid id)
         {
-            List<OrderItemsModels> items = db.OrderItems.Where(x => x.Orders_Id == id).ToList();
+            List<OrderItemsModels> items = db.OrderItems.Where(x => x.Orders_Id == id).OrderBy(x => x.RowNo).ToList();
             string message = @"<div class='table-responsive'>
                                     <table class='table table-striped table-bordered'>
                                         <thead>
@@ -247,22 +247,96 @@ namespace LintasMVC.Controllers
         // GET: Conciergeplus
         public async Task<ActionResult> Index()
         {
-            var data = (from o in db.Orders
-                        join c in db.Customers on o.Customers_Id equals c.Id
-                        join os in db.Stations on o.Origin_Stations_Id equals os.Id
-                        join ds in db.Stations on o.Destination_Stations_Id equals ds.Id
-                        select new OrdersIndexViewModels
+            var data = await (from o in db.Orders
+                              join c in db.Customers on o.Customers_Id equals c.Id
+                              join os in db.Stations on o.Origin_Stations_Id equals os.Id
+                              join ds in db.Stations on o.Destination_Stations_Id equals ds.Id
+                              select new OrdersIndexViewModels
+                              {
+                                  Id = o.Id,
+                                  No = o.No,
+                                  Timestamp = o.Timestamp,
+                                  Customer = c.FirstName + " " + c.MiddleName + " " + c.LastName,
+                                  Origin = os.Name,
+                                  Destination = ds.Name,
+                                  Notes = o.Notes,
+                                  Status = o.Status_enumid
+                              }).ToListAsync();
+
+            List<OrdersIndexViewModels> list = new List<OrdersIndexViewModels>();
+            foreach (var item in data)
+            {
+                var list_order_item = db.OrderItems.Where(x => x.Orders_Id == item.Id).ToList();
+                #region Check Received Order Item & Order Status
+                bool isPending = true;
+                foreach (var a in list_order_item)
+                {
+                    if (a.ReceivedQty != a.Qty) { isPending = true; break; }
+                    else //order item sudah diterima semua
+                    {
+                        int qtyUsed = 0; bool isOpen = true;
+                        var list_shipping_item_content = db.ShippingItemContents.Where(x => x.OrderItems_Id == a.Id).ToList();
+                        foreach (var sic in list_shipping_item_content)
                         {
-                            Id = o.Id,
-                            No = o.No,
-                            Timestamp = o.Timestamp,
-                            Customer = c.FirstName + " " + c.MiddleName + " " + c.LastName,
-                            Origin = os.Name,
-                            Destination = ds.Name,
-                            Notes = o.Notes,
-                            Status = o.Status_enumid
-                        }).ToListAsync();
-            return View(await data);
+                            qtyUsed += sic.Qty;
+                            var list_shipping_item = db.ShippingItems.Where(x => x.Id == sic.ShippingItems_Id).ToList();
+                            foreach (var si in list_shipping_item)
+                            {
+                                if (si.Status_enumid == ShippingItemStatusEnum.Open) { isOpen = true; break; }
+                                else { isOpen = false; }
+                            }
+                        }
+                        int remaining = a.Qty - qtyUsed;
+
+                        if (remaining > 0 && a.Status_enumid == OrderItemStatusEnum.Received) //masih ada order item yang belum di packaging
+                        {
+                            isPending = true; break;
+                        }
+                        else //semua order item sudah di buat packaging
+                        {
+                            if ((int)item.Status < 5) { isPending = true; } //jika order status belum sampai shipping
+                            else { isPending = false; }
+                        }
+
+                        if (isOpen) { isPending = true; break; } //ada packaging yg blum di ship
+                    }
+                }
+                #endregion
+                #region Check Shipment Completed
+                bool isShipmentComplete = false;
+                foreach (var b in list_order_item)
+                {
+                    var list_sic = db.ShippingItemContents.Where(x => x.OrderItems_Id == b.Id).ToList();
+                    foreach (var sic in list_sic)
+                    {
+                        var si = db.ShippingItems.Where(x => x.Id == sic.ShippingItems_Id).FirstOrDefault();
+                        if (si.Shippings_Id.HasValue)
+                        {
+                            if ((int)db.Shippings.Where(x => x.Id == si.Shippings_Id.Value).FirstOrDefault().Status_enumid < 5) //status shipping blm Shipment Completed
+                            {
+                                isShipmentComplete = false; break;
+                            }
+                            else { isShipmentComplete = true; }
+                        }
+                    }
+                    if (!isShipmentComplete) { break; }
+                }
+                #endregion
+
+                OrdersIndexViewModels oivm = new OrdersIndexViewModels();
+                oivm.Id = item.Id;
+                oivm.No = item.No;
+                oivm.Timestamp = item.Timestamp;
+                oivm.Customer = item.Customer;
+                oivm.Origin = item.Origin;
+                oivm.Destination = item.Destination;
+                oivm.Notes = item.Notes;
+                oivm.Pending = isPending;
+                oivm.Status = (!isShipmentComplete) ? item.Status : OrderStatusEnum.ShipmentCompleted;
+                list.Add(oivm);
+            }
+
+            return View(list);
         }
 
         public async Task<ActionResult> Create(Guid? id)
@@ -333,7 +407,7 @@ namespace LintasMVC.Controllers
 
                 paymentsModels = invoicesModels == null ? null : await db.Payments.Where(x => x.Invoices_Id == invoicesModels.Id).FirstOrDefaultAsync();
 
-                listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).ToListAsync();
+                listOrderItem = await db.OrderItems.Where(x => x.Orders_Id == id).OrderBy(x => x.RowNo).ToListAsync();
                 
                 //var list_si = await (from si in db.ShippingItems
                 //                     join sic in db.ShippingItemContents on si.Id equals sic.ShippingItems_Id
@@ -495,12 +569,14 @@ namespace LintasMVC.Controllers
                 ordersModels.Status_enumid = OrderStatusEnum.Ordered;
                 db.Orders.Add(ordersModels);
 
+                int line_no = 1;
                 List<OrderItemDetails> lOrderItem = JsonConvert.DeserializeObject<List<OrderItemDetails>>(order_items);
                 foreach (var item in lOrderItem)
                 {
                     OrderItemsModels oi = new OrderItemsModels();
                     oi.Id = Guid.NewGuid();
                     oi.Orders_Id = ordersModels.Id;
+                    oi.RowNo = line_no;
                     oi.Description = item.desc;
                     oi.Qty = item.qty;
                     oi.Amount = item.cost;
@@ -509,6 +585,7 @@ namespace LintasMVC.Controllers
                     oi.Invoiced = false;
                     oi.TrackingNo = Common.Master.GetTrackingNo(Common.Master.GetRandomHexNumber(10));
                     db.OrderItems.Add(oi);
+                    line_no++;
 
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();

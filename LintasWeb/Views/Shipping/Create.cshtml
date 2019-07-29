@@ -495,6 +495,7 @@
                                         <th>Height (cm)</th>
                                         <th>Weight (gr)</th>
                                         <th>Notes</th>
+                                        <th>Courier</th>
                                         <th>Status</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -511,6 +512,7 @@
                                                 <td>@item.Height</td>
                                                 <td>@item.Weight</td>
                                                 <td>@item.Notes</td>
+                                                <td>@item.CourierInfo</td>
                                                 <td>
                                                     @if (item.Delivery_Status == LintasMVC.Models.DeliveryItemStatusEnum.PickupWaiting)
                                                     {

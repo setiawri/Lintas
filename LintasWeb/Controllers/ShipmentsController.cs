@@ -146,6 +146,7 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.Id = Guid.NewGuid();
                     shipmentsReportModels.ShippingItems_Id = model.Id;
                     shipmentsReportModels.WaybillNumber = shipmentsModels.AWB;
+                    shipmentsReportModels.ServiceNumber = shippingsModels.No;
                     shipmentsReportModels.OriginCountry = db.Countries.Where(x => x.Id == db.Stations.Where(y => y.Id == shippingsModels.Origin_Stations_Id).FirstOrDefault().Countries_Id).FirstOrDefault().Name;
                     shipmentsReportModels.ParcelWeight = model.Weight;
                     shipmentsReportModels.ParcelLong = model.Length;
@@ -169,7 +170,7 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ConsigneeAddress2 = shippingsModels.Address2;
 
                     shipmentsReportModels.ShipperName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
-                    shipmentsReportModels.ShipperCompany = "";
+                    shipmentsReportModels.ShipperCompany = customer.Company;
                     shipmentsReportModels.ShipperPhone = customer.Phone2;
                     shipmentsReportModels.ShipperMobile = customer.Phone1;
                     shipmentsReportModels.ShipperFax = customer.Fax;
@@ -257,66 +258,70 @@ namespace LintasMVC.Controllers
             if (shipmentsModels.Status_enumid == ShipmentItemStatusEnum.Completed)
             {
                 bool isShipmentComplete = false;
-                ShippingItemsModels shippingItemsModels = db.ShippingItems.Where(x => x.Shipments_Id == shipmentsModels.Id).FirstOrDefault();
-
-                if (string.IsNullOrEmpty(shippingItemsModels.TrackingNo))
+                var list_shipping_item = db.ShippingItems.Where(x => x.Shipments_Id == shipmentsModels.Id).ToList();
+                foreach (var sItem in list_shipping_item)
                 {
-                    List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == shippingItemsModels.Id).ToList();
-                    foreach (var item in list_item)
+                    #region Add Tracking
+                    if (string.IsNullOrEmpty(sItem.TrackingNo))
+                    {
+                        List<ShippingItemContentsModels> list_item = db.ShippingItemContents.Where(x => x.ShippingItems_Id == sItem.Id).ToList();
+                        foreach (var item in list_item)
+                        {
+                            TrackingModels tr = new TrackingModels();
+                            tr.Id = Guid.NewGuid();
+                            tr.Ref_Id = item.OrderItems_Id;
+                            tr.Timestamp = DateTime.Now;
+                            tr.Description = "Received at Destination Station";
+                            db.Tracking.Add(tr);
+                        }
+                    }
+                    else //manual package
                     {
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
-                        tr.Ref_Id = item.OrderItems_Id;
+                        tr.Ref_Id = sItem.Id; //shipping items id
                         tr.Timestamp = DateTime.Now;
                         tr.Description = "Received at Destination Station";
                         db.Tracking.Add(tr);
                     }
-                }
-                else //manual package
-                {
-                    TrackingModels tr = new TrackingModels();
-                    tr.Id = Guid.NewGuid();
-                    tr.Ref_Id = shippingItemsModels.Id; //shipping items id
-                    tr.Timestamp = DateTime.Now;
-                    tr.Description = "Received at Destination Station";
-                    db.Tracking.Add(tr);
-                }
-
-                //check shipping item in same shipping
-                var list_shipment_same_shipping = (from si in db.ShippingItems
-                                                   join s in db.Shipments on si.Shipments_Id equals s.Id
-                                                   join f in db.Forwarders on s.Forwarders_Id equals f.Id
-                                                   where si.Shippings_Id == shippingItemsModels.Shippings_Id && si.Id != shippingItemsModels.Id
-                                                   select new ShipmentsIndexViewModels
-                                                   {
-                                                       Id = s.Id,
-                                                       Timestamp = s.Timestamp,
-                                                       No = s.No,
-                                                       Forwarders = f.Name,
-                                                       Notes = s.Notes,
-                                                       Status_enumid = s.Status_enumid
-                                                   }).ToList();
-                if (list_shipment_same_shipping.Count == 0) { isShipmentComplete = true; }
-                else
-                {
-                    foreach (var subitem in list_shipment_same_shipping)
+                    #endregion
+                    #region Check Shipping Item in same Shipping
+                    var list_shipment_same_shipping = (from si in db.ShippingItems
+                                                       join s in db.Shipments on si.Shipments_Id equals s.Id
+                                                       join f in db.Forwarders on s.Forwarders_Id equals f.Id
+                                                       where si.Shippings_Id == sItem.Shippings_Id && si.Id != sItem.Id
+                                                       select new ShipmentsIndexViewModels
+                                                       {
+                                                           Id = s.Id,
+                                                           Timestamp = s.Timestamp,
+                                                           No = s.No,
+                                                           Forwarders = f.Name,
+                                                           Notes = s.Notes,
+                                                           Status_enumid = s.Status_enumid
+                                                       }).ToList();
+                    if (list_shipment_same_shipping.Count == 0) { isShipmentComplete = true; }
+                    else
                     {
-                        if (subitem.Status_enumid == ShipmentItemStatusEnum.Completed)
+                        foreach (var subitem in list_shipment_same_shipping)
                         {
-                            isShipmentComplete = true;
-                        }
-                        else
-                        {
-                            isShipmentComplete = false; break;
+                            if (subitem.Status_enumid == ShipmentItemStatusEnum.Completed)
+                            {
+                                isShipmentComplete = true;
+                            }
+                            else
+                            {
+                                isShipmentComplete = false; break;
+                            }
                         }
                     }
-                }
 
-                if (isShipmentComplete)
-                {
-                    ShippingsModels shippingsModels = db.Shippings.Where(x => x.Id == shippingItemsModels.Shippings_Id).FirstOrDefault();
-                    shippingsModels.Status_enumid = ShippingStatusEnum.ShipmentComplete;
-                    db.Entry(shippingsModels).State = EntityState.Modified;
+                    if (isShipmentComplete)
+                    {
+                        ShippingsModels shippingsModels = db.Shippings.Where(x => x.Id == sItem.Shippings_Id).FirstOrDefault();
+                        shippingsModels.Status_enumid = ShippingStatusEnum.ShipmentComplete;
+                        db.Entry(shippingsModels).State = EntityState.Modified;
+                    }
+                    #endregion
                 }
             }
 

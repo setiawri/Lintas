@@ -13,6 +13,7 @@ namespace LintasMVC.Models
         [Key]
         public Guid Id { get; set; }
         public Guid Orders_Id { get; set; }
+        public int RowNo { get; set; }
 
         [Required]
         public string Description { get; set; }

@@ -46,7 +46,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Customer)</th>
                                 <th>@Html.DisplayNameFor(model => model.Origin)</th>
                                 <th>@Html.DisplayNameFor(model => model.Destination)</th>
-                                <th>@Html.DisplayNameFor(model => model.Notes)</th>
+                                <th>@Html.DisplayNameFor(model => model.Pending)</th>
                                 <th>@Html.DisplayNameFor(model => model.Status)</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -59,7 +59,16 @@
                                     <td>@Html.DisplayFor(modelItem => item.Customer)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Origin)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Destination)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+                                    <td>
+                                        @if (item.Pending)
+                                        {
+                                            <span class="badge badge-danger">YES</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">NO</span>
+                                        }
+                                    </td>
                                     <td>
                                         @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered)
                                         {
@@ -85,6 +94,10 @@
                                         {
                                             <span class="badge badge-info d-block">Shipping</span>
                                         }
+                                        else if (item.Status == LintasMVC.Models.OrderStatusEnum.ShipmentCompleted)
+                                        {
+                                            <span class="badge bg-pink d-block">Shipment Completed</span>
+                                        }
                                         else if (item.Status == LintasMVC.Models.OrderStatusEnum.Completed)
                                         {
                                             <span class="badge badge-primary d-block">Completed</span>
@@ -92,15 +105,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="#" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')">Views</a> |
-                                        @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
-                                            || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
-                                            || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
-                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
-                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Packaging
-                                            || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
-                                        {
-                                            <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a>
-                                        }
+                                        <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a>
                                         @*<div class="list-icons">
                                             <div class="dropdown">
                                                 <a href="#" class="list-icons-item" data-toggle="dropdown">
