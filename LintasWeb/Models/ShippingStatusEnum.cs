@@ -12,8 +12,8 @@ namespace LintasMVC.Models
         WaitingPayment,
         Documents,
         OnShipments,
-        OnDelivery,
         ShipmentComplete,
+        OnDelivery,
         Completed
     }
 }

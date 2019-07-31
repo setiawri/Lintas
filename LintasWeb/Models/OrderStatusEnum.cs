@@ -16,6 +16,7 @@ namespace LintasMVC.Models
         Purchasing,
         Packaging,
         Shipping,
+        ShipmentCompleted,
         Completed
     }
 }
