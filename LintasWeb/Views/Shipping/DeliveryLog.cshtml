@@ -23,7 +23,7 @@
     <!-- /page header -->
     <!-- Content area -->
     <div class="content">
-        @using (Html.BeginForm())
+        @using (Html.BeginForm("DeliveryLog", "Shipping", FormMethod.Post, new { id = "target" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.Id)
@@ -60,6 +60,7 @@
                             </div>
                             <div class="col-lg-5">
                                 @Html.ValidationMessageFor(model => model.Delivery_Status, "", new { @class = "text-danger" })
+                                <label class="status-validation text-danger" style="display: none"></label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -84,5 +85,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('.select2').select2();
+
+        $('#target').submit(function (e) {
+            //e.preventDefault();
+            if ($('#Delivery_Status').val() == '') {
+                $('.status-validation').html('The Delivery Status field is required.').show();
+                return false;
+            }
+            else {
+                $('.status-validation').html('').hide();
+                return true;
+            }
+        });
     });
 </script>
