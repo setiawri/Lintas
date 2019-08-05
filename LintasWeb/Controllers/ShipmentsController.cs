@@ -54,7 +54,7 @@ namespace LintasMVC.Controllers
             {
                 string price = (item.DeclaredPrice.HasValue) ? item.DeclaredPrice.Value.ToString("#,##0.00") : "0";
                 message += @"<tr>
-                                <td>" + item.No + @"</td>
+                                <td>PKG" + item.No + @"</td>
                                 <td>" + price + @"</td>
                                 <td>" + item.CourierInfo + @"</td>
                                 <td>" + item.Length + " x " + item.Width + " x " + item.Height + @"</td>
@@ -113,29 +113,31 @@ namespace LintasMVC.Controllers
             if (ModelState.IsValid)
             {
                 shipmentsModels.Id = Guid.NewGuid();
+                Common.Master m = new Common.Master();
+                shipmentsModels.No = m.GetLastHexAllTime("SHP");
                 shipmentsModels.Timestamp = DateTime.Now;
                 db.Shipments.Add(shipmentsModels);
 
                 string[] array_ids = items_selected.Split(',');
                 foreach (string s in array_ids)
                 {
-                    decimal declared_price = 0; string courier_info = "";
+                    //decimal declared_price = 0; string courier_info = "";
 
-                    List<ShipmentsDetails> item_list = JsonConvert.DeserializeObject<List<ShipmentsDetails>>(Items_List);
-                    foreach (var item in item_list)
-                    {
-                        if (item.id == s)
-                        {
-                            declared_price = string.IsNullOrEmpty(item.price) ? 0 : decimal.Parse(item.price);
-                            courier_info = item.courier;
-                            break;
-                        }
-                    }
+                    //List<ShipmentsDetails> item_list = JsonConvert.DeserializeObject<List<ShipmentsDetails>>(Items_List);
+                    //foreach (var item in item_list)
+                    //{
+                    //    if (item.id == s)
+                    //    {
+                    //        declared_price = string.IsNullOrEmpty(item.price) ? 0 : decimal.Parse(item.price);
+                    //        courier_info = item.courier;
+                    //        break;
+                    //    }
+                    //}
                     
                     ShippingItemsModels model = await db.ShippingItems.Where(x => x.Id.ToString() == s).FirstOrDefaultAsync();
                     model.Shipments_Id = shipmentsModels.Id;
-                    model.DeclaredPrice = declared_price;
-                    model.CourierInfo = courier_info;
+                    //model.DeclaredPrice = declared_price;
+                    //model.CourierInfo = courier_info;
                     db.Entry(model).State = EntityState.Modified;
 
                     ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == model.Shippings_Id).FirstOrDefaultAsync();
@@ -186,7 +188,7 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ParcelQty = 1;
                     shipmentsReportModels.ProductQty = 1;
                     shipmentsReportModels.ProductDescription = model.Description;
-                    shipmentsReportModels.DeclarationPrice = declared_price;
+                    shipmentsReportModels.DeclarationPrice = model.DeclaredPrice.Value;
                     shipmentsReportModels.Currency = "AUD$";
                     var forwarder = db.Forwarders.Where(x => x.Id == shipmentsModels.Forwarders_Id).FirstOrDefault();
                     shipmentsReportModels.BillingCode = forwarder.BillingCode;

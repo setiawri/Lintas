@@ -55,7 +55,7 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@(item.Timestamp.ToString("yyyyMMdd") + item.No)</td>
+                                    <td>@(item.Service + item.No)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Customer)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Origin)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Destination)</td>
@@ -104,28 +104,29 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')">Views</a> |
-                                        <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a>
+                                        <a href="#" onclick="ViewOrders('@item.Id', '@item.Service' + '@item.No', '@item.Customer', '@item.Origin', '@item.Destination')">Views</a> |
+                                        <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })">Edit</a> |
+                                        <a href="#" onclick="ViewLogs('@item.Id', '@item.Service' + '@item.No')">Logs</a>
                                         @*<div class="list-icons">
-                                            <div class="dropdown">
-                                                <a href="#" class="list-icons-item" data-toggle="dropdown">
-                                                    <i class="icon-menu9"></i>
-                                                </a>
+                                    <div class="dropdown">
+                                        <a href="#" class="list-icons-item" data-toggle="dropdown">
+                                            <i class="icon-menu9"></i>
+                                        </a>
 
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> View Orders</a>
-                                                    @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
-                                                        || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
-                                                    {
-                                                        <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
-                                                    }
-                                                    <a href="@Url.Action("Delete", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
-                                                </div>
-                                            </div>
-                                        </div>*@
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a href="#" class="dropdown-item" onclick="ViewOrders('@item.Id', '@item.Customer', '@item.Origin', '@item.Destination')"><i class="icon-eye"></i> View Orders</a>
+                                            @if (item.Status == LintasMVC.Models.OrderStatusEnum.Ordered
+                                                || item.Status == LintasMVC.Models.OrderStatusEnum.WaitingPayment
+                                                || item.Status == LintasMVC.Models.OrderStatusEnum.PaymentCompleted
+                                                || item.Status == LintasMVC.Models.OrderStatusEnum.Purchasing
+                                                || item.Status == LintasMVC.Models.OrderStatusEnum.Shipping)
+                                            {
+                                                <a href="@Url.Action("Create", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-pencil"></i> Edit</a>
+                                            }
+                                            <a href="@Url.Action("Delete", "Conciergeplus", new { id = item.Id })" class="dropdown-item"><i class="icon-bin"></i> Delete</a>
+                                        </div>
+                                    </div>
+                                </div>*@
                                     </td>
                                 </tr>
                             }
@@ -141,7 +142,7 @@
 
 </div>
 <script type="text/javascript">
-    function ViewOrders(id, customer, origin, destination) {
+    function ViewOrders(id, no, customer, origin, destination) {
         $.ajax({
             type: "POST",
             url: '@Url.Action("GetOrderItems", "Conciergeplus")',
@@ -150,10 +151,31 @@
             },
             success: function (data) {
                 var dialog = bootbox.alert({
-                    title: customer + ' ( ' + origin + ' - ' + destination + ' )',
+                    title: no + ': ' + customer + ' ( ' + origin + ' - ' + destination + ' )',
                     message: data.content,
                     backdrop: true,
                     size: 'large'
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
+    }
+
+    function ViewLogs(id, no) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetCsPlusLogs", "Conciergeplus")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: 'Activity Logs ' + no,
+                    message: data.content,
+                    size: 'large',
+                    backdrop: true
                 });
             }, //end success
             error: function (result) {

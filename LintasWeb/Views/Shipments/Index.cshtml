@@ -55,7 +55,7 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                    <td>@string.Format("{0}{1}", "SHP", item.No)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Forwarders)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Notes)</td>
                                     <td>

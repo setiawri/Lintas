@@ -95,7 +95,7 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        @{ 
+                                        @{
                                             Guid shipping_id = item.Id;
                                             bool isShipment = false;
                                             using (var ctx = new LintasMVC.Models.LintasContext())
@@ -116,13 +116,15 @@
                                             if (isShipment)
                                             {
                                                 <a href="#" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Views</a> @:|
-                                                <a href="@Url.Action("Create", "Shipping", new { id = item.Id })">Edit</a>
+                                                <a href="@Url.Action("Create", "Shipping", new { id = item.Id })">Edit</a> @:|
+                                                <a href="#" onclick="ViewLogs('@item.Id')">Logs</a>
                                             }
                                             else
                                             {
                                                 <a href="#" onclick="Views('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Views</a> @:|
                                                 <a href="@Url.Action("Create", "Shipping", new { id = item.Id })">Edit</a> @:|
-                                                <a href="#" onclick="Cancelled('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Cancel</a>
+                                                <a href="#" onclick="Cancelled('@item.Id', '@item.No', '@item.Origin', '@item.Destination')">Cancel</a> @:|
+                                                <a href="#" onclick="ViewLogs('@item.Id')">Logs</a>
                                             }
                                         }
                                         @*<div class="list-icons">
@@ -204,6 +206,27 @@
                 }
             }
         });
+    }
+
+    function ViewLogs(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetShippingLogs", "Shipping")',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                var dialog = bootbox.alert({
+                    title: 'Activity Logs',
+                    message: data.content,
+                    size: 'large',
+                    backdrop: true
+                });
+            }, //end success
+            error: function (result) {
+                bootbox.alert("Error " + result);
+            } //end error
+        }); //end ajax
     }
 
     $(document).ready(function () {

@@ -19,6 +19,35 @@ namespace LintasMVC.Common
             return result + 1;
         }
 
+        public string GetLastHexAllTime(string prefix) // prefix => CS / CS+ / PKG / SHP
+        {
+            string last_hex_string = "";
+            using (var ctx = new LintasContext())
+            {
+                if (prefix == "CS") { last_hex_string = ctx.Orders.Where(x => x.Service == prefix).Max(x => x.No ?? string.Empty); }
+                else if (prefix == "CS+") { last_hex_string = ctx.Orders.Where(x => x.Service == prefix).Max(x => x.No ?? string.Empty); }
+                else if (prefix == "PKG") { last_hex_string = ctx.ShippingItems.Max(x => x.No ?? string.Empty); }
+                else if (prefix == "SHP") { last_hex_string = ctx.Shipments.Max(x => x.No ?? string.Empty); }
+            }
+            int last_hex_int = int.Parse(string.IsNullOrEmpty(last_hex_string) ? 0.ToString("X5") : last_hex_string, System.Globalization.NumberStyles.HexNumber);
+
+            return (last_hex_int + 1).ToString("X5");
+        }
+
+        public string GetLastHexResetDay()
+        {
+            string last_hex_string = "";
+            using (var ctx = new LintasContext())
+            {
+                DateTime from = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+                DateTime to = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                last_hex_string = ctx.Shippings.Where(x => x.Timestamp >= from && x.Timestamp <= to).Max(x => x.No ?? string.Empty);
+            }
+            int last_hex_int = int.Parse(string.IsNullOrEmpty(last_hex_string) ? 0.ToString("X3") : last_hex_string, System.Globalization.NumberStyles.HexNumber);
+
+            return (last_hex_int + 1).ToString("X3");
+        }
+
         public string GetTotalOrderItem(Guid order_id)
         {
             string result;

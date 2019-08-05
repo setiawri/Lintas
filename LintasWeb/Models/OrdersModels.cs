@@ -12,6 +12,7 @@ namespace LintasMVC.Models
     {
         [Key]
         public Guid Id { get; set; }
+        public string Service { get; set; }
 
         [Required]
         public string No { get; set; }
@@ -28,6 +29,10 @@ namespace LintasMVC.Models
 
         [Display(Name = "Destination")]
         public Guid Destination_Stations_Id { get; set; }
+
+        [Display(Name = "Receiver Name")]
+        [Required]
+        public string ReceiverName { get; set; }
 
         [Required]
         public string Address { get; set; }

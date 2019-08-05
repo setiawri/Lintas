@@ -28,7 +28,7 @@
             <div class="card">
                 <div class="card-header bg-white header-elements-inline">
                     @Html.HiddenFor(model => model.Shipping.Id)
-                    <h6 class="card-title">No Shipping: <label class="no-shipping">@(Model.Shipping.No == null ? "" : Model.Shipping.No)</label></h6>
+                    <h6 class="card-title">No Shipping: <label class="no-shipping">@(Model.Shipping.No == null ? "" : ViewBag.no_shipping)</label></h6>
                     <div class="header-elements">
                         <div class="list-icons">
                             <a class="list-icons-item" data-action="collapse"></a>
@@ -63,6 +63,15 @@
                                     </div>
                                 </div>
                             </div>
+                            @*<div class="col-lg-6">
+                                <div class="form-group row">
+                                    @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    <div class="col-lg-9">
+                                        @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.No, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>*@
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
@@ -86,10 +95,10 @@
                         <div class="form-group row">
                             <div class="col-lg-6">
                                 <div class="form-group row">
-                                    @Html.LabelFor(model => model.Shipping.No, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                    @Html.LabelFor(model => model.Shipping.ReceiverName, htmlAttributes: new { @class = "col-form-label col-lg-3" })
                                     <div class="col-lg-9">
-                                        @Html.EditorFor(model => model.Shipping.No, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Shipping.No, "", new { @class = "text-danger" })
+                                        @Html.EditorFor(model => model.Shipping.ReceiverName, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Shipping.ReceiverName, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
@@ -239,12 +248,14 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>No</th>
+                                        @*<th>No</th>*@
                                         <th>Description</th>
                                         <th>Length (cm)</th>
                                         <th>Width (cm)</th>
                                         <th>Height (cm)</th>
                                         <th>Weight (gr)</th>
+                                        <th>Price</th>
+                                        <th>Courier</th>
                                         <th>Notes</th>
                                         <th class="never">Id</th>
                                     </tr>
@@ -257,12 +268,14 @@
                                         {
                                             <tr>
                                                 <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                <td>@item.No</td>
+                                                @*<td>@item.No</td>*@
                                                 <td>@item.Description</td>
                                                 <td>@item.Length</td>
                                                 <td>@item.Width</td>
                                                 <td>@item.Height</td>
                                                 <td>@item.Weight</td>
+                                                <td><input type="number" class="form-control price" value="@item.DeclaredPrice" /></td>
+                                                <td><input type="text" class="form-control courier" value="@item.CourierInfo" /></td>
                                                 <td>@item.Notes</td>
                                                 <td>@item.Id</td>
                                             </tr>
@@ -569,12 +582,12 @@
                         <form action="#" class="form-horizontal">
                             <div class="modal-body">
                                 <label class="model-validation text-danger" style="display: none"></label>
-                                <div class="form-group row">
+                                @*<div class="form-group row">
                                     <label class="col-form-label col-sm-3">No</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control mdl-no">
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3">Description</label>
                                     <div class="col-sm-9">
@@ -594,9 +607,18 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-form-label col-sm-3">Weight (gr)</label>
+                                    <label class="col-form-label col-sm-3">Weight (gr) / Price</label>
+                                    <div class="col-sm-3">
+                                        <input type="number" placeholder="Weight" class="form-control mdl-weight" min="1">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="number" placeholder="Declared Price" class="form-control mdl-price">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-sm-3">Courier Info</label>
                                     <div class="col-sm-9">
-                                        <input type="number" class="form-control mdl-weight" min="1">
+                                        <input type="text" class="form-control mdl-courier">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -632,6 +654,7 @@
     }
 
     function ClearCustomer() {
+        $('#Shipping_ReceiverName').val('');
         $('#Shipping_Company').val('');
         $('#Shipping_Address').val('');
         $('#Shipping_Address2').val('');
@@ -730,16 +753,16 @@
                         $('.shipping-validation').html('The Customer field is required.').show();
                         return false;
                     }
-                    else if ($('#Shipping_No').val() == '') {
-                        $('.shipping-validation').html('The No field is required.').show();
-                        return false;
-                    }
                     else if ($('#Shipping_Origin_Stations_Id').val() == '') {
                         $('.shipping-validation').html('The Origin Station field is required.').show();
                         return false;
                     }
                     else if ($('#Shipping_Destination_Stations_Id').val() == '') {
                         $('.shipping-validation').html('The Destination Station field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_ReceiverName').val() == '') {
+                        $('.shipping-validation').html('The Receiver Name field is required.').show();
                         return false;
                     }
                     else if ($('#Shipping_Address').val() == '') {
@@ -781,18 +804,21 @@
                         $('#data-body tr').each(function () {
                             var current_row = $(this).closest('tr');
                             var data = datatable.row(current_row).data();
-                            console.log(data);
+                            //console.log(data);
 
-                            var id = data[8];
-                            var no = data[1];
-                            var desc = data[2];
-                            var length = parseFloat(data[3]);
-                            var width = parseFloat(data[4]);
-                            var height = parseFloat(data[5]);
-                            var weight = parseFloat(data[6]);
-                            var notes = data[7];
-                            var obj = { id: id, no: no, desc: desc, length: length, width: width, height: height, weight: weight, notes: notes };
+                            var id = data[9];
+                            //var no = data[1];
+                            var desc = data[1];
+                            var length = parseFloat(data[2]);
+                            var width = parseFloat(data[3]);
+                            var height = parseFloat(data[4]);
+                            var weight = parseFloat(data[5]);
+                            var price = $(this).find('input.price').val(); if (price == '') { price = 0;}
+                            var courier = $(this).find('input.courier').val();
+                            var notes = data[8];
+                            var obj = { id: id, desc: desc, length: length, width: width, height: height, weight: weight, price: price, courier: courier, notes: notes };
                             arrItem.push(obj);
+                            //console.log(arrItem);
                         });
                         $('#Items_Content').val(JSON.stringify(arrItem));
 
@@ -804,9 +830,10 @@
                                 shipping_id: $('#Shipping_Id').val(),
                                 customer_id: $('#Shipping_Customers_Id').val(),
                                 company: $('#Shipping_Company').val(),
-                                no: $('#Shipping_No').val(),
+                                //no: $('#Shipping_No').val(),
                                 origin_id: $('#Shipping_Origin_Stations_Id').val(),
                                 destination_id: $('#Shipping_Destination_Stations_Id').val(),
+                                receiver: $('#Shipping_ReceiverName').val(),
                                 address: $('#Shipping_Address').val(),
                                 address2: $('#Shipping_Address2').val(),
                                 city: $('#Shipping_City').val(),
@@ -924,12 +951,14 @@
                         $.each(data, function (index, row) {
                             dataTable.row.add([
                                 '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + index + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
-                                row.No,
+                                //row.No,
                                 row.Description,
                                 row.Length,
                                 row.Width,
                                 row.Height,
                                 row.Weight,
+                                '<td><input type="number" class="form-control price" value="" /></td>',
+                                '<td><input type="text" class="form-control courier" value="" /></td>',
                                 row.Notes,
                                 row.Id
                             ]).draw();
@@ -984,18 +1013,17 @@
         });
 
         $('.mdl-btn-add').click(function () {
-            var no = $('.mdl-no').val();
+            //var no = $('.mdl-no').val();
             var desc = $('.mdl-desc').val();
             var length = $('.mdl-length').val();
             var width = $('.mdl-width').val();
             var height = $('.mdl-height').val();
             var weight = $('.mdl-weight').val();
+            var price = $('.mdl-price').val();
+            var courier = $('.mdl-courier').val();
             var notes = $('.mdl-notes').val();
 
-            if (no == '') {
-                $('.model-validation').html('The No field is required.').show();
-            }
-            else if (desc == '') {
+            if (desc == '') {
                 $('.model-validation').html('The Description field is required.').show();
             }
             else if (length == '' || length == 0) {
@@ -1012,16 +1040,18 @@
             }
             else {
                 $('.model-validation').html('').hide();
+                if (price == '') { price = 0;}
                 var row_count = datatable.page.info().recordsTotal; //alert(row_count);
 
                 dataTable.row.add([
                     '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + row_count + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
-                    no,
                     desc,
                     parseFloat(length),
                     parseFloat(width),
                     parseFloat(height),
                     parseFloat(weight),
+                    '<td><input type="number" class="form-control price" value="' + parseFloat(price) + '" /></td>',
+                    '<td><input type="text" class="form-control courier" value="' + courier + '" /></td>',
                     notes,
                     ''
                 ]).draw();
@@ -1051,7 +1081,7 @@
         var datatable = $('.datatable').DataTable({
             columnDefs: [
                 {
-                    visible: false, targets: [8]
+                    visible: false, targets: [9]
                 }
             ],
             //select: {
@@ -1070,14 +1100,17 @@
                 var data = datatable.row(current_row).data();
                 //console.log(data);
 
-                var id = data[7];
-                var no = data[1];
+                var id = data[9];
+                //var no = data[1];
+                var desc = data[1];
                 var length = parseFloat(data[2]);
                 var width = parseFloat(data[3]);
                 var height = parseFloat(data[4]);
                 var weight = parseFloat(data[5]);
-                var notes = data[6];
-                var obj = { id: id, no: no, length: length, width: width, height: height, weight: weight, notes: notes };
+                var price = parseFloat(data[6]);
+                var courier = data[7];
+                var notes = data[8];
+                var obj = { id: id, desc: desc, length: length, width: width, height: height, weight: weight, price: price, courier: courier, notes: notes };
                 arrItem.push(obj);
             });
             $('#Items_Content').val(JSON.stringify(arrItem));

@@ -9,6 +9,7 @@ namespace LintasMVC.Models
     public class OrdersIndexViewModels
     {
         public Guid Id { get; set; }
+        public string Service { get; set; }
         public string No { get; set; }
 
         [Display(Name = "Date")]

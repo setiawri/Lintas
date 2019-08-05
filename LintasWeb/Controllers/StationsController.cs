@@ -24,6 +24,7 @@ namespace LintasMVC.Controllers
                         select new StationsIndexViewModels
                         {
                             Id = s.Id,
+                            Code = s.Code,
                             Name = s.Name,
                             Countries = c.Name,
                             Address = s.Address
@@ -43,7 +44,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Code,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +79,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Code,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
         {
             if (ModelState.IsValid)
             {
@@ -100,6 +101,7 @@ namespace LintasMVC.Controllers
                         select new StationsIndexViewModels
                         {
                             Id = s.Id,
+                            Code = s.Code,
                             Name = s.Name,
                             Countries = c.Name,
                             Address = s.Address

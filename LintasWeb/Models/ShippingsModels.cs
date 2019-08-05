@@ -26,6 +26,10 @@ namespace LintasMVC.Models
         [Display(Name = "Destination")]
         public Guid Destination_Stations_Id { get; set; }
 
+        [Display(Name = "Receiver Name")]
+        [Required]
+        public string ReceiverName { get; set; }
+
         public string Company { get; set; }
 
         [Required]
@@ -84,12 +88,13 @@ namespace LintasMVC.Models
     public class ShippingItemDetails
     {
         public string id { get; set; }
-        public string no { get; set; }
         public string desc { get; set; }
         public int length { get; set; }
         public int width { get; set; }
         public int height { get; set; }
         public int weight { get; set; }
+        public int price { get; set; }
+        public string courier { get; set; }
         public string notes { get; set; }
     }
 }

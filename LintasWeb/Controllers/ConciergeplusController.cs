@@ -45,6 +45,134 @@ namespace LintasMVC.Controllers
             return Json(new { content = message }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetCsPlusLogs(Guid id)
+        {
+            List<ActivityLogsViewModels> list = new List<ActivityLogsViewModels>();
+            #region CS PLUS
+            List<ActivityLogsModels> csplus = db.ActivityLogs.Where(x => x.RefId == id && x.Description != "Modified").ToList();
+            foreach (var item in csplus)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.Timestamp,
+                    TableName = item.TableName,
+                    Description = item.Description,
+                    User_Id = item.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region ORDER ITEMS
+            var order_item = (from oi in db.OrderItems
+                              join al in db.ActivityLogs on oi.Id equals al.RefId
+                              where oi.Orders_Id == id && al.Description == "Added"
+                              select new { al, oi }).ToList();
+            foreach (var item in order_item)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.oi.Description,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region INVOICES
+            var invoice = (from o in db.Orders
+                           join inv in db.Invoices on o.Id equals inv.Ref_Id
+                           join al in db.ActivityLogs on inv.Id equals al.RefId
+                           where o.Id == id && al.Description == "Added"
+                           select new { al, inv }).ToList();
+            foreach (var item in invoice)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.al.TableName,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region PAYMENT
+            var payment = (from o in db.Orders
+                           join inv in db.Invoices on o.Id equals inv.Ref_Id
+                           join p in db.Payments on inv.Id equals p.Invoices_Id
+                           join al in db.ActivityLogs on p.Id equals al.RefId
+                           where o.Id == id && al.Description == "Added"
+                           select new { al, inv }).ToList();
+            foreach (var item in payment)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.al.TableName,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region PACKAGING
+            var package = (from si in db.ShippingItems
+                           join sic in db.ShippingItemContents on si.Id equals sic.ShippingItems_Id
+                           join oi in db.OrderItems on sic.OrderItems_Id equals oi.Id
+                           join al in db.ActivityLogs on si.Id equals al.RefId
+                           where oi.Orders_Id == id && al.Description == "Added"
+                           select new { al }).ToList();
+            foreach (var item in package)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = "Package",
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region SHIPPING
+            var shipping = (from s in db.Shippings
+                            join si in db.ShippingItems on s.Id equals si.Shippings_Id
+                            join sic in db.ShippingItemContents on si.Id equals sic.ShippingItems_Id
+                            join oi in db.OrderItems on sic.OrderItems_Id equals oi.Id
+                            join al in db.ActivityLogs on s.Id equals al.RefId
+                            where oi.Orders_Id == id && al.Description == "Added"
+                            select new { al }).ToList();
+            foreach (var item in shipping)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = "Shipping",
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Description</th>
+                                                <th>Created By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (var item in list.OrderByDescending(x => x.Timestamp))
+            {
+                message += @"<tr>
+                                <td>" + string.Format("{0:yyyy-MM-dd HH:mm}", item.Timestamp) + @"</td>
+                                <td>" + item.TableName + " " + item.Description + @"</td>
+                                <td>" + db.User.Where(x => x.Id == item.User_Id).FirstOrDefault().Fullname + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetInvoiceItems(Guid id)
         {
             var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
@@ -199,7 +327,7 @@ namespace LintasMVC.Controllers
             foreach (var item in list)
             {
                 message += @"<tr>
-                                <td>" + item.No + @"</td>
+                                <td>PKG" + item.No + @"</td>
                                 <td>" + item.Length + " x " + item.Width + " x " + item.Height + @"</td>
                                 <td>" + item.Weight.ToString("#,##0") + @"</td>
                                 <td>" + item.Notes + @"</td>
@@ -251,9 +379,11 @@ namespace LintasMVC.Controllers
                               join c in db.Customers on o.Customers_Id equals c.Id
                               join os in db.Stations on o.Origin_Stations_Id equals os.Id
                               join ds in db.Stations on o.Destination_Stations_Id equals ds.Id
+                              where o.Service == "CS+"
                               select new OrdersIndexViewModels
                               {
                                   Id = o.Id,
+                                  Service = o.Service,
                                   No = o.No,
                                   Timestamp = o.Timestamp,
                                   Customer = c.FirstName + " " + c.MiddleName + " " + c.LastName,
@@ -325,6 +455,7 @@ namespace LintasMVC.Controllers
 
                 OrdersIndexViewModels oivm = new OrdersIndexViewModels();
                 oivm.Id = item.Id;
+                oivm.Service = item.Service;
                 oivm.No = item.No;
                 oivm.Timestamp = item.Timestamp;
                 oivm.Customer = item.Customer;
@@ -536,7 +667,7 @@ namespace LintasMVC.Controllers
             return View(conciergeplusModels);
         }
 
-        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string company, string tax_number, string notes, string order_items)
+        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string receiver, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string company, string tax_number, string notes, string order_items)
         {
             string status;
             OrdersModels ordersModels;
@@ -548,10 +679,12 @@ namespace LintasMVC.Controllers
                 Common.Master m = new Common.Master();
                 ordersModels.Id = Guid.NewGuid();
                 ordersModels.Timestamp = order_date;
-                ordersModels.No = m.GetLastNo(ordersModels.Timestamp).ToString("000");
+                ordersModels.Service = "CS+";
+                ordersModels.No = m.GetLastHexAllTime("CS+"); //m.GetLastNo(ordersModels.Timestamp).ToString("00000");
                 ordersModels.Customers_Id = customer_id;
                 ordersModels.Origin_Stations_Id = origin_id;
                 ordersModels.Destination_Stations_Id = destination_id;
+                ordersModels.ReceiverName = receiver;
                 ordersModels.Address = address;
                 ordersModels.Address2 = address2;
                 ordersModels.City = city;
@@ -629,7 +762,7 @@ namespace LintasMVC.Controllers
 
             await db.SaveChangesAsync();
 
-            return Json(new { status = status, id = ordersModels.Id, no_order = order_date.ToString("yyyyMMdd") + ordersModels.No }, JsonRequestBehavior.AllowGet);
+            return Json(new { status = status, id = ordersModels.Id, no_order = ordersModels.Service + ordersModels.No }, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<JsonResult> SaveInvoice(Guid order_id, DateTime inv_date, decimal total_amount, string notes, string inv_items)
@@ -1174,6 +1307,8 @@ namespace LintasMVC.Controllers
             if (ModelState.IsValid)
             {
                 shippingItemsModels.Id = Guid.NewGuid();
+                Common.Master m = new Common.Master();
+                shippingItemsModels.No = m.GetLastHexAllTime("PKG");
                 shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Open;
                 shippingItemsModels.Invoiced = false;
 

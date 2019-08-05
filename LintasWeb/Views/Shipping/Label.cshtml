@@ -43,7 +43,7 @@
                 <!-- Invoice template -->
                 <div class="card">
                     <div class="card-header bg-transparent header-elements-inline">
-                        <h6 class="card-title">@Model.No</h6>
+                        <h6 class="card-title">Label Package</h6>
                         <div class="header-elements">
                             <button type="button" class="btn btn-light btn-sm ml-3" onclick="print_exec()"><i class="icon-printer mr-2"></i> Print</button>
                         </div>
@@ -52,37 +52,59 @@
                     <div class="card-body" id="print-area">
 
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-12">
                                 <div class="table-responsive">
                                     <table class="table table-lg table-bordered">
                                         <tbody>
                                             <tr>
                                                 <td colspan="4" align="center">
-                                                    <svg class="barcode"
+                                                    No. Package <br />
+                                                    <svg class="barcode_pkg"
                                                          jsbarcode-height="60"
-                                                         jsbarcode-value="@Model.No"
+                                                         jsbarcode-value="@string.Format("{0}{1}", "PKG", Model.No)"
                                                          jsbarcode-textmargin="0"
                                                          jsbarcode-fontoptions="bold">
                                                     </svg>
                                                 </td>
+                                                <td colspan="4" align="center">
+                                                    No. Shipping <br />
+                                                    <svg class="barcode_shipping"
+                                                            jsbarcode-height="60"
+                                                            jsbarcode-value="@ViewBag.NoShipping"
+                                                            jsbarcode-textmargin="0"
+                                                            jsbarcode-fontoptions="bold">
+                                                    </svg>
+                                                </td>
+                                                <td colspan="4" align="center">
+                                                    Courier Info <br />
+                                                    @if (!string.IsNullOrEmpty(Model.CourierInfo))
+                                                    {
+                                                        <svg class="barcode_courier"
+                                                             jsbarcode-height="60"
+                                                             jsbarcode-value="@Model.CourierInfo"
+                                                             jsbarcode-textmargin="0"
+                                                             jsbarcode-fontoptions="bold">
+                                                        </svg>
+                                                    }
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td>Length: @Model.Length cm</td>
-                                                <td>Width: @Model.Width cm</td>
-                                                <td>Height: @Model.Height cm</td>
-                                                <td>Weight: @Model.Weight gr</td>
+                                                <td colspan="3">Length: @Model.Length cm</td>
+                                                <td colspan="3">Width: @Model.Width cm</td>
+                                                <td colspan="3">Height: @Model.Height cm</td>
+                                                <td colspan="3">Weight: @Model.Weight gr</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="2">Origin: @ViewBag.Origin</td>
-                                                <td colspan="2">Destination: @ViewBag.Destination</td>
+                                                <td colspan="6">Origin: @ViewBag.Origin</td>
+                                                <td colspan="6">Destination: @ViewBag.Destination</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3">
+                                                <td colspan="8">
                                                     Customer Info: <br />
                                                     @ViewBag.Customer <br />
                                                     @ViewBag.Address
                                                 </td>
-                                                <td>
+                                                <td colspan="4">
                                                     Notes: <br />
                                                     @Model.Notes
                                                 </td>
@@ -120,7 +142,9 @@
         }
 
         $(document).ready(function () {
-            JsBarcode('.barcode').init();
+            JsBarcode('.barcode_pkg').init();
+            JsBarcode('.barcode_shipping').init();
+            JsBarcode('.barcode_courier').init();
         });
     </script>
 </body>

@@ -18,20 +18,40 @@ namespace LintasMVC.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var data = (from s in db.Shippings
-                        join o in db.Stations on s.Origin_Stations_Id equals o.Id
-                        join d in db.Stations on s.Destination_Stations_Id equals d.Id
-                        select new ShippingsViewModels
-                        {
-                            Id = s.Id,
-                            No = s.No,
-                            Timestamp = s.Timestamp,
-                            Origin = o.Name,
-                            Destination = d.Name,
-                            Notes = s.Notes,
-                            Status_enumid = s.Status_enumid
-                        }).ToListAsync();
-            return View(await data);
+            //var data = (from s in db.Shippings
+            //            join o in db.Stations on s.Origin_Stations_Id equals o.Id
+            //            join d in db.Stations on s.Destination_Stations_Id equals d.Id
+            //            select new ShippingsViewModels
+            //            {
+            //                Id = s.Id,
+            //                No = s.No,
+            //                Timestamp = s.Timestamp,
+            //                Origin = o.Name,
+            //                Destination = d.Name,
+            //                Notes = s.Notes,
+            //                Status_enumid = s.Status_enumid
+            //            }).ToListAsync();
+
+            var data = await (from s in db.Shippings
+                              join o in db.Stations on s.Origin_Stations_Id equals o.Id
+                              join d in db.Stations on s.Destination_Stations_Id equals d.Id
+                              select new { s, o, d }).ToListAsync();
+            List<ShippingsViewModels> list = new List<ShippingsViewModels>();
+            foreach (var item in data)
+            {
+                list.Add(new ShippingsViewModels
+                {
+                    Id = item.s.Id,
+                    No = item.o.Code + item.d.Code + item.s.Timestamp.ToString("MM") + item.s.Timestamp.ToString("dd") + item.s.No,
+                    Timestamp = item.s.Timestamp,
+                    Origin = item.o.Name,
+                    Destination = item.d.Name,
+                    Notes = item.s.Notes,
+                    Status_enumid = item.s.Status_enumid
+                });
+            }
+
+            return View(list);
         }
 
         public JsonResult GetItems(Guid customerId)
@@ -87,12 +107,105 @@ namespace LintasMVC.Controllers
             return Json(status, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetShippingLogs(Guid id)
+        {
+            List<ActivityLogsViewModels> list = new List<ActivityLogsViewModels>();
+            #region SHIPPING
+            List<ActivityLogsModels> shipping = db.ActivityLogs.Where(x => x.RefId == id && x.Description != "Modified").ToList();
+            foreach (var item in shipping)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.Timestamp,
+                    TableName = item.TableName,
+                    Description = item.Description,
+                    User_Id = item.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region INVOICES
+            var invoice = (from s in db.Shippings
+                           join inv in db.Invoices on s.Id equals inv.Ref_Id
+                           join al in db.ActivityLogs on inv.Id equals al.RefId
+                           where s.Id == id && al.Description == "Added"
+                           select new { al, inv }).ToList();
+            foreach (var item in invoice)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.al.TableName,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region PAYMENT
+            var payment = (from s in db.Shippings
+                           join inv in db.Invoices on s.Id equals inv.Ref_Id
+                           join p in db.Payments on inv.Id equals p.Invoices_Id
+                           join al in db.ActivityLogs on p.Id equals al.RefId
+                           where s.Id == id && al.Description == "Added"
+                           select new { al, inv }).ToList();
+            foreach (var item in payment)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.al.TableName,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+            #region SHIPMENT
+            var shipment = (from smnt in db.Shipments
+                           join si in db.ShippingItems on smnt.Id equals si.Shipments_Id
+                           join s in db.Shippings on si.Shippings_Id equals s.Id
+                           join al in db.ActivityLogs on smnt.Id equals al.RefId
+                           where s.Id == id && al.Description == "Added"
+                           select new { al }).ToList();
+            foreach (var item in shipment)
+            {
+                list.Add(new ActivityLogsViewModels()
+                {
+                    Timestamp = item.al.Timestamp,
+                    TableName = item.al.TableName,
+                    Description = item.al.Description,
+                    User_Id = item.al.UserAccounts_Id
+                });
+            }
+            #endregion
+
+            string message = @"<div class='table-responsive'>
+                                    <table class='table table-striped table-bordered'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Description</th>
+                                                <th>Created By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>";
+            foreach (var item in list.OrderByDescending(x => x.Timestamp))
+            {
+                message += @"<tr>
+                                <td>" + string.Format("{0:yyyy-MM-dd HH:mm}", item.Timestamp) + @"</td>
+                                <td>" + item.TableName + " " + item.Description + @"</td>
+                                <td>" + db.User.Where(x => x.Id == item.User_Id).FirstOrDefault().Fullname + @"</td>
+                            </tr>";
+            }
+            message += "</tbody></table></div>";
+
+            return Json(new { content = message }, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult AutofillingCustomer(Guid customer_id)
         {
             var cust_model = db.Customers.Where(x => x.Id == customer_id).FirstOrDefault();
             var country_model = db.Countries.Where(x => x.Id == cust_model.Countries_Id).FirstOrDefault();
 
-            return Json(new { cust_model = cust_model, country_model = country_model }, JsonRequestBehavior.AllowGet);
+            return Json(new { cust_model, country_model }, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<ActionResult> Create(Guid? id, Guid? order)
@@ -142,6 +255,7 @@ namespace LintasMVC.Controllers
                     shipping.Origin_Stations_Id = ordersModels.Origin_Stations_Id;
                     shipping.Destination_Stations_Id = ordersModels.Destination_Stations_Id;
                     shipping.Company = ordersModels.Company;
+                    shipping.ReceiverName = ordersModels.ReceiverName;
                     shipping.Address = ordersModels.Address;
                     shipping.Address2 = ordersModels.Address2;
                     shipping.City = ordersModels.City;
@@ -174,6 +288,11 @@ namespace LintasMVC.Controllers
             else
             {
                 shipping = await db.Shippings.Where(x => x.Id == id).FirstOrDefaultAsync();
+                ViewBag.no_shipping = db.Stations.Where(x => x.Id == shipping.Origin_Stations_Id).FirstOrDefault().Code
+                    + db.Stations.Where(x => x.Id == shipping.Destination_Stations_Id).FirstOrDefault().Code
+                    + shipping.Timestamp.ToString("MM")
+                    + shipping.Timestamp.ToString("dd")
+                    + shipping.No;
                 var shipping_items = db.ShippingItems.Where(x => x.Shippings_Id == id).OrderBy(x => x.No).ToList();
                 ViewBag.listItems = shipping_items;
                 listInvoice = await db.Invoices.Where(x => x.Ref_Id == id).OrderBy(x => x.No).ToListAsync();
@@ -195,7 +314,7 @@ namespace LintasMVC.Controllers
                 {
                     ShippingDocumentsViewModels sdvm = new ShippingDocumentsViewModels();
                     sdvm.Id = item.Id;
-                    sdvm.No = item.No;
+                    sdvm.No = "PKG" + item.No;
                     sdvm.ListFileUploads = db.FileUploads.Where(x => x.Ref_Id == item.Id).ToList();
                     listDocument.Add(sdvm);
                 }
@@ -335,7 +454,7 @@ namespace LintasMVC.Controllers
         //    return View(shippingsModels);
         //}
 
-        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string company, string no, Guid origin_id, Guid destination_id, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string tax_number, string notes, string shipping_items)
+        public async Task<JsonResult> SaveShipping(Guid? shipping_id, Guid customer_id, string company, Guid origin_id, Guid destination_id, string receiver, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string tax_number, string notes, string shipping_items)
         {
             string status;
             ShippingsModels shippingsModels;
@@ -347,10 +466,12 @@ namespace LintasMVC.Controllers
                 shippingsModels.Id = Guid.NewGuid();
                 shippingsModels.Customers_Id = customer_id;
                 shippingsModels.Company = company;
-                shippingsModels.No = no;
+                Common.Master m = new Common.Master();
+                shippingsModels.No = m.GetLastHexResetDay();
                 shippingsModels.Timestamp = DateTime.Now;
                 shippingsModels.Origin_Stations_Id = origin_id;
                 shippingsModels.Destination_Stations_Id = destination_id;
+                shippingsModels.ReceiverName = receiver;
                 shippingsModels.Address = address;
                 shippingsModels.Address2 = address2;
                 shippingsModels.City = city;
@@ -376,11 +497,13 @@ namespace LintasMVC.Controllers
                         shippingItemsModels = new ShippingItemsModels();
                         shippingItemsModels.Id = Guid.NewGuid();
                         shippingItemsModels.Shippings_Id = shippingsModels.Id;
-                        shippingItemsModels.No = item.no;
+                        shippingItemsModels.No = m.GetLastHexAllTime("PKG");
                         shippingItemsModels.Length = item.length;
                         shippingItemsModels.Width = item.width;
                         shippingItemsModels.Height = item.height;
                         shippingItemsModels.Weight = item.weight;
+                        shippingItemsModels.DeclaredPrice = item.price;
+                        shippingItemsModels.CourierInfo = item.courier;
                         shippingItemsModels.Notes = item.notes;
                         shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
                         shippingItemsModels.Invoiced = false;
@@ -399,6 +522,8 @@ namespace LintasMVC.Controllers
                     {
                         shippingItemsModels = await db.ShippingItems.Where(x => x.Id.ToString() == item.id).FirstOrDefaultAsync();
                         shippingItemsModels.Shippings_Id = shippingsModels.Id;
+                        shippingItemsModels.DeclaredPrice = item.price;
+                        shippingItemsModels.CourierInfo = item.courier;
                         shippingItemsModels.Status_enumid = ShippingItemStatusEnum.Closed;
                         shippingItemsModels.Invoiced = false;
                         db.Entry(shippingItemsModels).State = EntityState.Modified;
@@ -428,7 +553,15 @@ namespace LintasMVC.Controllers
             }
 
             await db.SaveChangesAsync();
-            return Json(new { status = status, id = shippingsModels.Id, no_shipping = no }, JsonRequestBehavior.AllowGet);
+            return Json(new
+            {
+                status, id = shippingsModels.Id,
+                no_shipping = db.Stations.Where(x=>x.Id==shippingsModels.Origin_Stations_Id).FirstOrDefault().Code
+                    + db.Stations.Where(x => x.Id == shippingsModels.Destination_Stations_Id).FirstOrDefault().Code
+                    + shippingsModels.Timestamp.ToString("MM")
+                    + shippingsModels.Timestamp.ToString("dd") 
+                    + shippingsModels.No
+            }, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<ActionResult> Invoice(Guid? id)
@@ -467,7 +600,12 @@ namespace LintasMVC.Controllers
 
                 int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
-                invoicesModels.No = shippingsModels.Timestamp.ToString("yyyyMMdd") + shippingsModels.No + counter;
+                invoicesModels.No = db.Stations.Where(x=>x.Id==shippingsModels.Origin_Stations_Id).FirstOrDefault().Code
+                    + db.Stations.Where(x => x.Id == shippingsModels.Destination_Stations_Id).FirstOrDefault().Code
+                    + shippingsModels.Timestamp.ToString("MM")
+                    + shippingsModels.Timestamp.ToString("dd")
+                    + shippingsModels.No
+                    + "-" + counter;
                 db.Invoices.Add(invoicesModels);
 
                 List<ShippingItemsModels> listShippingItems = await db.ShippingItems.Where(x => x.Shippings_Id == invoicesModels.Ref_Id && x.Invoiced == false).ToListAsync();
@@ -484,7 +622,7 @@ namespace LintasMVC.Controllers
 
                     foreach (var oi in listShippingItems)
                     {
-                        if (item.desc == oi.No)
+                        if (item.desc == oi.Description)
                         {
                             oi.Invoiced = true;
                             db.Entry(oi).State = EntityState.Modified;
@@ -656,7 +794,7 @@ namespace LintasMVC.Controllers
             ShippingItemsModels shippingItemsModels = await db.ShippingItems.Where(x => x.Id == id).FirstOrDefaultAsync();
             FileUploadsModels fileUploadsModels = new FileUploadsModels();
             fileUploadsModels.Ref_Id = shippingItemsModels.Id;
-            ViewBag.Package = shippingItemsModels.No + " (Dimension: " + shippingItemsModels.Length + "cm x " + shippingItemsModels.Width + "cm x " + shippingItemsModels.Height + "cm)";
+            ViewBag.Package = "PKG" + shippingItemsModels.No + " (Dimension: " + shippingItemsModels.Length + "cm x " + shippingItemsModels.Width + "cm x " + shippingItemsModels.Height + "cm)";
 
             return View(fileUploadsModels);
         }
@@ -825,6 +963,7 @@ namespace LintasMVC.Controllers
                             join c in db.Customers on s.Customers_Id equals c.Id
                             where s.Id == shippingItemsModels.Shippings_Id
                             select new { s, os, ds, c }).FirstOrDefault();
+            ViewBag.NoShipping = shipping.os.Code + shipping.ds.Code + shipping.s.Timestamp.ToString("MM") + shipping.s.Timestamp.ToString("dd") + shipping.s.No;
             ViewBag.Origin = shipping.os.Name;
             ViewBag.Destination = shipping.ds.Name;
             ViewBag.Customer = shipping.c.FirstName + " " + shipping.c.MiddleName + " " + shipping.c.LastName;

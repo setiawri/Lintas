@@ -14,6 +14,10 @@ namespace LintasMVC.Models
         public Guid Id { get; set; }
 
         [Required]
+        [StringLength(2)]
+        public string Code { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         [Required]

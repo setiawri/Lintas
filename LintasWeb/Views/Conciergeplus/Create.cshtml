@@ -31,7 +31,7 @@
                 @Html.HiddenFor(model => model.Invoice.Id)
                 @Html.HiddenFor(model => model.Invoice.TotalAmount)
                 @Html.Hidden("RedirectUrl")
-                <h6 class="card-title">No Order: <label class="no-order">@(Model.Order.No == null ? "" : Model.Order.Timestamp.ToString("yyyyMMdd") + Model.Order.No)</label></h6>
+                <h6 class="card-title">No Order: <label class="no-order">@(Model.Order.No == null ? "" : Model.Order.Service + Model.Order.No)</label></h6>
                 <div class="header-elements">
                     <div class="list-icons">
                         <a class="list-icons-item" data-action="collapse"></a>
@@ -95,6 +95,12 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Receiver Name: <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Order.ReceiverName, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Company:</label>
@@ -443,7 +449,7 @@
                                 @foreach (var item in Model.ListShippingItem)
                                 {
                                     <tr>
-                                        <td>@Html.DisplayFor(modelItem => item.No)</td>
+                                        <td>@string.Format("{0}{1}", "PKG", item.No)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Length)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Width)</td>
                                         <td>@Html.DisplayFor(modelItem => item.Height)</td>
@@ -531,6 +537,7 @@
 <script type="text/javascript">
     //Form Order
     function ClearCustomer() {
+        $('#Order_ReceiverName').val('');
         $('#Order_Company').val('');
         $('#Order_Address').val('');
         $('#Order_Address2').val('');
@@ -670,7 +677,7 @@
             success: function (data) {
                 var dialog = bootbox.alert({
                     size: 'large',
-                    title: 'Package Item: ' + no,
+                    title: 'Package Item: PKG' + no,
                     message: data.content,
                     backdrop: true
                 });
@@ -766,6 +773,10 @@
                         $('.order-validation').html('The Destination Station field is required.').show();
                         return false;
                     }
+                    else if ($('#Order_ReceiverName').val() == '') {
+                        $('.order-validation').html('The Receiver Name field is required.').show();
+                        return false;
+                    }
                     else if ($('#Order_Address').val() == '') {
                         $('.order-validation').html('The Address 1 field is required.').show();
                         return false;
@@ -811,6 +822,7 @@
                                 customer_id: $('#Order_Customers_Id').val(),
                                 origin_id: $('#Order_Origin_Stations_Id').val(),
                                 destination_id: $('#Order_Destination_Stations_Id').val(),
+                                receiver: $('#Order_ReceiverName').val(),
                                 address: $('#Order_Address').val(),
                                 address2: $('#Order_Address2').val(),
                                 city: $('#Order_City').val(),

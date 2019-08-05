@@ -115,7 +115,7 @@
                                                 {
                                                     <tr id="row_@row">
                                                         <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                        <td><input type="text" class="form-control desc" value="@item.No" /></td>
+                                                        <td><input type="text" class="form-control desc" value="@item.Description" /></td>
                                                         <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
                                                         <td><input type="text" class="form-control note" value="@item.Notes" /></td>
                                                         <td style="display: none">@(row++)</td>
@@ -124,12 +124,12 @@
                                             }
                                             else
                                             {
-                                                <tr id="row_@row">
-                                                    <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
-                                                    <td><input type="text" class="form-control desc" /></td>
-                                                    <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
-                                                    <td><input type="text" class="form-control note" /></td>
-                                                </tr>
+                                                    <tr id="row_@row">
+                                                        <td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(@row)" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>
+                                                        <td><input type="text" class="form-control desc" /></td>
+                                                        <td><input type="text" class="form-control text-right cost" onkeyup="math_total_price()" /></td>
+                                                        <td><input type="text" class="form-control note" /></td>
+                                                    </tr>
                                             }
                                         </tbody>
                                         <tfoot>

@@ -204,6 +204,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ActivityLogsModels.cs" />
     <Compile Include="Models\ConciergeplusModels.cs" />
     <Compile Include="Models\CountriesModels.cs" />
     <Compile Include="Models\CustomersIndexViewModels.cs" />
