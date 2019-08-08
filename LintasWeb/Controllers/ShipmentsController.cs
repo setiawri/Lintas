@@ -159,8 +159,8 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ParcelHigh = model.Height;
                     shipmentsReportModels.ConsignmentDate = DateTime.Today;
                     shipmentsReportModels.TaxConsigneeNumber = shippingsModels.TaxNumber;
-                    
-                    shipmentsReportModels.ConsigneeName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
+
+                    shipmentsReportModels.ConsigneeName = shippingsModels.ReceiverName;
                     shipmentsReportModels.ConsigneeCompany = shippingsModels.Company;
                     shipmentsReportModels.ConsigneePhone = shippingsModels.Phone2;
                     shipmentsReportModels.ConsigneeMobile = shippingsModels.Phone1;
