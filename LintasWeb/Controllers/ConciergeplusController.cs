@@ -321,6 +321,7 @@ namespace LintasMVC.Controllers
                                                 <th>Weight (gr)</th>
                                                 <th>Notes</th>
                                                 <th>Tracking No</th>
+                                                <th>Label</th>
                                             </tr>
                                         </thead>
                                         <tbody>";
@@ -332,6 +333,7 @@ namespace LintasMVC.Controllers
                                 <td>" + item.Weight.ToString("#,##0") + @"</td>
                                 <td>" + item.Notes + @"</td>
                                 <td><a href='" + Url.Content("~") + "Tracking/?no=" + item.TrackingNo + "' target='_blank'>" + item.TrackingNo + @"</a></td>
+                                <td><a href='" + Url.Content("~") + "Shipping/Label/" + item.Id + @"' target='_blank'>Print</a></td>
                             </tr>";
             }
             message += "</tbody></table></div>";
@@ -615,7 +617,9 @@ namespace LintasMVC.Controllers
                                     {
                                         ShippingsViewModels svm = new ShippingsViewModels();
                                         svm.Id = item.Id;
-                                        svm.No = item.No;
+                                        svm.No = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Code
+                                            + db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Code
+                                            + item.Timestamp.ToString("MM") + item.Timestamp.ToString("dd") + item.No;
                                         svm.Timestamp = item.Timestamp;
                                         svm.Origin = db.Stations.Where(x => x.Id == item.Origin_Stations_Id).FirstOrDefault().Name;
                                         svm.Destination = db.Stations.Where(x => x.Id == item.Destination_Stations_Id).FirstOrDefault().Name;

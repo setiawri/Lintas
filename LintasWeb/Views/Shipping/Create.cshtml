@@ -991,6 +991,7 @@
                             customer_id: $('#Shipping_Customers_Id').val()
                         },
                         success: function (data) {
+                            $('#Shipping_ReceiverName').val($('#Shipping_Customers_Id option:selected').text());
                             $('#Shipping_Company').val(data.cust_model.Company);
                             $('#Shipping_Address').val(data.cust_model.Address);
                             $('#Shipping_Address2').val(data.cust_model.Address2);

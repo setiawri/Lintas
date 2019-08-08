@@ -148,7 +148,10 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.Id = Guid.NewGuid();
                     shipmentsReportModels.ShippingItems_Id = model.Id;
                     shipmentsReportModels.WaybillNumber = shipmentsModels.AWB;
-                    shipmentsReportModels.ServiceNumber = shippingsModels.No;
+                    shipmentsReportModels.ServiceNumber = db.Stations.Where(x => x.Id == shippingsModels.Origin_Stations_Id).FirstOrDefault().Code
+                        + db.Stations.Where(x => x.Id == shippingsModels.Destination_Stations_Id).FirstOrDefault().Code
+                        + shippingsModels.Timestamp.ToString("MM") + shippingsModels.Timestamp.ToString("dd")
+                        + shippingsModels.No;
                     shipmentsReportModels.OriginCountry = db.Countries.Where(x => x.Id == db.Stations.Where(y => y.Id == shippingsModels.Origin_Stations_Id).FirstOrDefault().Countries_Id).FirstOrDefault().Name;
                     shipmentsReportModels.ParcelWeight = model.Weight;
                     shipmentsReportModels.ParcelLong = model.Length;
