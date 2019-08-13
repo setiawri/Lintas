@@ -217,6 +217,7 @@
     <Compile Include="Models\InvoiceItemsModels.cs" />
     <Compile Include="Models\InvoicesIndexViewModels.cs" />
     <Compile Include="Models\InvoicesModels.cs" />
+    <Compile Include="Models\LabelViewModels.cs" />
     <Compile Include="Models\LintasContext.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\OrderItemLogModels.cs" />

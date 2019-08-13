@@ -47,6 +47,11 @@ namespace LintasMVC.Controllers
 
         public JsonResult GetCsPlusLogs(Guid id)
         {
+            string tz_origin = (from o in db.Orders
+                                join os in db.Stations on o.Origin_Stations_Id equals os.Id
+                                where o.Id == id
+                                select new { o, os }).FirstOrDefault().os.TimeZone;
+
             List<ActivityLogsViewModels> list = new List<ActivityLogsViewModels>();
             #region CS PLUS
             List<ActivityLogsModels> csplus = db.ActivityLogs.Where(x => x.RefId == id && x.Description != "Modified").ToList();
@@ -54,7 +59,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = item.TableName,
                     Description = item.Description,
                     User_Id = item.UserAccounts_Id
@@ -70,7 +75,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.al.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.al.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = item.oi.Description,
                     Description = item.al.Description,
                     User_Id = item.al.UserAccounts_Id
@@ -87,7 +92,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.al.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.al.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = item.al.TableName,
                     Description = item.al.Description,
                     User_Id = item.al.UserAccounts_Id
@@ -105,7 +110,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.al.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.al.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = item.al.TableName,
                     Description = item.al.Description,
                     User_Id = item.al.UserAccounts_Id
@@ -123,7 +128,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.al.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.al.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = "Package",
                     Description = item.al.Description,
                     User_Id = item.al.UserAccounts_Id
@@ -142,7 +147,7 @@ namespace LintasMVC.Controllers
             {
                 list.Add(new ActivityLogsViewModels()
                 {
-                    Timestamp = item.al.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.al.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(tz_origin)),
                     TableName = "Shipping",
                     Description = item.al.Description,
                     User_Id = item.al.UserAccounts_Id
@@ -232,8 +237,13 @@ namespace LintasMVC.Controllers
 
         public JsonResult GetLogs(Guid id)
         {
-            var payments = db.Payments.Where(x => x.Invoices_Id == id).ToList();
-            var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
+            //var payments = db.Payments.Where(x => x.Invoices_Id == id).ToList();
+            //var invoice = db.Invoices.Where(x => x.Id == id).FirstOrDefault();
+            string TimeZoneId = (from o in db.Orders
+                                 join oi in db.OrderItems on o.Id equals oi.Orders_Id
+                                 join s in db.Stations on o.Origin_Stations_Id equals s.Id
+                                 where oi.Id == id
+                                 select new { o, oi, s }).FirstOrDefault().s.TimeZone;
             List<OrderItemLogModels> itemLogs = db.OrderItemLog.Where(x => x.OrderItems_Id == id).OrderByDescending(x => x.Timestamp).ToList();
             string message = @"<div class='table-responsive'>
                                     <table class='table table-striped table-bordered'>
@@ -248,7 +258,7 @@ namespace LintasMVC.Controllers
             foreach (OrderItemLogModels item in itemLogs)
             {
                 message += @"<tr>
-                                <td>" + item.Timestamp.ToString("yyyy/MM/dd HH:mm") + @"</td>
+                                <td>" + TimeZoneInfo.ConvertTimeFromUtc(item.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId)).ToString("yyyy/MM/dd HH:mm") + @"</td>
                                 <td>" + item.Description + @"</td>
                                 <td>" + db.User.Where(x => x.Id == item.UserAccounts_Id).FirstOrDefault().Fullname + @"</td>
                             </tr>";
@@ -265,13 +275,13 @@ namespace LintasMVC.Controllers
             OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
             orderItemLogModels.Id = Guid.NewGuid();
             orderItemLogModels.OrderItems_Id = id;
-            orderItemLogModels.Timestamp = DateTime.Now;
+            orderItemLogModels.Timestamp = DateTime.UtcNow;
             orderItemLogModels.Description = "[Stopped] Order Qty changed from " + orderItemsModels.Qty + " to " + orderItemsModels.ReceivedQty;
             orderItemLogModels.UserAccounts_Id = db.User.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().Id;
             db.OrderItemLog.Add(orderItemLogModels);
 
             orderItemsModels.Qty = orderItemsModels.ReceivedQty;
-            orderItemsModels.ReceiveTimestamp = DateTime.Now;
+            orderItemsModels.ReceiveTimestamp = DateTime.UtcNow;
             orderItemsModels.Status_enumid = OrderItemStatusEnum.Received;
             db.Entry(orderItemsModels).State = EntityState.Modified;
 
@@ -495,6 +505,7 @@ namespace LintasMVC.Controllers
             ViewBag.listCustomers = new SelectList(newList, "Id", "Name");
             ViewBag.listStations = new SelectList(db.Stations.OrderBy(x => x.Name).ToList(), "Id", "Name");
 
+            string timeZoneID;
             OrdersModels ordersModels;
             List<InvoicesModels> listInvoice;
             List<PaymentsIndexViewModels> listPayment;
@@ -506,6 +517,7 @@ namespace LintasMVC.Controllers
             ConciergeplusModels conciergeplusModels = new ConciergeplusModels();
             if (id == null || id == Guid.Empty)
             {
+                timeZoneID = string.Empty;
                 ordersModels = new OrdersModels();
                 listInvoice = new List<InvoicesModels>();
                 listPayment = new List<PaymentsIndexViewModels>();
@@ -518,6 +530,11 @@ namespace LintasMVC.Controllers
             }
             else
             {
+                timeZoneID = (from o in db.Orders
+                              join s in db.Stations on o.Origin_Stations_Id equals s.Id
+                              where o.Id == id
+                              select new { o, s }).FirstOrDefault().s.TimeZone;
+
                 ordersModels = await db.Orders.Where(x => x.Id == id).FirstOrDefaultAsync();
                 ViewBag.listItems = db.OrderItems.Where(x => x.Orders_Id == id).ToList();
 
@@ -659,19 +676,21 @@ namespace LintasMVC.Controllers
                 //            ? (int)ordersModels.Status_enumid + 1 //purchasing completed
                 //            : (int)ordersModels.Status_enumid; //purchasing not completed
             }
+
+            conciergeplusModels.TimeZoneId = timeZoneID;
             conciergeplusModels.Order = ordersModels;
             conciergeplusModels.ListInvoice = listInvoice;
             conciergeplusModels.ListPayment = listPayment;
             conciergeplusModels.Invoice = invoicesModels;
             conciergeplusModels.Payment = paymentsModels;
-            conciergeplusModels.ListOrderItem = listOrderItem;
+            conciergeplusModels.ListOrderItem = listOrderItem   ;
             conciergeplusModels.ListShippingItem = listShippingItem;
             conciergeplusModels.ListShipping = listShipping;
 
             return View(conciergeplusModels);
         }
 
-        public async Task<JsonResult> SaveOrder(Guid? order_id, DateTime order_date, Guid customer_id, Guid origin_id, Guid destination_id, string receiver, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string company, string tax_number, string notes, string order_items)
+        public async Task<JsonResult> SaveOrder(Guid? order_id, Guid customer_id, Guid origin_id, Guid destination_id, string receiver, string address, string address2, string city, string state, string country, string country_code, string postal_code, string mobile, string phone, string fax, string email, string company, string tax_number, string notes, string order_items)
         {
             string status;
             OrdersModels ordersModels;
@@ -682,7 +701,7 @@ namespace LintasMVC.Controllers
                 ordersModels = new OrdersModels();
                 Common.Master m = new Common.Master();
                 ordersModels.Id = Guid.NewGuid();
-                ordersModels.Timestamp = order_date;
+                ordersModels.Timestamp = DateTime.UtcNow;
                 ordersModels.Service = "CS+";
                 ordersModels.No = m.GetLastHexAllTime("CS+"); //m.GetLastNo(ordersModels.Timestamp).ToString("00000");
                 ordersModels.Customers_Id = customer_id;
@@ -727,7 +746,7 @@ namespace LintasMVC.Controllers
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
                     tr.Ref_Id = oi.Id; //Order Items Id
-                    tr.Timestamp = DateTime.Now;
+                    tr.Timestamp = DateTime.UtcNow;
                     tr.Description = "Orders Created";
                     db.Tracking.Add(tr);
                 }
@@ -949,7 +968,8 @@ namespace LintasMVC.Controllers
                 OrdersModels ordersModels = await db.Orders.AsNoTracking().Where(x => x.Id == invoicesModels.Ref_Id).FirstOrDefaultAsync();
                 int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
-                invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + counter;
+                invoicesModels.Timestamp = DateTime.UtcNow;
+                invoicesModels.No = ordersModels.Timestamp.ToString("yyyyMMdd") + ordersModels.No + "-" + counter;
                 db.Invoices.Add(invoicesModels);
 
                 List<OrderItemsModels> listOrderItems = await db.OrderItems.Where(x => x.Orders_Id == invoicesModels.Ref_Id && x.Invoiced == false).ToListAsync();
@@ -1093,7 +1113,13 @@ namespace LintasMVC.Controllers
 
             if (ModelState.IsValid)
             {
+                //string timeZoneID = (from o in db.Orders
+                //                     join s in db.Stations on o.Origin_Stations_Id equals s.Id
+                //                     where o.Id == Order_Id
+                //                     select new { o, s }).FirstOrDefault().s.TimeZone;
+
                 paymentsModels.Id = Guid.NewGuid();
+                //paymentsModels.Timestamp = TimeZoneInfo.ConvertTimeToUtc(paymentsModels.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(timeZoneID));
                 db.Payments.Add(paymentsModels);
 
                 invoice.TotalPaid += paymentsModels.Amount;
@@ -1114,7 +1140,7 @@ namespace LintasMVC.Controllers
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
                         tr.Ref_Id = item.Id;
-                        tr.Timestamp = DateTime.Now;
+                        tr.Timestamp = DateTime.UtcNow;
                         tr.Description = "Payment Completed";
                         db.Tracking.Add(tr);
                     }
@@ -1235,7 +1261,7 @@ namespace LintasMVC.Controllers
                 string qtyReceived = "";
                 if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Purchased)
                 {
-                    orderItemsModels.PurchaseTimestamp = DateTime.Now;
+                    orderItemsModels.PurchaseTimestamp = DateTime.UtcNow;
                     orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
                 }
                 else if (orderItemLogViewModels.OrderItem.Status_enumid == OrderItemStatusEnum.Conflict)
@@ -1248,7 +1274,7 @@ namespace LintasMVC.Controllers
 
                     if (orderItemsModels.Qty == orderItemsModels.ReceivedQty + Remaining)
                     {
-                        orderItemsModels.ReceiveTimestamp = DateTime.Now;
+                        orderItemsModels.ReceiveTimestamp = DateTime.UtcNow;
                         orderItemsModels.Status_enumid = orderItemLogViewModels.OrderItem.Status_enumid;
                     }
                     orderItemsModels.ReceivedQty += Remaining;
@@ -1256,7 +1282,7 @@ namespace LintasMVC.Controllers
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
                     tr.Ref_Id = orderItemsModels.Id;
-                    tr.Timestamp = DateTime.Now;
+                    tr.Timestamp = DateTime.UtcNow;
                     tr.Description = Remaining + " Item Received from Supplier";
                     db.Tracking.Add(tr);
                 }
@@ -1265,7 +1291,7 @@ namespace LintasMVC.Controllers
                 OrderItemLogModels orderItemLogModels = new OrderItemLogModels();
                 orderItemLogModels.Id = Guid.NewGuid();
                 orderItemLogModels.OrderItems_Id = orderItemLogViewModels.OrderItem.Id;
-                orderItemLogModels.Timestamp = DateTime.Now;
+                orderItemLogModels.Timestamp = DateTime.UtcNow;
                 if (string.IsNullOrEmpty(DescriptionLog))
                 {
                     orderItemLogModels.Description = "[" + Enum.GetName(typeof(OrderItemStatusEnum), orderItemLogViewModels.OrderItem.Status_enumid) + qtyReceived + "]";
@@ -1392,7 +1418,7 @@ namespace LintasMVC.Controllers
             if (ModelState.IsValid)
             {
                 shippingsModels.Id = Guid.NewGuid();
-                shippingsModels.Timestamp = DateTime.Now;
+                shippingsModels.Timestamp = DateTime.UtcNow;
                 db.Shippings.Add(shippingsModels);
 
                 string[] arrID = Items_Selected.Split(',');

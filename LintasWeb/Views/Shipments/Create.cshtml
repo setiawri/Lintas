@@ -26,7 +26,7 @@
         @using (Html.BeginForm("Create", "Shipments", FormMethod.Post, new { id = "target" }))
         {
             @Html.AntiForgeryToken()
-            <input type="hidden" id="Timestamp" name="Timestamp" value="@DateTime.Now" />
+            <input type="hidden" id="Timestamp" name="Timestamp" value="@DateTime.UtcNow" />
             <input type="hidden" id="items_selected" name="items_selected" />
             <input type="hidden" id="Items_List" name="Items_List" />
             <input type="hidden" id="No" name="No" value="123" />
@@ -78,7 +78,8 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>No</th>
+                                        <th>No Package</th>
+                                        <th>No Shipping</th>
                                         <th>Dimension (cm)</th>
                                         @*<th>Length (cm)</th>
                                         <th>Width (cm)</th>
@@ -95,12 +96,19 @@
                                     {
                                         foreach (var item in ViewBag.listItems)
                                         {
-                                            bool isPaymentCompleted = false;
+                                            bool isPaymentCompleted = false; string shipping_no = "";
                                             using (var ctx = new LintasMVC.Models.LintasContext())
                                             {
                                                 Guid shippingsId = item.Shippings_Id;
                                                 var inv = ctx.Invoices.Where(x => x.Ref_Id == shippingsId).FirstOrDefault();
                                                 if (inv.TotalAmount == inv.TotalPaid) { isPaymentCompleted = true; }
+
+                                                var shipping = (from s in ctx.Shippings
+                                                                join o in ctx.Stations on s.Origin_Stations_Id equals o.Id
+                                                                join d in ctx.Stations on s.Destination_Stations_Id equals d.Id
+                                                                where s.Id == shippingsId
+                                                                select new { s, o, d }).FirstOrDefault();
+                                                shipping_no = shipping.o.Code + shipping.d.Code + shipping.s.Timestamp.ToString("MM") + shipping.s.Timestamp.ToString("dd") + shipping.s.No;
                                             }
 
                                             if (isPaymentCompleted)
@@ -108,6 +116,7 @@
                                                 <tr>
                                                     <td>@item.Id</td>
                                                     <td>@string.Format("{0}{1}", "PKG", item.No)</td>
+                                                    <td>@shipping_no</td>
                                                     <td>@item.Length x @item.Width x @item.Height</td>
                                                     @*<td>@item.Length</td>
                                                     <td>@item.Width</td>
@@ -185,7 +194,7 @@
                     targets: 0
                 },
                 {
-                    visible: false, targets: [7]
+                    visible: false, targets: [8]
                 }
             ],
             select: {
@@ -205,7 +214,7 @@
             $('#data-body tr').each(function () {
                 var price = parseFloat($(this).find('input.price').val());
                 var courier = $(this).find('input.courier').val();
-                var id = datatable.row(this).data()[7];
+                var id = datatable.row(this).data()[8];
                 var obj = { price: price, courier: courier, id: id };
                 arrItem.push(obj);
             });

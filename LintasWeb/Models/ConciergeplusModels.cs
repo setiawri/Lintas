@@ -7,6 +7,7 @@ namespace LintasMVC.Models
 {
     public class ConciergeplusModels
     {
+        public string TimeZoneId { get; set; }
         public OrdersModels Order { get; set; }
         public List<InvoicesModels> ListInvoice { get; set; }
         public List<PaymentsIndexViewModels> ListPayment { get; set; }

@@ -1,4 +1,4 @@
-﻿@model LintasMVC.Models.ShippingItemsModels
+﻿@model LintasMVC.Models.LabelViewModels
 
 @{
     Layout = null;
@@ -61,7 +61,7 @@
                                                     No. Package <br />
                                                     <svg class="barcode_pkg"
                                                          jsbarcode-height="60"
-                                                         jsbarcode-value="@string.Format("{0}{1}", "PKG", Model.No)"
+                                                         jsbarcode-value="@string.Format("{0}{1}", "PKG", Model.ShippingItems.No)"
                                                          jsbarcode-textmargin="0"
                                                          jsbarcode-fontoptions="bold">
                                                     </svg>
@@ -70,18 +70,18 @@
                                                     No. Shipping <br />
                                                     <svg class="barcode_shipping"
                                                             jsbarcode-height="60"
-                                                            jsbarcode-value="@ViewBag.NoShipping"
+                                                            jsbarcode-value="@Model.NoShipping"
                                                             jsbarcode-textmargin="0"
                                                             jsbarcode-fontoptions="bold">
                                                     </svg>
                                                 </td>
                                                 <td colspan="4" align="center">
                                                     Courier Info <br />
-                                                    @if (!string.IsNullOrEmpty(Model.CourierInfo))
+                                                    @if (!string.IsNullOrEmpty(Model.ShippingItems.CourierInfo))
                                                     {
                                                         <svg class="barcode_courier"
                                                              jsbarcode-height="60"
-                                                             jsbarcode-value="@Model.CourierInfo"
+                                                             jsbarcode-value="@Model.ShippingItems.CourierInfo"
                                                              jsbarcode-textmargin="0"
                                                              jsbarcode-fontoptions="bold">
                                                         </svg>
@@ -89,24 +89,28 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td colspan="3">Length: @Model.Length cm</td>
-                                                <td colspan="3">Width: @Model.Width cm</td>
-                                                <td colspan="3">Height: @Model.Height cm</td>
-                                                <td colspan="3">Weight: @Model.Weight gr</td>
+                                                <td colspan="3">Length: @Model.ShippingItems.Length cm</td>
+                                                <td colspan="3">Width: @Model.ShippingItems.Width cm</td>
+                                                <td colspan="3">Height: @Model.ShippingItems.Height cm</td>
+                                                <td colspan="3">Weight: @Model.ShippingItems.Weight gr</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6">Origin: @ViewBag.Origin</td>
-                                                <td colspan="6">Destination: @ViewBag.Destination</td>
+                                                <td colspan="6">Origin: @Model.OriginStation.Name</td>
+                                                <td colspan="6">Destination: @Model.DestinationStation.Name</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="8">
                                                     Customer Info: <br />
-                                                    @ViewBag.Customer <br />
-                                                    @ViewBag.Address
+                                                    @Model.Shippings.ReceiverName <br />
+                                                    @Model.Shippings.Address <br />
+                                                    @Model.Shippings.Address2 <br />
+                                                    @Model.Shippings.City @Model.Shippings.PostalCode <br />
+                                                    @Model.Shippings.State @Model.Shippings.Country <br />
+                                                    @Model.Shippings.Phone1 / @Model.Shippings.Phone2
                                                 </td>
                                                 <td colspan="4">
                                                     Notes: <br />
-                                                    @Model.Notes
+                                                    @Model.ShippingItems.Notes
                                                 </td>
                                             </tr>
                                         </tbody>

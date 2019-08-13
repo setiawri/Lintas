@@ -66,7 +66,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="form-group" style="display: none">
                                 <label>Order Date: <span class="text-danger">*</span></label>
                                 @Html.EditorFor(model => model.Order.Timestamp, new { htmlAttributes = new { @class = "form-control", @Value = Model.Order.No == null ? DateTime.Today.ToString("yyyy/MM/dd") : Model.Order.Timestamp.ToString("yyyy/MM/dd"), @readonly = "readonly" } })
                             </div>
@@ -303,7 +303,7 @@
                                     foreach (var item in Model.ListInvoice)
                                     {
                                         <tr>
-                                            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                            <td>@TimeZoneInfo.ConvertTimeFromUtc(item.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(Model.TimeZoneId)).ToString("yyyy/MM/dd")</td>
                                             <td>@Html.DisplayFor(modelItem => item.No)</td>
                                             <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
                                             <td>@Html.DisplayFor(modelItem => item.TotalPaid)</td>
@@ -395,23 +395,23 @@
                             <tbody id="data-body-purchasing">
                                 @foreach (var item in Model.ListOrderItem)
                                 {
-                                    <tr>
-                                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Qty)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.ReceivedQty)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.PurchaseTimestamp)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.ReceiveTimestamp)</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
-                                        <td class="text-center">
-                                            @if (item.Qty != item.ReceivedQty)
-                                            {
-                                                <a href="#" onclick="StopPurchasing('@item.Id')">Stop</a> @:|
-                                            }
-                                            <a href="#" onclick="ViewLogs('@item.Id')">Log</a> |
-                                            @Html.ActionLink("Update", "OrderItemLog", new { id = item.Id })
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ReceivedQty)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                    <td>@(item.PurchaseTimestamp.HasValue? TimeZoneInfo.ConvertTimeFromUtc(item.PurchaseTimestamp.Value, TimeZoneInfo.FindSystemTimeZoneById(Model.TimeZoneId)).ToString("yyyy/MM/dd"):string.Empty)</td>
+                                    <td>@(item.ReceiveTimestamp.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(item.ReceiveTimestamp.Value, TimeZoneInfo.FindSystemTimeZoneById(Model.TimeZoneId)).ToString("yyyy/MM/dd") : string.Empty)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Status_enumid)</td>
+                                    <td class="text-center">
+                                        @if (item.Qty != item.ReceivedQty)
+                                        {
+                                            <a href="#" onclick="StopPurchasing('@item.Id')">Stop</a> @:|
+                                        }
+                                        <a href="#" onclick="ViewLogs('@item.Id')">Log</a> |
+                                        @Html.ActionLink("Update", "OrderItemLog", new { id = item.Id })
+                                    </td>
+                                </tr>
                                 }
                             </tbody>
                         </table>
@@ -818,7 +818,7 @@
                             url: '@Url.Action("SaveOrder", "Conciergeplus")',
                             data: {
                                 order_id: $('#Order_Id').val(),
-                                order_date: $('#Order_Timestamp').val(),
+                                //order_date: $('#Order_Timestamp').val(),
                                 customer_id: $('#Order_Customers_Id').val(),
                                 origin_id: $('#Order_Origin_Stations_Id').val(),
                                 destination_id: $('#Order_Destination_Stations_Id').val(),

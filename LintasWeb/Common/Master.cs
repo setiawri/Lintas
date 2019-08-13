@@ -39,8 +39,8 @@ namespace LintasMVC.Common
             string last_hex_string = "";
             using (var ctx = new LintasContext())
             {
-                DateTime from = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-                DateTime to = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                DateTime from = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 0, 0);
+                DateTime to = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 23, 59, 59);
                 last_hex_string = ctx.Shippings.Where(x => x.Timestamp >= from && x.Timestamp <= to).Max(x => x.No ?? string.Empty);
             }
             int last_hex_int = int.Parse(string.IsNullOrEmpty(last_hex_string) ? 0.ToString("X3") : last_hex_string, System.Globalization.NumberStyles.HexNumber);

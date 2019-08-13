@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using LintasMVC.Models;
+using System.Collections.ObjectModel;
 
 namespace LintasMVC.Controllers
 {
@@ -35,6 +36,17 @@ namespace LintasMVC.Controllers
         // GET: Stations/Create
         public ActionResult Create()
         {
+            ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+            List<object> list_tz = new List<object>();
+            foreach (TimeZoneInfo timeZone in timeZones)
+            {
+                list_tz.Add(new
+                {
+                    Id = timeZone.Id,
+                    Name = timeZone.DisplayName
+                });
+            }
+            ViewBag.listTimeZone = new SelectList(list_tz, "Id", "Name");
             ViewBag.listCountries = new SelectList(db.Countries.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View();
         }
@@ -44,7 +56,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Code,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Code,Name,Countries_Id,TimeZone,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
         {
             if (ModelState.IsValid)
             {
@@ -54,6 +66,17 @@ namespace LintasMVC.Controllers
                 return RedirectToAction("Index");
             }
 
+            ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+            List<object> list_tz = new List<object>();
+            foreach (TimeZoneInfo timeZone in timeZones)
+            {
+                list_tz.Add(new
+                {
+                    Id = timeZone.Id,
+                    Name = timeZone.DisplayName
+                });
+            }
+            ViewBag.listTimeZone = new SelectList(list_tz, "Id", "Name");
             ViewBag.listCountries = new SelectList(db.Countries.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View(stationsModels);
         }
@@ -70,6 +93,17 @@ namespace LintasMVC.Controllers
             {
                 return HttpNotFound();
             }
+            ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+            List<object> list_tz = new List<object>();
+            foreach (TimeZoneInfo timeZone in timeZones)
+            {
+                list_tz.Add(new
+                {
+                    Id = timeZone.Id,
+                    Name = timeZone.DisplayName
+                });
+            }
+            ViewBag.listTimeZone = new SelectList(list_tz, "Id", "Name");
             ViewBag.listCountries = new SelectList(db.Countries.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View(stationsModels);
         }
@@ -79,7 +113,7 @@ namespace LintasMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Code,Name,Countries_Id,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Code,Name,Countries_Id,TimeZone,Address,Phone1,Phone2,Notes")] StationsModels stationsModels)
         {
             if (ModelState.IsValid)
             {
@@ -88,6 +122,17 @@ namespace LintasMVC.Controllers
                 return RedirectToAction("Index");
             }
 
+            ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
+            List<object> list_tz = new List<object>();
+            foreach (TimeZoneInfo timeZone in timeZones)
+            {
+                list_tz.Add(new
+                {
+                    Id = timeZone.Id,
+                    Name = timeZone.DisplayName
+                });
+            }
+            ViewBag.listTimeZone = new SelectList(list_tz, "Id", "Name");
             ViewBag.listCountries = new SelectList(db.Countries.OrderBy(x => x.Name).ToList(), "Id", "Name");
             return View(stationsModels);
         }

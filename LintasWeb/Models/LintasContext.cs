@@ -82,7 +82,7 @@ namespace LintasMVC.Models
         {
             List<ActivityLogsModels> result = new List<ActivityLogsModels>();
 
-            DateTime changeTime = DateTime.Now;
+            DateTime changeTime = DateTime.UtcNow;
 
             // Get the Table() attribute, if one exists
             TableAttribute tableAttr = dbEntry.Entity.GetType().GetCustomAttributes(typeof(TableAttribute), false).SingleOrDefault() as TableAttribute;

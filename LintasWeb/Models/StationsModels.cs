@@ -24,6 +24,10 @@ namespace LintasMVC.Models
         [Display(Name = "Countries")]
         public Guid Countries_Id { get; set; }
 
+        [Required]
+        [Display(Name = "Time Zone")]
+        public string TimeZone { get; set; }
+
         public string Address { get; set; }
 
         [Display(Name = "Phone 1")]

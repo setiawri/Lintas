@@ -115,7 +115,7 @@ namespace LintasMVC.Controllers
                 shipmentsModels.Id = Guid.NewGuid();
                 Common.Master m = new Common.Master();
                 shipmentsModels.No = m.GetLastHexAllTime("SHP");
-                shipmentsModels.Timestamp = DateTime.Now;
+                shipmentsModels.Timestamp = DateTime.UtcNow;
                 db.Shipments.Add(shipmentsModels);
 
                 string[] array_ids = items_selected.Split(',');
@@ -157,7 +157,7 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ParcelLong = model.Length;
                     shipmentsReportModels.ParcelWide = model.Width;
                     shipmentsReportModels.ParcelHigh = model.Height;
-                    shipmentsReportModels.ConsignmentDate = DateTime.Today;
+                    shipmentsReportModels.ConsignmentDate = DateTime.UtcNow;
                     shipmentsReportModels.TaxConsigneeNumber = shippingsModels.TaxNumber;
 
                     shipmentsReportModels.ConsigneeName = shippingsModels.ReceiverName;
@@ -208,7 +208,7 @@ namespace LintasMVC.Controllers
                             TrackingModels tr = new TrackingModels();
                             tr.Id = Guid.NewGuid();
                             tr.Ref_Id = item.OrderItems_Id;
-                            tr.Timestamp = DateTime.Now;
+                            tr.Timestamp = DateTime.UtcNow;
                             tr.Description = "Item sent to Forwarders";
                             db.Tracking.Add(tr);
                         }
@@ -218,7 +218,7 @@ namespace LintasMVC.Controllers
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
                         tr.Ref_Id = model.Id; //Shipping Items Id
-                        tr.Timestamp = DateTime.Now;
+                        tr.Timestamp = DateTime.UtcNow;
                         tr.Description = "Item sent to Forwarders";
                         db.Tracking.Add(tr);
                     }
@@ -248,7 +248,7 @@ namespace LintasMVC.Controllers
             ShipmentLogModels shipmentLogModels = new ShipmentLogModels();
             shipmentLogModels.Id = Guid.NewGuid();
             shipmentLogModels.Shipments_Id = shipmentsModels.Id;
-            shipmentLogModels.Timestamp = DateTime.Now;
+            shipmentLogModels.Timestamp = DateTime.UtcNow;
             if (string.IsNullOrEmpty(Description))
             {
                 shipmentLogModels.Description = "[" + Enum.GetName(typeof(ShipmentItemStatusEnum), shipmentsModels.Status_enumid) + "]";
@@ -275,7 +275,7 @@ namespace LintasMVC.Controllers
                             TrackingModels tr = new TrackingModels();
                             tr.Id = Guid.NewGuid();
                             tr.Ref_Id = item.OrderItems_Id;
-                            tr.Timestamp = DateTime.Now;
+                            tr.Timestamp = DateTime.UtcNow;
                             tr.Description = "Received at Destination Station";
                             db.Tracking.Add(tr);
                         }
@@ -285,7 +285,7 @@ namespace LintasMVC.Controllers
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
                         tr.Ref_Id = sItem.Id; //shipping items id
-                        tr.Timestamp = DateTime.Now;
+                        tr.Timestamp = DateTime.UtcNow;
                         tr.Description = "Received at Destination Station";
                         db.Tracking.Add(tr);
                     }

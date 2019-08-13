@@ -43,7 +43,7 @@ namespace LintasMVC.Controllers
                 {
                     Id = item.s.Id,
                     No = item.o.Code + item.d.Code + item.s.Timestamp.ToString("MM") + item.s.Timestamp.ToString("dd") + item.s.No,
-                    Timestamp = item.s.Timestamp,
+                    Timestamp = TimeZoneInfo.ConvertTimeFromUtc(item.s.Timestamp, TimeZoneInfo.FindSystemTimeZoneById(item.o.TimeZone)),
                     Origin = item.o.Name,
                     Destination = item.d.Name,
                     Notes = item.s.Notes,
@@ -468,7 +468,7 @@ namespace LintasMVC.Controllers
                 shippingsModels.Company = company;
                 Common.Master m = new Common.Master();
                 shippingsModels.No = m.GetLastHexResetDay();
-                shippingsModels.Timestamp = DateTime.Now;
+                shippingsModels.Timestamp = DateTime.UtcNow;
                 shippingsModels.Origin_Stations_Id = origin_id;
                 shippingsModels.Destination_Stations_Id = destination_id;
                 shippingsModels.ReceiverName = receiver;
@@ -514,7 +514,7 @@ namespace LintasMVC.Controllers
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
                         tr.Ref_Id = shippingItemsModels.Id; //Shipping Items Id
-                        tr.Timestamp = DateTime.Now;
+                        tr.Timestamp = DateTime.UtcNow;
                         tr.Description = "Processed for Shipping";
                         db.Tracking.Add(tr);
                     }
@@ -539,7 +539,7 @@ namespace LintasMVC.Controllers
                             TrackingModels tr = new TrackingModels();
                             tr.Id = Guid.NewGuid();
                             tr.Ref_Id = subitem.OrderItems_Id;
-                            tr.Timestamp = DateTime.Now;
+                            tr.Timestamp = DateTime.UtcNow;
                             tr.Description = "Processed for Shipping";
                             db.Tracking.Add(tr);
                         }
@@ -600,6 +600,7 @@ namespace LintasMVC.Controllers
 
                 int counter = db.Invoices.AsNoTracking().Where(x => x.Ref_Id == invoicesModels.Ref_Id).Count();
                 invoicesModels.Id = Guid.NewGuid();
+                invoicesModels.Timestamp = DateTime.UtcNow;
                 invoicesModels.No = db.Stations.Where(x=>x.Id==shippingsModels.Origin_Stations_Id).FirstOrDefault().Code
                     + db.Stations.Where(x => x.Id == shippingsModels.Destination_Stations_Id).FirstOrDefault().Code
                     + shippingsModels.Timestamp.ToString("MM")
@@ -895,7 +896,7 @@ namespace LintasMVC.Controllers
             DeliveryLogModels deliveryLogModels = new DeliveryLogModels();
             deliveryLogModels.Id = Guid.NewGuid();
             deliveryLogModels.ShippingItem_Id = shippingItemsModels.Id;
-            deliveryLogModels.Timestamp = DateTime.Now;
+            deliveryLogModels.Timestamp = DateTime.UtcNow;
             if (string.IsNullOrEmpty(Description))
             {
                 deliveryLogModels.Description = "[" + Enum.GetName(typeof(DeliveryItemStatusEnum), shippingItemsModels.Delivery_Status) + "]";
@@ -917,7 +918,7 @@ namespace LintasMVC.Controllers
                         TrackingModels tr = new TrackingModels();
                         tr.Id = Guid.NewGuid();
                         tr.Ref_Id = item.OrderItems_Id;
-                        tr.Timestamp = DateTime.Now;
+                        tr.Timestamp = DateTime.UtcNow;
                         tr.Description =
                             (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery)
                             ? "Sent Out to Local Courier"
@@ -930,7 +931,7 @@ namespace LintasMVC.Controllers
                     TrackingModels tr = new TrackingModels();
                     tr.Id = Guid.NewGuid();
                     tr.Ref_Id = shippingItemsModels.Id; //shipping item id
-                    tr.Timestamp = DateTime.Now;
+                    tr.Timestamp = DateTime.UtcNow;
                     tr.Description =
                         (shippingItemsModels.Delivery_Status == DeliveryItemStatusEnum.LocalDelivery)
                         ? "Sent Out to Local Courier"
@@ -963,13 +964,22 @@ namespace LintasMVC.Controllers
                             join c in db.Customers on s.Customers_Id equals c.Id
                             where s.Id == shippingItemsModels.Shippings_Id
                             select new { s, os, ds, c }).FirstOrDefault();
-            ViewBag.NoShipping = shipping.os.Code + shipping.ds.Code + shipping.s.Timestamp.ToString("MM") + shipping.s.Timestamp.ToString("dd") + shipping.s.No;
-            ViewBag.Origin = shipping.os.Name;
-            ViewBag.Destination = shipping.ds.Name;
-            ViewBag.Customer = shipping.c.FirstName + " " + shipping.c.MiddleName + " " + shipping.c.LastName;
-            ViewBag.Address = shipping.s.Address;
+            //ViewBag.NoShipping = shipping.os.Code + shipping.ds.Code + shipping.s.Timestamp.ToString("MM") + shipping.s.Timestamp.ToString("dd") + shipping.s.No;
+            //ViewBag.Origin = shipping.os.Name;
+            //ViewBag.Destination = shipping.ds.Name;
+            //ViewBag.Customer = shipping.c.FirstName + " " + shipping.c.MiddleName + " " + shipping.c.LastName;
+            //ViewBag.Address = shipping.s.Address;
 
-            return View(shippingItemsModels);
+            LabelViewModels labelViewModels = new LabelViewModels()
+            {
+                NoShipping = shipping.os.Code + shipping.ds.Code + shipping.s.Timestamp.ToString("MM") + shipping.s.Timestamp.ToString("dd") + shipping.s.No,
+                Shippings = shipping.s,
+                ShippingItems = shippingItemsModels,
+                OriginStation = shipping.os,
+                DestinationStation = shipping.ds
+            };
+
+            return View(labelViewModels);
         }
     }
 }
