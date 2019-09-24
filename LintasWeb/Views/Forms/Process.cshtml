@@ -1,0 +1,846 @@
+﻿@model LintasMVC.Models.CustomerFormsIndexViewModels
+
+@{
+    ViewBag.Root = "Customer Forms";
+    ViewBag.Title = "Process";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Customer", "Forms")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+
+        <!-- Step Form -->
+        <div class="card">
+            <div class="card-header bg-white header-elements-inline">
+                <span class="text-uppercase font-size-sm font-weight-bold">@ViewBag.Title</span>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                        <a class="list-icons-item" data-action="reload"></a>
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+
+            <form class="shipping-form steps-validation" action="#" data-fouc>
+                <!-- Customer -->
+                <h6>Customer</h6>
+                <fieldset>
+                    <label class="customer-validation text-danger" style="display: none"></label>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Customer Name</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            @Html.EditorFor(model => model.Customer.FirstName, new { htmlAttributes = new { @class = "form-control", @placeholder = "First Name", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.FirstName, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-4">
+                                            @Html.EditorFor(model => model.Customer.MiddleName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Middle Name", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.MiddleName, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-4">
+                                            @Html.EditorFor(model => model.Customer.LastName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Last Name", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.LastName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.Company, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.Company, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.Company, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.Address, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.Address, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.Address2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.Address2, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.City, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.City, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.State, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.State, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.State, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Countries / Postal Code</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            @Html.DropDownListFor(model => model.Customer.Countries_Id, ViewBag.listCountries as SelectList, "Select Country", new { @class = "form-control select2", @onkeyup = "Preview()" })
+                                            @Html.ValidationMessageFor(model => model.Customer.Countries_Id, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-4">
+                                            @Html.EditorFor(model => model.Customer.Zipcode, new { htmlAttributes = new { @class = "form-control", @placeholder = "Postal Code", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.Zipcode, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Mobile / Phone</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Customer.Phone1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Mobile", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.Phone1, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Customer.Phone2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.Phone2, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Fax / Email</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Customer.Fax, new { htmlAttributes = new { @class = "form-control", @placeholder = "Fax", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.Fax, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Customer.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Customer.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Customer.Notes, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Customer.Notes, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Customer.Notes, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Customer", "Forms")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step" disabled><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Customer -->
+                <!-- Shipping -->
+                <h6>Shipping</h6>
+                <fieldset>
+                    <label class="shipping-validation text-danger" style="display: none"></label>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Stations</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.DropDownListFor(model => model.Shipping.Origin_Stations_Id, ViewBag.listStations as SelectList, "Select Origin", new { @class = "form-control select2", @onkeyup = "Preview()" })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Origin_Stations_Id, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.DropDownListFor(model => model.Shipping.Destination_Stations_Id, ViewBag.listStations as SelectList, "Select Destination", new { @class = "form-control select2", @onkeyup = "Preview()" })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Destination_Stations_Id, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-check mb-1">
+                                <label class="form-check-label">
+                                    <input type="checkbox" id="chkCustomer" class="check-styled-primary" data-fouc>
+                                    Send to Customer's Address
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.ReceiverName, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.ReceiverName, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.ReceiverName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.Company, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.Company, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.Company, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.Address, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.Address, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.Address, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.Address2, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.Address2, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.Address2, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.City, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.City, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.City, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                @Html.LabelFor(model => model.Shipping.State, htmlAttributes: new { @class = "col-form-label col-lg-3" })
+                                <div class="col-lg-9">
+                                    @Html.EditorFor(model => model.Shipping.State, new { htmlAttributes = new { @class = "form-control", @onkeyup = "Preview()" } })
+                                    @Html.ValidationMessageFor(model => model.Shipping.State, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Country / Postal Code</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            @Html.EditorFor(model => model.Shipping.Country, new { htmlAttributes = new { @class = "form-control", @placeholder = "Country", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Country, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-4">
+                                            @Html.EditorFor(model => model.Shipping.PostalCode, new { htmlAttributes = new { @class = "form-control", @placeholder = "Postal Code", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.PostalCode, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Mobile / Phone</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.Phone1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Mobile", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Phone1, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.Phone2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Phone2, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Fax / Email</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.Fax, new { htmlAttributes = new { @class = "form-control", @placeholder = "Fax", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Fax, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group row">
+                                <label class="col-form-label col-lg-3">Tax Number / Notes</label>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.TaxNumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "Tax Number", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.TaxNumber, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-lg-6">
+                                            @Html.EditorFor(model => model.Shipping.Notes, new { htmlAttributes = new { @class = "form-control", @placeholder = "Notes", @onkeyup = "Preview()" } })
+                                            @Html.ValidationMessageFor(model => model.Shipping.Notes, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Customer", "Forms")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm next-step">Next <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Shipping -->
+                <!-- Items -->
+                <h6>Items</h6>
+                <fieldset>
+                    <input type="hidden" id="Items_Content" name="Items_Content" />
+                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_item"><i class="icon-plus2 mr-2"></i> Add New Item</button>
+                    <label class="items-validation text-danger" style="display: none"></label>
+                    @Html.ValidationMessage("Items", "", new { @class = "text-danger" })
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Description</th>
+                                    <th>Length (cm)</th>
+                                    <th>Width (cm)</th>
+                                    <th>Height (cm)</th>
+                                    <th>Weight (gr)</th>
+                                    <th>Price</th>
+                                    <th>Courier</th>
+                                    <th>Notes</th>
+                                    <th class="never">Id</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div style="float: right; margin-bottom: 20px">
+                        <a href="@Url.Action("Customer", "Forms")" class="btn btn-warning btn-sm">Back to List</a>
+                        <button type="button" class="btn btn-primary btn-sm previous-step"><i class="icon-arrow-left13 mr-2"></i> Previous</button>
+                        <button type="button" class="btn btn-primary btn-sm submit-step">Submit Form <i class="icon-arrow-right14 ml-2"></i></button>
+                    </div>
+                </fieldset>
+                <!-- /Items -->
+            </form>
+        </div>
+        <!-- /Step Form -->
+        <!-- Horizontal form modal -->
+        <div id="modal_item" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New Package Input</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <form action="#" class="form-horizontal">
+                        <div class="modal-body">
+                            <label class="model-validation text-danger" style="display: none"></label>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3">Description</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mdl-desc">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3">Dimension (cm)</label>
+                                <div class="col-sm-3">
+                                    <input type="number" placeholder="Length" class="form-control mdl-length" min="1">
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="number" placeholder="Width" class="form-control mdl-width" min="1">
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="number" placeholder="Height" class="form-control mdl-height" min="1">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3">Weight (gr) / Price</label>
+                                <div class="col-sm-3">
+                                    <input type="number" placeholder="Weight" class="form-control mdl-weight" min="1">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="number" placeholder="Declared Price" class="form-control mdl-price">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3">Courier Info</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mdl-courier">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3">Notes</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mdl-notes">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn bg-primary mdl-btn-add">Add Package</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /horizontal form modal -->
+    </div>
+    <!-- /content area -->
+
+</div>
+
+<script type="text/javascript">
+
+    var dataTable;
+    function RemoveItem(no) {
+        dataTable.row(no).remove().draw();
+    }
+
+    function ClearCustomer() {
+        $('#Shipping_ReceiverName').val('');
+        $('#Shipping_Company').val('');
+        $('#Shipping_Address').val('');
+        $('#Shipping_Address2').val('');
+        $('#Shipping_City').val('');
+        $('#Shipping_State').val('');
+        $('#Shipping_Country').val('');
+        $('#Shipping_CountryCode').val('');
+        $('#Shipping_PostalCode').val('');
+        $('#Shipping_Phone1').val('');
+        $('#Shipping_Phone2').val('');
+        $('#Shipping_Fax').val('');
+        $('#Shipping_Email').val('');
+    }
+
+    function Preview() {
+        $('.customer-fullname').html($('#Customer_FirstName').val() + ' ' + $('#Customer_MiddleName').val() + ' ' + $('#Customer_LastName').val());
+        $('.customer-company').html($('#Customer_Company').val());
+        $('.customer-address1').html($('#Customer_Address').val());
+        $('.customer-address2').html($('#Customer_Address2').val());
+        $('.customer-city').html($('#Customer_City').val());
+        $('.customer-state').html($('#Customer_State').val());
+        $('.customer-country').html($('#Customer_Countries_Id option:selected').text());
+        $('.customer-postalcode').html($('#Customer_Zipcode').val());
+        $('.customer-mobile').html($('#Customer_Phone1').val());
+        $('.customer-phone').html($('#Customer_Phone2').val());
+        $('.customer-fax').html($('#Customer_Fax').val());
+        $('.customer-email').html($('#Customer_Email').val());
+        $('.customer-notes').html($('#Customer_Notes').val());
+
+        $('.shipping-origin').html($('#Shipping_Origin_Stations_Id option:selected').text());
+        $('.shipping-destination').html($('#Shipping_Destination_Stations_Id option:selected').text());
+        $('.shipping-receiver').html($('#Shipping_ReceiverName').val());
+        $('.shipping-company').html($('#Shipping_Company').val());
+        $('.shipping-address1').html($('#Shipping_Address').val());
+        $('.shipping-address2').html($('#Shipping_Address2').val());
+        $('.shipping-city').html($('#Shipping_City').val());
+        $('.shipping-state').html($('#Shipping_State').val());
+        $('.shipping-country').html($('#Shipping_Country').val());
+        $('.shipping-postalcode').html($('#Shipping_PostalCode').val());
+        $('.shipping-mobile').html($('#Shipping_Phone1').val());
+        $('.shipping-phone').html($('#Shipping_Phone2').val());
+        $('.shipping-fax').html($('#Shipping_Fax').val());
+        $('.shipping-email').html($('#Shipping_Email').val());
+        $('.shipping-tax').html($('#Shipping_TaxNumber').val());
+        $('.shipping-notes').html($('#Shipping_Notes').val());
+    }
+
+    $(document).ready(function () {
+
+        var form = $('.steps-validation').show();
+
+        //Basic wizard setup
+        form.steps({
+            headerTag: 'h6',
+            bodyTag: 'fieldset',
+            transitionEffect: 'fade',
+            enableAllSteps: true,
+            enablePagination: false,
+            titleTemplate: '<span class="number">#index#</span> #title#',
+            autoFocus: true,
+            startIndex: @ViewBag.startIndex,
+            labels: {
+                previous: '<i class="icon-arrow-left13 mr-2" /> Previous',
+                next: 'Next <i class="icon-arrow-right14 ml-2" />',
+                finish: 'Submit form <i class="icon-arrow-right14 ml-2" />'
+            },
+            onStepChanging: function (event, currentIndex, newIndex) {
+                // Allways allow previous action even if the current form is not valid!
+                if (currentIndex > newIndex) {
+                    return true;
+                }
+
+                // Needed in some cases if the user went back (clean up)
+                if (currentIndex < newIndex) {
+
+                    // To remove error styles
+                    form.find('.body:eq(' + newIndex + ') label.error').remove();
+                    form.find('.body:eq(' + newIndex + ') .error').removeClass('error');
+                }
+
+                if (currentIndex === 0) {
+                    if ($('#Customer_FirstName').val() == '') {
+                        $('.customer-validation').html('The First Name field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_LastName').val() == '') {
+                        $('.customer-validation').html('The Last Name field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_Address').val() == '') {
+                        $('.customer-validation').html('The Address 1 field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_City').val() == '') {
+                        $('.customer-validation').html('The City field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_State').val() == '') {
+                        $('.customer-validation').html('The State field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_Countries_Id').val() == '') {
+                        $('.customer-validation').html('The Countries field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Customer_Phone1').val() == '') {
+                        $('.customer-validation').html('The Mobile field is required.').show();
+                        return false;
+                    }
+                    else {
+                        $('.customer-validation').html('').hide();
+                        return true;
+                    }
+                }
+                else if (currentIndex === 1) {
+                    if ($('#Shipping_Origin_Stations_Id').val() == '') {
+                        $('.shipping-validation').html('The Origin Station field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Destination_Stations_Id').val() == '') {
+                        $('.shipping-validation').html('The Destination Station field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_ReceiverName').val() == '') {
+                        $('.shipping-validation').html('The Receiver Name field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Address').val() == '') {
+                        $('.shipping-validation').html('The Address 1 field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_City').val() == '') {
+                        $('.shipping-validation').html('The City field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_State').val() == '') {
+                        $('.shipping-validation').html('The State field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Country').val() == '') {
+                        $('.shipping-validation').html('The Country field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_PostalCode').val() == '') {
+                        $('.shipping-validation').html('The Postal Code field is required.').show();
+                        return false;
+                    }
+                    else if ($('#Shipping_Phone1').val() == '') {
+                        $('.shipping-validation').html('The Mobile field is required.').show();
+                        return false;
+                    }
+                    else {
+                        $('.shipping-validation').html('').hide();
+                        return true;
+                    }
+                }
+
+                //form.validate().settings.ignore = ':disabled,:hidden';
+                //return form.valid();
+            },
+            onStepChanged: function (event, currentIndex, priorIndex) {
+
+            },
+            onFinishing: function (event, currentIndex) {
+                //form.validate().settings.ignore = ':disabled';
+                //return form.valid();
+
+                if (currentIndex === 2) {
+                    if (datatable.page.info().recordsTotal == 0) {
+                        $('.items-validation').html('The Shipping Item is required.').show();
+                        return false;
+                    }
+                    else {
+                        $('.items-validation').html('').hide();
+                        return true;
+                    }
+                }
+            },
+            onFinished: function (event, currentIndex) {
+
+                var arrItem = [];
+                $('#data-body tr').each(function () {
+                    var current_row = $(this).closest('tr');
+                    var data = datatable.row(current_row).data();
+                    //console.log(data);
+
+                    var id = data[9];
+                    //var no = data[1];
+                    var desc = data[1];
+                    var length = parseFloat(data[2]);
+                    var width = parseFloat(data[3]);
+                    var height = parseFloat(data[4]);
+                    var weight = parseFloat(data[5]);
+                    var price = $(this).find('input.price').val(); if (price == '') { price = 0; }
+                    var courier = $(this).find('input.courier').val();
+                    var notes = data[8];
+                    var obj = { id: id, desc: desc, length: length, width: width, height: height, weight: weight, price: price, courier: courier, notes: notes };
+                    arrItem.push(obj);
+                    //console.log(arrItem);
+                });
+                $('#Items_Content').val(JSON.stringify(arrItem));
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GenerateShipping", "Forms")',
+                    data: {
+                        CustomerForms_Id: '@ViewBag.CustomerForms_Id',
+                        Items_Content: $('#Items_Content').val(),
+
+                        Customer_FirstName: $('#Customer_FirstName').val(),
+                        Customer_MiddleName: $('#Customer_MiddleName').val(),
+                        Customer_LastName: $('#Customer_LastName').val(),
+                        Customer_Company: $('#Customer_Company').val(),
+                        Customer_Address: $('#Customer_Address').val(),
+                        Customer_Address2: $('#Customer_Address2').val(),
+                        Customer_City: $('#Customer_City').val(),
+                        Customer_State: $('#Customer_State').val(),
+                        Customer_Countries_Id: $('#Customer_Countries_Id').val(),
+                        Customer_PostalCode: $('#Customer_Zipcode').val(),
+                        Customer_Phone1: $('#Customer_Phone1').val(),
+                        Customer_Phone2: $('#Customer_Phone2').val(),
+                        Customer_Fax: $('#Customer_Fax').val(),
+                        Customer_Email: $('#Customer_Email').val(),
+                        Customer_Notes: $('#Customer_Notes').val(),
+
+                        Shipping_Origin_Stations_Id: $('#Shipping_Origin_Stations_Id').val(),
+                        Shipping_Destination_Stations_Id: $('#Shipping_Destination_Stations_Id').val(),
+                        Shipping_ReceiverName: $('#Shipping_ReceiverName').val(),
+                        Shipping_Company: $('#Shipping_Company').val(),
+                        Shipping_Address: $('#Shipping_Address').val(),
+                        Shipping_Address2: $('#Shipping_Address2').val(),
+                        Shipping_City: $('#Shipping_City').val(),
+                        Shipping_State: $('#Shipping_State').val(),
+                        Shipping_Country: $('#Shipping_Country').val(),
+                        Shipping_PostalCode: $('#Shipping_PostalCode').val(),
+                        Shipping_Phone1: $('#Shipping_Phone1').val(),
+                        Shipping_Phone2: $('#Shipping_Phone2').val(),
+                        Shipping_Fax: $('#Shipping_Fax').val(),
+                        Shipping_Email: $('#Shipping_Email').val(),
+                        Shipping_TaxNumber: $('#Shipping_TaxNumber').val(),
+                        Shipping_Notes: $('#Shipping_Notes').val()
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        window.location.href = '@Url.Action("Index", "Shipping")';
+                    }, //end success
+                    error: function (result) {
+                        bootbox.alert("Error " + result);
+                        isSuccess = false;
+                    } //end error
+                }); //end ajax
+
+            }
+        });
+
+        $('.previous-step').click(function () {
+            form.steps('previous');
+        });
+
+        $('.next-step').click(function () {
+            form.steps('next');
+        });
+
+        $('.submit-step').click(function () {
+            form.steps('finish');
+        });
+
+        $('.select2').select2();
+
+        $('.check-styled-primary').uniform({
+            wrapperClass: 'border-primary-600 text-primary-800'
+        });
+
+        $('#chkCustomer').click(function () {
+            if ($(this).prop('checked') == false) {
+                ClearCustomer();
+            }
+            else {
+                $('#Shipping_ReceiverName').val($('#Customer_FirstName').val() + ' ' + $('#Customer_MiddleName').val() + ' ' + $('#Customer_LastName').val());
+                $('#Shipping_Company').val($('#Customer_Company').val());
+                $('#Shipping_Address').val($('#Customer_Address').val());
+                $('#Shipping_Address2').val($('#Customer_Address2').val());
+                $('#Shipping_City').val($('#Customer_City').val());
+                $('#Shipping_State').val($('#Customer_State').val());
+                $('#Shipping_Country').val($('#Customer_Countries_Id option:selected').text());
+                //$('#Shipping_CountryCode').val($('#Customer_Countries_Id').val());
+                $('#Shipping_PostalCode').val($('#Customer_Zipcode').val());
+                $('#Shipping_Phone1').val($('#Customer_Phone1').val());
+                $('#Shipping_Phone2').val($('#Customer_Phone2').val());
+                $('#Shipping_Fax').val($('#Customer_Fax').val());
+                $('#Shipping_Email').val($('#Customer_Email').val());
+
+                Preview();
+            }
+        });
+
+        $('.mdl-btn-add').click(function () {
+            //var no = $('.mdl-no').val();
+            var desc = $('.mdl-desc').val();
+            var length = $('.mdl-length').val();
+            var width = $('.mdl-width').val();
+            var height = $('.mdl-height').val();
+            var weight = $('.mdl-weight').val();
+            var price = $('.mdl-price').val();
+            var courier = $('.mdl-courier').val();
+            var notes = $('.mdl-notes').val();
+
+            if (desc == '') {
+                $('.model-validation').html('The Description field is required.').show();
+            }
+            else if (length == '' || length == 0) {
+                $('.model-validation').html('The Length field is required.').show();
+            }
+            else if (width == '' || width == 0) {
+                $('.model-validation').html('The Width field is required.').show();
+            }
+            else if (height == '' || height == 0) {
+                $('.model-validation').html('The Height field is required.').show();
+            }
+            else if (weight == '' || weight == 0) {
+                $('.model-validation').html('The Weight field is required.').show();
+            }
+            else {
+                $('.model-validation').html('').hide();
+                if (price == '') { price = 0; }
+                var row_count = datatable.page.info().recordsTotal; //alert(row_count);
+                dataTable = $('.datatable').DataTable();
+                dataTable.row.add([
+                    '<td align="center" style="vertical-align:middle"><a href="#" onclick="RemoveItem(' + row_count + ')" class="text-danger"><i class="icon-cross icon-2x"></i></a></td>',
+                    desc,
+                    parseFloat(length),
+                    parseFloat(width),
+                    parseFloat(height),
+                    parseFloat(weight),
+                    '<td><input type="number" class="form-control price" value="' + parseFloat(price) + '" /></td>',
+                    '<td><input type="text" class="form-control courier" value="' + courier + '" /></td>',
+                    notes,
+                    ''
+                ]).draw();
+
+                $('#modal_item').modal('toggle');
+                $('.modal-body input').val('');
+            }
+        });
+
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [0]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        var datatable = $('.datatable').DataTable({
+            columnDefs: [
+                {
+                    visible: false, targets: [9]
+                }
+            ],
+            pagingType: 'full_numbers',
+            order: [[1, 'asc']]
+        });
+
+    });
+</script>

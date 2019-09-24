@@ -487,6 +487,7 @@ namespace LintasMVC.Controllers
                 shippingsModels.Notes = notes;
                 shippingsModels.Status_enumid = ShippingStatusEnum.Shipping;
                 db.Shippings.Add(shippingsModels);
+                await db.SaveChangesAsync();
 
                 List<ShippingItemDetails> listDetails = JsonConvert.DeserializeObject<List<ShippingItemDetails>>(shipping_items);
                 foreach (var item in listDetails)
@@ -544,6 +545,7 @@ namespace LintasMVC.Controllers
                             db.Tracking.Add(tr);
                         }
                     }
+                    await db.SaveChangesAsync();
                 }
             }
             else
@@ -551,8 +553,7 @@ namespace LintasMVC.Controllers
                 status = "edit";
                 shippingsModels = await db.Shippings.FindAsync(shipping_id);
             }
-
-            await db.SaveChangesAsync();
+            
             return Json(new
             {
                 status, id = shippingsModels.Id,
@@ -570,12 +571,12 @@ namespace LintasMVC.Controllers
                                join c in db.Customers on s.Customers_Id equals c.Id
                                where s.Id == id
                                select new { s, c }).FirstOrDefaultAsync();
-            string fullName = shipping.c.FirstName;
-            if (!string.IsNullOrEmpty(shipping.c.MiddleName)) { fullName += " " + shipping.c.MiddleName; }
-            if (!string.IsNullOrEmpty(shipping.c.LastName)) { fullName += " " + shipping.c.LastName; }
+            //string fullName = shipping.c.FirstName;
+            //if (!string.IsNullOrEmpty(shipping.c.MiddleName)) { fullName += " " + shipping.c.MiddleName; }
+            //if (!string.IsNullOrEmpty(shipping.c.LastName)) { fullName += " " + shipping.c.LastName; }
 
             ViewBag.ShippingId = id;
-            ViewBag.Shipping = fullName + " (" + shipping.s.No + ")";
+            //ViewBag.Shipping = fullName + " (" + shipping.s.No + ")";
             ViewBag.ListShippingItem = await db.ShippingItems.Where(x => x.Shippings_Id == id && x.Invoiced == false).OrderBy(x => x.No).ToListAsync();
             ViewBag.ListPrice = new SelectList(db.ShippingPrices.OrderBy(x => x.Description).ToList(), "Id", "Description");
 

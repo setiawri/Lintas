@@ -142,7 +142,21 @@ namespace LintasMVC.Controllers
 
                     ShippingsModels shippingsModels = await db.Shippings.Where(x => x.Id == model.Shippings_Id).FirstOrDefaultAsync();
                     var customer = db.Customers.Where(x => x.Id == shippingsModels.Customers_Id).FirstOrDefault();
-                    var country = db.Countries.Where(x => x.Id == customer.Countries_Id).FirstOrDefault();
+                    var customer_forms = db.CustomerForms.Where(x => x.Shippings_Id == shippingsModels.Id).FirstOrDefault();
+                    string customer_country = "";
+                    string customer_countrycode = "";
+                    if (customer == null) //input-an dari form customer
+                    {
+                        var country = db.Countries.Where(x => x.Id == customer_forms.Customer_Countries_Id).FirstOrDefault();
+                        customer_country = country.Name;
+                        customer_countrycode = country.Code;
+                    }
+                    else
+                    {
+                        var country = db.Countries.Where(x => x.Id == customer.Countries_Id).FirstOrDefault();
+                        customer_country = country.Name;
+                        customer_countrycode = country.Code;
+                    }
 
                     ShipmentsReportModels shipmentsReportModels = new ShipmentsReportModels();
                     shipmentsReportModels.Id = Guid.NewGuid();
@@ -174,19 +188,21 @@ namespace LintasMVC.Controllers
                     shipmentsReportModels.ConsigneeAddress1 = shippingsModels.Address;
                     shipmentsReportModels.ConsigneeAddress2 = shippingsModels.Address2;
 
-                    shipmentsReportModels.ShipperName = customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
-                    shipmentsReportModels.ShipperCompany = customer.Company;
-                    shipmentsReportModels.ShipperPhone = customer.Phone2;
-                    shipmentsReportModels.ShipperMobile = customer.Phone1;
-                    shipmentsReportModels.ShipperFax = customer.Fax;
-                    shipmentsReportModels.ShipperEmail = customer.Email;
-                    shipmentsReportModels.ShipperPostalCode = customer.Zipcode;
-                    shipmentsReportModels.ShipperCountry = country.Name;
-                    shipmentsReportModels.ShipperCountryCode = country.Code;
-                    shipmentsReportModels.ShipperState = customer.State;
-                    shipmentsReportModels.ShipperCity = customer.City;
-                    shipmentsReportModels.ShipperAddress1 = customer.Address;
-                    shipmentsReportModels.ShipperAddress2 = customer.Address2;
+                    shipmentsReportModels.ShipperName = customer == null
+                        ? customer_forms.Customer_FirstName + " " + customer_forms.Customer_MiddleName + " " + customer_forms.Customer_LastName
+                        : customer.FirstName + " " + customer.MiddleName + " " + customer.LastName;
+                    shipmentsReportModels.ShipperCompany = customer == null ? customer_forms.Customer_Company : customer.Company;
+                    shipmentsReportModels.ShipperPhone = customer == null ? customer_forms.Customer_Phone2 : customer.Phone2;
+                    shipmentsReportModels.ShipperMobile = customer == null ? customer_forms.Customer_Phone1 : customer.Phone1;
+                    shipmentsReportModels.ShipperFax = customer == null ? customer_forms.Customer_Fax : customer.Fax;
+                    shipmentsReportModels.ShipperEmail = customer == null ? customer_forms.Customer_Email : customer.Email;
+                    shipmentsReportModels.ShipperPostalCode = customer == null ? customer_forms.Customer_PostalCode : customer.Zipcode;
+                    shipmentsReportModels.ShipperCountry = customer_country;
+                    shipmentsReportModels.ShipperCountryCode = customer_countrycode;
+                    shipmentsReportModels.ShipperState = customer == null ? customer_forms.Customer_State : customer.State;
+                    shipmentsReportModels.ShipperCity = customer == null ? customer_forms.Customer_City : customer.City;
+                    shipmentsReportModels.ShipperAddress1 = customer == null ? customer_forms.Customer_Address : customer.Address;
+                    shipmentsReportModels.ShipperAddress2 = customer == null ? customer_forms.Customer_Address2 : customer.Address2;
 
                     shipmentsReportModels.ParcelQty = 1;
                     shipmentsReportModels.ProductQty = 1;

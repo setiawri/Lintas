@@ -181,6 +181,7 @@
     <Compile Include="Controllers\ConciergeplusController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\FormsController.cs" />
     <Compile Include="Controllers\ForwardersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InvoicesController.cs" />
@@ -207,11 +208,15 @@
     <Compile Include="Models\ActivityLogsModels.cs" />
     <Compile Include="Models\ConciergeplusModels.cs" />
     <Compile Include="Models\CountriesModels.cs" />
+    <Compile Include="Models\CustomerFormsModels.cs" />
+    <Compile Include="Models\CustomerFormsStatusEnum.cs" />
+    <Compile Include="Models\CustomerFormsViewModels.cs" />
     <Compile Include="Models\CustomersIndexViewModels.cs" />
     <Compile Include="Models\CustomersModels.cs" />
     <Compile Include="Models\DeliveryItemStatusEnum.cs" />
     <Compile Include="Models\DeliveryLogModels.cs" />
     <Compile Include="Models\FileUploadsModels.cs" />
+    <Compile Include="Models\CustomerFormsIndexViewModels.cs" />
     <Compile Include="Models\ForwardersModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InvoiceItemsModels.cs" />
@@ -429,6 +434,10 @@
     <Content Include="Views\Tracking\Index.cshtml" />
     <Content Include="Views\Shipments\Report.cshtml" />
     <Content Include="Views\Shipping\Label.cshtml" />
+    <Content Include="Views\Forms\Index.cshtml" />
+    <Content Include="Views\Forms\Customer.cshtml" />
+    <Content Include="Views\Forms\Completed.cshtml" />
+    <Content Include="Views\Forms\Process.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

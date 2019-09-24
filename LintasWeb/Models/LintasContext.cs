@@ -42,12 +42,14 @@ namespace LintasMVC.Models
         public DbSet<DeliveryLogModels> DeliveryLog { get; set; }
         public DbSet<TrackingModels> Tracking { get; set; }
         public DbSet<ShipmentsReportModels> ShipmentsReport { get; set; }
+        public DbSet<CustomerFormsModels> CustomerForms { get; set; }
 
         #region Activity Log
         public override int SaveChanges()
         {
             LintasContext db = new LintasContext();
-            string userId = db.User.Where(x => x.UserName == HttpContext.Current.User.Identity.Name).FirstOrDefault().Id;
+            var user_model = db.User.Where(x => x.UserName == HttpContext.Current.User.Identity.Name).FirstOrDefault();
+            string userId = user_model == null ? "" : user_model.Id;
             // Get all Added/Deleted/Modified entities (not Unmodified or Detached)
             foreach (var ent in this.ChangeTracker.Entries().Where(p => p.State == EntityState.Added || p.State == EntityState.Deleted || p.State == EntityState.Modified))
             {
@@ -64,7 +66,8 @@ namespace LintasMVC.Models
         public override async Task<int> SaveChangesAsync()
         {
             LintasContext db = new LintasContext();
-            string userId = db.User.Where(x => x.UserName == HttpContext.Current.User.Identity.Name).FirstOrDefault().Id;
+            var user_model = db.User.Where(x => x.UserName == HttpContext.Current.User.Identity.Name).FirstOrDefault();
+            string userId = user_model == null ? "" : user_model.Id;
             // Get all Added/Deleted/Modified entities (not Unmodified or Detached)
             foreach (var ent in this.ChangeTracker.Entries().Where(p => p.State == EntityState.Added || p.State == EntityState.Deleted || p.State == EntityState.Modified))
             {

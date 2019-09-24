@@ -158,6 +158,12 @@
                             </ul>
                         </li>
                         <li class="nav-item">
+                            <a href="@Url.Action("Customer", "Forms")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Forms" ? "nav-link active" : "nav-link")">
+                                <i class="icon-address-book2"></i>
+                                <span>Customer Forms</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="@Url.Action("Index", "Shipments")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Shipments" ? "nav-link active" : "nav-link")">
                                 <i class="icon-gift"></i>
                                 <span>Shipments</span>
@@ -170,32 +176,32 @@
                             </a>
                         </li>
                         @*<li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Customers"
-                            || ViewContext.RouteData.Values["Controller"].ToString() == "Orders"
-                            || ViewContext.RouteData.Values["Controller"].ToString() == "Invoices"
-                            || ViewContext.RouteData.Values["Controller"].ToString() == "Payments"
-                            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
-                            <a href="#" class="nav-link"><i class="icon-airplane2"></i> <span>Concierge Service PLUS</span></a>
-                            <ul class="nav nav-group-sub" data-submenu-title="Concierge Service PLUS">
-                                <li class="nav-item"><a href="@Url.Action("Index", "Customers")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Customers" ? "nav-link active" : "nav-link")">Customers</a></li>
-                                <li class="nav-item"><a href="@Url.Action("Index", "Orders")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders" ? "nav-link active" : "nav-link")">Orders</a></li>
-                                <li class="nav-item"><a href="@Url.Action("Index", "Invoices")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Invoices" ? "nav-link active" : "nav-link")">Invoices</a></li>
-                                <li class="nav-item"><a href="@Url.Action("Index", "Payments")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Payments" ? "nav-link active" : "nav-link")">Payments</a></li>
-                            </ul>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xxx"
-                            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
-                            <a href="#" class="nav-link"><i class="icon-train2"></i> <span>Concierge Service</span></a>
-                            <ul class="nav nav-group-sub" data-submenu-title="Concierge Service">
-                                <li class="nav-item"><a href="@Url.Action("Index", "xxx")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xxx" ? "nav-link active" : "nav-link")">xxx</a></li>
-                            </ul>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xyz"
-                            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
-                            <a href="#" class="nav-link"><i class="icon-truck"></i> <span>Shipping Service</span></a>
-                            <ul class="nav nav-group-sub" data-submenu-title="Shipping Service">
-                                <li class="nav-item"><a href="@Url.Action("Index", "xyz")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xyz" ? "nav-link active" : "nav-link")">xyz</a></li>
-                            </ul>
-                        </li>*@
+            || ViewContext.RouteData.Values["Controller"].ToString() == "Orders"
+            || ViewContext.RouteData.Values["Controller"].ToString() == "Invoices"
+            || ViewContext.RouteData.Values["Controller"].ToString() == "Payments"
+            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
+            <a href="#" class="nav-link"><i class="icon-airplane2"></i> <span>Concierge Service PLUS</span></a>
+            <ul class="nav nav-group-sub" data-submenu-title="Concierge Service PLUS">
+                <li class="nav-item"><a href="@Url.Action("Index", "Customers")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Customers" ? "nav-link active" : "nav-link")">Customers</a></li>
+                <li class="nav-item"><a href="@Url.Action("Index", "Orders")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Orders" ? "nav-link active" : "nav-link")">Orders</a></li>
+                <li class="nav-item"><a href="@Url.Action("Index", "Invoices")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Invoices" ? "nav-link active" : "nav-link")">Invoices</a></li>
+                <li class="nav-item"><a href="@Url.Action("Index", "Payments")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Payments" ? "nav-link active" : "nav-link")">Payments</a></li>
+            </ul>
+        </li>
+        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xxx"
+            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
+            <a href="#" class="nav-link"><i class="icon-train2"></i> <span>Concierge Service</span></a>
+            <ul class="nav nav-group-sub" data-submenu-title="Concierge Service">
+                <li class="nav-item"><a href="@Url.Action("Index", "xxx")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xxx" ? "nav-link active" : "nav-link")">xxx</a></li>
+            </ul>
+        </li>
+        <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xyz"
+            ? "nav-item nav-item-submenu nav-item-expanded nav-item-open" : "nav-item nav-item-submenu")">
+            <a href="#" class="nav-link"><i class="icon-truck"></i> <span>Shipping Service</span></a>
+            <ul class="nav nav-group-sub" data-submenu-title="Shipping Service">
+                <li class="nav-item"><a href="@Url.Action("Index", "xyz")" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "xyz" ? "nav-link active" : "nav-link")">xyz</a></li>
+            </ul>
+        </li>*@
                         <!-- /main -->
                         <!-- Setting -->
                         <li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Setting</div> <i class="icon-menu" title="Setting"></i></li>

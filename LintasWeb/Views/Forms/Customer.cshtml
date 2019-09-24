@@ -1,0 +1,194 @@
+﻿@model IEnumerable<LintasMVC.Models.CustomerFormsViewModels>
+
+@{
+    ViewBag.Root = "Customer Forms";
+    ViewBag.Title = "List";
+}
+
+<div class="content-wrapper">
+
+    <!-- Page header -->
+    <div class="page-header page-header-light">
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home")" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                    <a href="@Url.Action("Customer", "Forms")" class="breadcrumb-item">@ViewBag.Root</a>
+                    <span class="breadcrumb-item active">@ViewBag.Title</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /page header -->
+    <!-- Content area -->
+    <div class="content">
+
+        <!-- Form inputs -->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">@ViewBag.Root</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                        <a class="list-icons-item" data-action="reload"></a>
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Timestamp)</th>
+                                <th>@Html.DisplayNameFor(model => model.ReceiverName)</th>
+                                <th>@Html.DisplayNameFor(model => model.Destination)</th>
+                                <th>@Html.DisplayNameFor(model => model.ShippingAddress)</th>
+                                <th>@Html.DisplayNameFor(model => model.ShippingMobile)</th>
+                                <th>@Html.DisplayNameFor(model => model.Status)</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ReceiverName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Destination)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ShippingMobile)</td>
+                                    <td>
+                                        @if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.None)
+                                        {
+                                            <span class="badge badge-dark d-block">None</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.Approved)
+                                        {
+                                            <span class="badge badge-primary d-block">Approved</span>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.Cancelled)
+                                        {
+                                            <span class="badge badge-danger d-block">Cancelled</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.None)
+                                        {
+                                            @Html.ActionLink("Process", "Process", new { id = item.Id }) @:|
+                                            <a href="#" onclick="Cancelled('@item.Id', '@item.ReceiverName', '@item.Destination')">Cancel</a>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.Cancelled)
+                                        {
+                                            <a href="#" onclick="UndoCancelled('@item.Id', '@item.ReceiverName', '@item.Destination')">Undo Cancel</a>
+                                        }
+                                        else if (item.Status == LintasMVC.Models.CustomerFormsStatusEnum.Approved)
+                                        {
+
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /form inputs -->
+
+    </div>
+    <!-- /content area -->
+
+</div>
+<script type="text/javascript">
+    function Cancelled(id, name, destination) {
+        bootbox.confirm({
+            message: "Are you sure want to cancel transaction " + name + " - Destination " + destination + " ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("Cancelled", "Forms")',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            location.reload();
+                        }, //end success
+                        error: function (result) {
+                            bootbox.alert("Error " + result);
+                        } //end error
+                    }); //end ajax
+                }
+            }
+        });
+    }
+
+    function UndoCancelled(id, name, destination) {
+        bootbox.confirm({
+            message: "Are you sure want to undo cancel transaction " + name + " - Destination " + destination + " ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UndoCancelled", "Forms")',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            location.reload();
+                        }, //end success
+                        error: function (result) {
+                            bootbox.alert("Error " + result);
+                        } //end error
+                    }); //end ajax
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            columnDefs: [{
+                orderable: false,
+                width: 140,
+                targets: [6]
+            }],
+            dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+        $('.datatable').DataTable({
+            pagingType: 'full_numbers',
+            order: [[0, 'desc']]
+        });
+    });
+</script>
